@@ -1,4 +1,3 @@
 builds
-Src/obj
-Src/bin
-Src/
+src/obj
+src/bin

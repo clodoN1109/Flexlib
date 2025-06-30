@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <BaseOutputPath>$(MSBuildThisFileDirectory)builds\temp\</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)builds\temp\obj\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+</Project>

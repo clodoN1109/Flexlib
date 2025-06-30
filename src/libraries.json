@@ -1,0 +1,26 @@
+[
+  {
+    "Name": "myLibrary",
+    "Path": "."
+  },
+  {
+    "Name": "mySecondLibrary",
+    "Path": "C:\\Users\\clovi\\Clodo\\Work\\Projects\\"
+  },
+  {
+    "Name": "AnotherLibrary",
+    "Path": "somewhere"
+  },
+  {
+    "Name": "YetAnotherLibrary",
+    "Path": "SomewhereElse"
+  },
+  {
+    "Name": "AgainYetAnotherLibrary",
+    "Path": "SomewhereElse"
+  },
+  {
+    "Name": "AgainYet",
+    "Path": "Somewhere"
+  }
+]
