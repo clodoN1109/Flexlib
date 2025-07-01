@@ -1,7 +1,7 @@
-using System.Text.Json;
 using Flexlib.Application.Ports;
 using Flexlib.Domain;
-using System.Reflection;
+using Flexlib.Shared;
+using Flexlib.Infrastructure.Persistence.Common;
 using System.IO;
 
 namespace Flexlib.Infrastructure.Persistence;
@@ -14,28 +14,57 @@ public class JsonLibraryRepository : ILibraryRepository
 
     public JsonLibraryRepository()
     {
-        string? exeFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        if (!Directory.Exists(exeFolder))
-            throw new DirectoryNotFoundException($"Directory not found: {exeFolder}");
+        _cache = new List<Library>();
+
+        _dataDirectory = EnsureDataDirectory();
+
+        _metaFile = EnsureMetaFile();
+
+    }
+
+    private string EnsureDataDirectory()
+    {
 #if DEBUG
-        _dataDirectory = Path.Combine(exeFolder, "data/");
-        _metaFile = Path.Combine(_dataDirectory, "libraries.json");
+        
+        string? exeFolder = Env.GetExecutingAssemblyLocation();
+
+        if (!Directory.Exists(exeFolder))
+            throw new DirectoryNotFoundException($"Executable file directory not found: {exeFolder}");
+        
+        string dataDirectory = Path.Combine(exeFolder, "data/");
 #else
-        _dataDirectory = Path.Combine(exeFolder, "data/");
-        _metaFile = Path.Combine(_dataDirectory, "libraries.json");
+        string dataDirectory = "~/AppData/Flexlib/data/";
 #endif
 
-        Directory.CreateDirectory(_dataDirectory);
+        Directory.CreateDirectory(dataDirectory);
+    
+        return dataDirectory;
+    }
+    
+    private string EnsureMetaFile()
+    {
+        string? exeFolder = Shared.Env.GetExecutingAssemblyLocation();
+        
+        if (!Directory.Exists(exeFolder))
+            throw new DirectoryNotFoundException($"Directory not found: {exeFolder}");
 
-        if (File.Exists(_metaFile))
+#if DEBUG
+        string metaFile = Path.Combine(exeFolder, "data/libraries.json");
+#else 
+        string metaFile = Path.Combine(exeFolder, "data/libraries.json");
+#endif
+
+        if (File.Exists(metaFile))
         {
-            var json = File.ReadAllText(_metaFile);
-            _cache = JsonSerializer.Deserialize<List<Library>>(json) ?? new List<Library>();
+            var json = File.ReadAllText(metaFile);
+            _cache = Json.ReadJson(json) ?? new List<Library>();
         }
         else
         {
             _cache = new List<Library>();
         }
+
+        return metaFile;
     }
 
     public void Save(Library lib)
@@ -43,21 +72,13 @@ public class JsonLibraryRepository : ILibraryRepository
         _cache.RemoveAll(l => l.Name == lib.Name && l.Path == lib.Path);
         
         _cache.Add(lib);
-        
-        File.WriteAllText(_metaFile, JsonSerializer.Serialize(_cache, new JsonSerializerOptions { WriteIndented = true }));
 
-        UpdateLibrary(lib);
-       
-    }
-
-    private void UpdateLibrary(Library lib)
-    {
- 
+        Json.WriteJson(_metaFile, _cache);
         UpdateLibFileStructure(lib);
         UpdateLibMetaFile(lib);
         UpdateItems(lib);
         UpdateLocalStorage(lib);
-        
+       
     }
 
     private void UpdateItems(Library lib)
@@ -104,14 +125,14 @@ public class JsonLibraryRepository : ILibraryRepository
         string libDir = Path.Combine(lib.Path, $"{lib.Name}");
 
         string libMetaFile = Path.Combine(libDir, $"{lib.Name}.json");
-        File.WriteAllText(libMetaFile, JsonSerializer.Serialize(lib.Items, new JsonSerializerOptions {WriteIndented = true }));
+        Json.WriteJson(libMetaFile, lib.Items);
     
     }
 
     private void UpdateItemMetaFile(LibraryItem item)
     {
         string itemMetaFile = Path.Combine(item.Path, $"{item.Name}.json");
-        File.WriteAllText(itemMetaFile, JsonSerializer.Serialize(item, new JsonSerializerOptions {WriteIndented = true }));
+        Json.WriteJson(itemMetaFile, item);
     }
 
     public bool Exists(string name, string path) => _cache.Any( l => l.Name == name && l.Path == path);
