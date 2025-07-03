@@ -5,7 +5,7 @@ using Flexlib.Domain;
 public interface ILibraryRepository
 {
     void Save(Library lib);
-    bool Exists(string name, string path);
+    bool Exists(string name);
     Library? GetByName(string name);
     IEnumerable<Library> GetAll();
 }

@@ -5,12 +5,9 @@ class Program
     static void Main(string[] args)
     {
     
-        ParsedInput input = Input.Parse(args);
+        var parsedInput = Input.Parse(args);
 
-        if ( input.IsValid() )
-            Router.Route(input); 
-        else 
-            Output.ExplainUsage(input);
+        Router.Route(parsedInput); 
         
     }
 

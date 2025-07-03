@@ -1,4 +1,4 @@
-namespace Flexlib.Application.Common;
+namespace Flexlib.Common;
 
 public class Result
 {

@@ -1,4 +1,5 @@
-namespace Flexlib.Shared;
+namespace Flexlib.Common;
+
 using System.Reflection;
 using System.IO;
 

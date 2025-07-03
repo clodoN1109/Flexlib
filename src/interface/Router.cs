@@ -7,11 +7,14 @@ public static class Router {
         switch (parsedInput) 
         {
             case Command cmd:
-                CommandController.Handle(cmd);
+                if ( cmd.IsValid() )
+                    CommandController.Handle(cmd);
+                else 
+                    Output.ExplainUsage(cmd.UsageInstructions());
                 break;
             
             default:
-                Output.ExplainUsage(parsedInput);
+                Output.ExplainUsage();
                 break;
         }
 

@@ -2,18 +2,13 @@ namespace Flexlib.Interface;
 
 public static class Output
 {
-    public static void ExplainUsage(ParsedInput input)
+    public static void ExplainUsage(string? usageInstructions = null)
     {
-        switch (input) 
-        {
-            case NewLibraryCommand newlib:
-                Console.WriteLine("\n Usage: flexlib new {name} {path}\n");
-                break;
 
-            default: 
-                Console.WriteLine("\n Usage: flexlib [options] \n");
-                break;
-        }
+        if (usageInstructions != null)
+            Console.WriteLine($"\n{usageInstructions}\n");
+        else
+            Console.WriteLine("\n Usage: flexlib {command} [options] \n");
 
     }
 

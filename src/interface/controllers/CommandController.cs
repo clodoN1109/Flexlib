@@ -1,4 +1,4 @@
-using Flexlib.Application.Common;
+using Flexlib.Common;
 using Flexlib.Application.Ports;
 using Flexlib.Application.UseCases;
 using Flexlib.Infrastructure.Persistence;
@@ -22,15 +22,22 @@ public static class CommandController
                 result = NewLibrary.Execute(newLib.Name, newLib.Path, _repo); 
                 break;
 
-            case UpdateLibraryCommand updateLib:
-                result = UpdateLibrary.Execute();
+            case AddItemCommand addItem:
+                result = AddItem.Execute(addItem.LibraryName, addItem.ItemOrigin, addItem.ItemName, _repo);
+                break;
+
+            case RefreshCommand refresh:
+                result = Refresh.Execute(refresh.LibraryName, _repo);
+                break;
+            
+            case UnknownCommand UnknownCmd:
+                result = Result.Fail(UnknownCmd.Message);
                 break;
 
             default:
-                result = Result.Fail($"No controller takes the command {command}.");
+                result = Result.Fail($"Unknown use case {command}.");
                 break;
         }
-
 
         if (result.IsSuccess)
             Output.Success(result.SuccessMessage);

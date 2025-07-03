@@ -1,6 +1,6 @@
 using Flexlib.Application.Ports;
 using Flexlib.Domain;
-using Flexlib.Shared;
+using Flexlib.Common;
 using Flexlib.Infrastructure.Persistence.Common;
 using System.IO;
 
@@ -43,7 +43,7 @@ public class JsonLibraryRepository : ILibraryRepository
     
     private string EnsureMetaFile()
     {
-        string? exeFolder = Shared.Env.GetExecutingAssemblyLocation();
+        string? exeFolder = Env.GetExecutingAssemblyLocation();
         
         if (!Directory.Exists(exeFolder))
             throw new DirectoryNotFoundException($"Directory not found: {exeFolder}");
@@ -87,25 +87,39 @@ public class JsonLibraryRepository : ILibraryRepository
 
         foreach (LibraryItem item in lib.Items)
         {
-            UpdateItemMetaFile(item);
+            UpdateItemMetaFile(item, lib);
         }
     }
     
     private void UpdateLocalStorage(Library lib)
     {
+        string libDir = Path.Combine(lib.Path, lib.Name!);
+        string itemsDir = Path.Combine(libDir, "items");
+        string localDir = Path.Combine(itemsDir, "local");
 
-        string libDir = Path.Combine(lib.Path, $"{lib.Name}");
-        string itemsDir = Path.Combine(libDir, "items/");
-        string localDir = Path.Combine(itemsDir, "local/");
+        Directory.CreateDirectory(localDir);
 
-        string[] localFiles = Directory.GetFiles(localDir);
+        var localFiles = new HashSet<string?>(
+            Directory.GetFiles(localDir).Select(Path.GetFileName),
+            StringComparer.OrdinalIgnoreCase
+        );
 
-        DeleteUnlistedItems(lib);
-    }
+        foreach (LibraryItem item in lib.Items)
+        {
+            string sourcePath = item.Origin!;
+            
+            string itemName = item.Name!;
+            string fileExtension = Path.GetExtension( Path.GetFileName(sourcePath) );
+            string fileName = $"{itemName}{fileExtension}";
 
-    private void DeleteUnlistedItems(Library lib)
-    {
-          
+            string targetPath = Path.Combine(localDir, fileName);
+
+            if (!localFiles.Contains(fileName))
+            {
+                AddressType type = AddressAnalysis.GetAddressType(sourcePath);
+                CopyHelpers.TryCopyToLocal(type, sourcePath, targetPath);
+            }
+        }
     }
 
     private void UpdateLibFileStructure(Library lib)
@@ -120,7 +134,8 @@ public class JsonLibraryRepository : ILibraryRepository
  
     }
 
-    private void UpdateLibMetaFile(Library lib){
+    private void UpdateLibMetaFile(Library lib)
+    {
 
         string libDir = Path.Combine(lib.Path, $"{lib.Name}");
 
@@ -129,13 +144,48 @@ public class JsonLibraryRepository : ILibraryRepository
     
     }
 
-    private void UpdateItemMetaFile(LibraryItem item)
+    private void UpdateItemMetaFile(LibraryItem item, Library lib)
     {
-        string itemMetaFile = Path.Combine(item.Path, $"{item.Name}.json");
+        string itemMetaFile = Path.Combine(lib.Path, lib.Name!, "items", $"{item.Name}.json");
         Json.WriteJson(itemMetaFile, item);
     }
 
-    public bool Exists(string name, string path) => _cache.Any( l => l.Name == name && l.Path == path);
+    private void DeleteLibMetaFile(Library lib)
+    {
+        string libDir = Path.Combine(lib.Path, lib.Name!);
+        string libMetaFile = Path.Combine(libDir, $"{lib.Name}.json");
+
+        if (File.Exists(libMetaFile))
+            File.Delete(libMetaFile);
+    }
+
+    private void DeleteItemMetaFile(LibraryItem item, Library lib)
+    {
+        string itemMetaFile = Path.Combine(lib.Path, lib.Name!, "items", $"{item.Name}.json");
+
+        if (File.Exists(itemMetaFile))
+            File.Delete(itemMetaFile);
+    }
+
+
+    private void DeleteAllLocalMetaFiles()
+    {
+        foreach (var lib in _cache)
+        {
+            if (lib == null) continue;
+
+            DeleteLibMetaFile(lib);
+
+            if (lib.Items == null) continue;
+
+            foreach (var item in lib.Items)
+            {
+                DeleteItemMetaFile(item, lib);
+            }
+        }
+    }
+
+    public bool Exists(string name) => _cache.Any( l => l.Name == name);
 
     public Library? GetByName(string name) => _cache.FirstOrDefault(l => l.Name == name);
 
