@@ -43,9 +43,8 @@ public class Library
     
     private void AddPropertyToItem(ItemPropertyDefinition def, LibraryItem item)
     {
-
-        item.PropertyValues.Add(def.Name, null);
-
+        if (!item.PropertyValues.ContainsKey(def.Name))
+            item.PropertyValues.Add(def.Name, null);
     }
 
     public ItemPropertyDefinition? GetPropertyDefinition(string name)

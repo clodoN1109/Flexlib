@@ -88,7 +88,7 @@ public static class ListProperties
     public class ParsedArgs
     {
         public string LibName { get; }
-        public string? ItemName { get; }
+        public string ItemName { get; }
         public ILibraryRepository Repo { get; }
 
         public ParsedArgs(string libName, string? itemName, ILibraryRepository repo)

@@ -12,7 +12,7 @@ public class LibraryItem
 
     public List<string> Comments { get; }
     
-    public Dictionary<string, string> PropertyValues { get; set; }
+    public Dictionary<string, string?> PropertyValues { get; set; }
 
     public LibraryItem(string? name, string origin, Library library)
     {

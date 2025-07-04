@@ -21,61 +21,83 @@ public static class EditProperty
 
     private static Result IsOperationAllowed(ParsedArgs args)
     {
-        if (string.IsNullOrWhiteSpace(args.LibName))
-            return Result.Fail("Library name must be provided.");
-
-        if (string.IsNullOrWhiteSpace(args.ItemName))
-            return Result.Fail("Item name must be provided.");
-
         if (string.IsNullOrWhiteSpace(args.PropName))
             return Result.Fail("Property name must be provided.");
 
-        var lib = args.Repo.GetByName(args.LibName);
-        if (lib == null)
-            return Result.Fail($"Library '{args.LibName}' not found.");
+        // If libName is provided, check that the library exists
+        if (!string.IsNullOrWhiteSpace(args.LibName))
+        {
+            var lib = args.Repo.GetByName(args.LibName);
+            if (lib == null)
+                return Result.Fail($"Library '{args.LibName}' not found.");
 
-        if (!lib.ContainsName(args.ItemName))
-            return Result.Fail($"Item '{args.ItemName}' not found in library '{args.LibName}'.");
+            // If itemName is also provided, check item and property
+            if (!string.IsNullOrWhiteSpace(args.ItemName))
+            {
+                if (!lib.ContainsName(args.ItemName))
+                    return Result.Fail($"Item '{args.ItemName}' not found in library '{args.LibName}'.");
 
-        var item = lib.GetItemByName(args.ItemName)!;
-        if (!item.PropertyValues.ContainsKey(args.PropName))
-            return Result.Fail($"Property '{args.PropName}' not found in item '{args.ItemName}'.");
+                var item = lib.GetItemByName(args.ItemName);
+
+                if (!item!.PropertyValues.ContainsKey(args.PropName))
+                    return Result.Fail($"Property '{args.PropName}' not found in item '{args.ItemName}'.");
+            }
+        }
 
         return Result.Success("Operation allowed.");
     }
 
     private static Result ApplyEdit(ParsedArgs args)
     {
-        var lib = args.Repo.GetByName(args.LibName)!;
-        var item = lib.GetItemByName(args.ItemName)!;
+        var targetLibraries = string.IsNullOrWhiteSpace(args.LibName)
+            ? args.Repo.GetAll()
+            : new[] { args.Repo.GetByName(args.LibName)! };
 
-        var selectedProperty = lib.PropertyDefinitions.FirstOrDefault(def => def.Name == args.PropName);
-        if (selectedProperty == null)
+        foreach (var lib in targetLibraries.ToList())
         {
-            return Result.Fail($"Property '{args.PropName}' is not defined in library '{args.LibName}'.");
+            var propertyDef = lib.PropertyDefinitions.FirstOrDefault(d => d.Name == args.PropName);
+            if (propertyDef == null)
+                continue; // Skip libraries that don't define the property
+
+            var targetItems = string.IsNullOrWhiteSpace(args.ItemName)
+                ? lib.Items
+                : new List<LibraryItem> { lib.GetItemByName(args.ItemName)! };
+
+
+            foreach (var item in targetItems)
+            {
+                if (!item.PropertyValues.ContainsKey(args.PropName))
+                    continue;
+
+                if (propertyDef.IsList)
+                {
+                    string currentValue = item.PropertyValues[args.PropName] as string ?? "";
+
+                    var values = currentValue
+                        .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(v => v.Trim())
+                        .ToList();
+
+                    values.Add(args.NewValue.Trim());
+
+                    item.PropertyValues[args.PropName] = string.Join(',', values);
+                }
+                else
+                {
+                    item.PropertyValues[args.PropName] = args.NewValue;
+                }
+            }
+
+            args.Repo.Save(lib);
         }
 
-        if (selectedProperty.IsList)
-        {
-            string currentValue = (string) item.PropertyValues[args.PropName];
-
-            var values = currentValue
-                .Split(';', StringSplitOptions.RemoveEmptyEntries)
-                .Select(v => v.Trim())
-                .ToList();
-
-            values.Add(args.NewValue.Trim());
-
-            item.PropertyValues[args.PropName] = string.Join(';', values);
-        }
-        else
-        {
-            item.PropertyValues[args.PropName] = args.NewValue;
-        }
-
-        args.Repo.Save(lib);
-
-        return Result.Success($"Property '{args.PropName}' updated in item '{args.ItemName}'.");
+        return Result.Success(
+            string.IsNullOrWhiteSpace(args.LibName)
+                ? $"Property '{args.PropName}' updated for all items in all libraries."
+                : string.IsNullOrWhiteSpace(args.ItemName)
+                    ? $"Property '{args.PropName}' updated for all items in library '{args.LibName}'."
+                    : $"Property '{args.PropName}' updated in item '{args.ItemName}'."
+        );
     }
 
     public class ParsedArgs
@@ -90,11 +112,10 @@ public static class EditProperty
         {
             PropName = propName;
             NewValue = newValue;
-            LibName = libName;
-            ItemName = itemName;
+            LibName = libName ?? "";
+            ItemName = itemName ?? "";
             Repo = repo;
         }
     }
 }
-
 

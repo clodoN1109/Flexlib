@@ -139,7 +139,7 @@ public class ListPropertiesCommand : Command
 {
     string[] Options;
     public string LibName { get; } 
-    public string? ItemName { get; } 
+    public string ItemName { get; } 
 
     public ListPropertiesCommand(string[] options)
     {
@@ -180,7 +180,7 @@ public class EditPropertyCommand : Command
 
     public override bool IsValid()
     {
-        return (Options.Length == 4);
+        return (Options.Length > 1 && Options.Length < 5);
     }
     
     public override string UsageInstructions()
