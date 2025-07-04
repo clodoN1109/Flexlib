@@ -30,6 +30,18 @@ public static class CommandController
                 result = Refresh.Execute(refresh.LibraryName, _repo);
                 break;
             
+            case AddPropertyCommand addProp:
+                result = AddProperty.Execute(addProp.LibName, addProp.PropName, addProp.PropType, _repo);
+                break;
+            
+            case ListPropertiesCommand listProps:
+                result = ListProperties.Execute(listProps.LibName, listProps.ItemName, _repo);
+                break;
+            
+            case EditPropertyCommand editProp:
+                result = EditProperty.Execute(editProp.PropName, editProp.NewValue, editProp.LibName, editProp.ItemName, _repo);
+                break;
+            
             case UnknownCommand UnknownCmd:
                 result = Result.Fail(UnknownCmd.Message);
                 break;

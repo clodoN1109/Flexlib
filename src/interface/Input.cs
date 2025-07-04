@@ -16,6 +16,9 @@ public static class Input
         {
             "new" => new NewLibraryCommand(options),
             "add-item" => new AddItemCommand(options),
+            "add-prop" => new AddPropertyCommand(options),
+            "list-props" => new ListPropertiesCommand(options),
+            "edit-prop" => new EditPropertyCommand(options),
             "refresh" => new RefreshCommand(options), 
             _     => new UnknownCommand($"Unknown command: {command}")
         };
@@ -50,7 +53,7 @@ public class NewLibraryCommand : Command
 
     public override string UsageInstructions()
     {
-        return "Usage: flexlib new {name} {path}";
+        return "Usage: flexlib new <name> <path>";
     } 
 }
 
@@ -74,7 +77,7 @@ public class AddItemCommand : Command
     
     public override string UsageInstructions()
     {
-        return "Usage: flexlib add-item {library name} {item origin} <item name>";
+        return "Usage: flexlib add-item <library name> <item origin> [item name]";
     }
 }
 
@@ -100,6 +103,94 @@ public class RefreshCommand : Command
     }
 }
 
+public class AddPropertyCommand : Command
+{
+    string[] Options;
+    public string PropName { get; } 
+    public string PropType { get; } 
+    public string LibName { get; } 
+
+    public AddPropertyCommand(string[] options)
+    {
+        Options = options;
+        PropName = options.Length > 0 ? options[0] : "";
+        PropType = options.Length > 1 ? options[1] : "string";
+        LibName = options.Length > 2 ? options[2] : "";
+    }
+
+    public override bool IsValid()
+    {
+        return (Options.Length >= 1 && Options.Length <= 3);
+    }
+    
+    public override string UsageInstructions()
+    {
+        return
+            "Usage:  flexlib add-prop <property name> [property type] [library name]\n\n" +
+            "   <property name>   The name of the new property.\n\n" +
+            "   [property type]   (Optional) The type of the property.\n\n" +
+            "       Supported types: string (default), integer, decimal, float, bool, list\n\n" +
+            "   [library name]    (Optional) The name of the target library.\n\n";
+    }
+
+}
+
+public class ListPropertiesCommand : Command
+{
+    string[] Options;
+    public string LibName { get; } 
+    public string? ItemName { get; } 
+
+    public ListPropertiesCommand(string[] options)
+    {
+        Options = options;
+        LibName = options.Length > 0 ? options[0] : "";
+        ItemName = options.Length > 1 ? options[1] : "";
+    }
+
+    public override bool IsValid()
+    {
+        return (Options.Length >= 1 && Options.Length <=2);
+    }
+    
+    public override string UsageInstructions()
+    {
+        return
+            "Usage:  flexlib list-props <library name> [item name]\n";
+    }
+
+}
+
+public class EditPropertyCommand : Command
+{
+    string[] Options;
+    public string PropName { get; } 
+    public string NewValue { get; } 
+    public string ItemName { get; } 
+    public string LibName { get; } 
+
+    public EditPropertyCommand(string[] options)
+    {
+        Options = options;
+        PropName = options.Length > 0 ? options[0] : "";
+        NewValue = options.Length > 1 ? options[1] : "";
+        LibName = options.Length > 2 ? options[2] : "";
+        ItemName = options.Length > 3 ? options[3] : "";
+    }
+
+    public override bool IsValid()
+    {
+        return (Options.Length == 4);
+    }
+    
+    public override string UsageInstructions()
+    {
+        return
+            "Usage:  flexlib edit-prop <property name> <new value> <library name> <item name>\n";
+    }
+
+}
+
 public class UnknownCommand : Command
 {
     public string Message { get; }
@@ -123,7 +214,6 @@ public class UnknownCommand : Command
     }
 }
 
-
 public class Commands{
     
     public static List<string> GetAvailableCommandsList()
@@ -132,6 +222,9 @@ public class Commands{
 
             "new",
             "add-item",
+            "add-prop",
+            "list-props",
+            "edit-props",
             "refresh"
 
         };

@@ -21,7 +21,7 @@ public class Library
 
         foreach (var def in PropertyDefinitions)
         {
-            newItem.PropertyValues.Add(def.Name, null);
+            AddPropertyToItem(def, newItem);
         }
 
         Items.Add(newItem);
@@ -29,27 +29,46 @@ public class Library
         return this;
     }
 
+    public void AddPropertyDefinition(string propName, string propType)
+    {
+        var def = new ItemPropertyDefinition(propName, propType);   
+
+        PropertyDefinitions.Add( def );
+
+        foreach (LibraryItem item in Items)
+        {
+            AddPropertyToItem(def, item);
+        }
+    }
+    
+    private void AddPropertyToItem(ItemPropertyDefinition def, LibraryItem item)
+    {
+
+        item.PropertyValues.Add(def.Name, null);
+
+    }
+
     public ItemPropertyDefinition? GetPropertyDefinition(string name)
     {
         return PropertyDefinitions.FirstOrDefault(p => p.Name == name);
     }
-    
-    public bool isPropertyValueValid(string? propertyName, object? value)
+
+    public bool HasPropertyDefinition(string propName)
     {
-        var def = GetPropertyDefinition(propertyName!);
+        return PropertyDefinitions.Any(p => p.Name == propName);
+    }
+    
+    public bool isPropertyValueValid(string propertyName, object? value)
+    {
+        var def = GetPropertyDefinition(propertyName);
         
         if (def == null)
             return false;
         
-        if (value != null && !def.DataType.IsAssignableFrom(value.GetType()))
+        if (value != null && !def.GetDataType().IsAssignableFrom(value.GetType()))
             return false;
 
         return true;
-    }
-
-    public void SetPropertyDefinition(string name, Type dataType)
-    {
-        PropertyDefinitions.Add( new ItemPropertyDefinition( name, dataType) );
     }
 
     public bool ContainsOrigin(string origin)

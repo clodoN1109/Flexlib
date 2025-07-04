@@ -12,7 +12,7 @@ public class LibraryItem
 
     public List<string> Comments { get; }
     
-    public Dictionary<string, object?> PropertyValues { get; set; }
+    public Dictionary<string, string> PropertyValues { get; set; }
 
     public LibraryItem(string? name, string origin, Library library)
     {
@@ -37,7 +37,7 @@ public class LibraryItem
             : default;
     }
 
-    public void SetValue(string? propertyName, object? value)
+    public void SetValue(string propertyName, string value)
     {
 
         if ( _library!.isPropertyValueValid(propertyName, value) )
