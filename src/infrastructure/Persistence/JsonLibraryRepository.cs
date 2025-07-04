@@ -57,7 +57,7 @@ public class JsonLibraryRepository : ILibraryRepository
         if (File.Exists(metaFile))
         {
             var json = File.ReadAllText(metaFile);
-            _cache = Json.ReadJson(json) ?? new List<Library>();
+            _cache = JsonHelpers.ReadJson(json) ?? new List<Library>();
         }
         else
         {
@@ -73,7 +73,7 @@ public class JsonLibraryRepository : ILibraryRepository
         
         _cache.Add(lib);
 
-        Json.WriteJson(_metaFile, _cache);
+        JsonHelpers.WriteJson(_metaFile, _cache);
         UpdateLibFileStructure(lib);
         UpdateLibMetaFile(lib);
         UpdateItems(lib);
@@ -140,14 +140,14 @@ public class JsonLibraryRepository : ILibraryRepository
         string libDir = Path.Combine(lib.Path, $"{lib.Name}");
 
         string libMetaFile = Path.Combine(libDir, $"{lib.Name}.json");
-        Json.WriteJson(libMetaFile, lib.Items);
+        JsonHelpers.WriteJson(libMetaFile, lib.Items);
     
     }
 
     private void UpdateItemMetaFile(LibraryItem item, Library lib)
     {
         string itemMetaFile = Path.Combine(lib.Path, lib.Name!, "items", $"{item.Name}.json");
-        Json.WriteJson(itemMetaFile, item);
+        JsonHelpers.WriteJson(itemMetaFile, item);
     }
 
     private void DeleteLibMetaFile(Library lib)

@@ -3,6 +3,7 @@ using Flexlib.Common;
 using Flexlib.Domain;
 using System;
 using System.Linq;
+using System.Text.Json;
 
 namespace Flexlib.Application.UseCases;
 
@@ -63,24 +64,29 @@ public static class EditProperty
                 ? lib.Items
                 : new List<LibraryItem> { lib.GetItemByName(args.ItemName)! };
 
-
             foreach (var item in targetItems)
             {
                 if (!item.PropertyValues.ContainsKey(args.PropName))
                     continue;
 
+                object? existingValue = item.PropertyValues[args.PropName];
+
                 if (propertyDef.IsList)
                 {
-                    string currentValue = item.PropertyValues[args.PropName] as string ?? "";
-
-                    var values = currentValue
-                        .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                        .Select(v => v.Trim())
-                        .ToList();
-
-                    values.Add(args.NewValue.Trim());
-
-                    item.PropertyValues[args.PropName] = string.Join(',', values);
+                    if (existingValue is List<string> existingList)
+                    {
+                        existingList.Add(args.NewValue.Trim());
+                    }
+                    else if (existingValue is JsonElement je && je.ValueKind == JsonValueKind.Array)
+                    {
+                        var list = JsonHelpers.JsonElementToStringList(je);
+                        list.Add(args.NewValue.Trim());
+                        item.PropertyValues[args.PropName] = list;
+                    }
+                    else
+                    {
+                        item.PropertyValues[args.PropName] = new List<string> { args.NewValue.Trim() };
+                    }
                 }
                 else
                 {
