@@ -1,5 +1,6 @@
 using Flexlib.Domain;
 using Flexlib.Common;
+using Flexlib.Application.UseCases.Common;
 using Flexlib.Application.Ports;
 
 namespace Flexlib.Application.UseCases;
@@ -74,6 +75,9 @@ public static class AddItem
 
     private static Result IsOperationAllowed(string libName, string itemOrigin, string itemName, ILibraryRepository repo)
     {
+        if (libName == "Default Library" && AssureDefaultLibrary.Execute(repo).IsFailure)
+            return Result.Fail($"Default Library not found.");
+
         Library? selectedLibrary = repo.GetByName(libName);
         if (selectedLibrary == null)
             return Result.Fail($"Library '{libName}' not found.");

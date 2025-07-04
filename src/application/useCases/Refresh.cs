@@ -1,4 +1,5 @@
 using Flexlib.Application.Ports;
+using Flexlib.Application.UseCases.Common;
 using Flexlib.Domain;
 using Flexlib.Common;
 
@@ -56,6 +57,8 @@ public static class Refresh
     
     private static Result IsOperationAllowed(string? libName, ILibraryRepository repo)
     {
+        if (libName == "Default Library" && AssureDefaultLibrary.Execute(repo).IsFailure)
+            return Result.Fail($"Default Library not found.");
 
         if (libName == null)
             return Result.Success("Operation allowed.");

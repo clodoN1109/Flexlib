@@ -1,4 +1,5 @@
 using Flexlib.Application.Ports;
+using Flexlib.Application.UseCases.Common;
 using Flexlib.Common;
 using Flexlib.Domain;
 using System.Text;
@@ -69,6 +70,9 @@ public static class ListProperties
 
     private static Result IsOperationAllowed(ParsedArgs parsedArgs)
     {
+        if (parsedArgs.LibName == "Default Library" && AssureDefaultLibrary.Execute(parsedArgs.Repo).IsFailure)
+            return Result.Fail($"Default Library not found.");
+        
         if (string.IsNullOrWhiteSpace(parsedArgs.LibName))
             return Result.Fail("Library name must be informed.");
 

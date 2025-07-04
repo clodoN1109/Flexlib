@@ -65,9 +65,9 @@ public class AddItemCommand : Command
 
     public AddItemCommand(string[] options)
     {
-        LibraryName = options.Length > 0 ? options[0] : "";
-        ItemOrigin = options.Length > 1 ? options[1] : "";
-        ItemName = options.Length > 2 ? options[2] : "";
+        ItemOrigin = options.Length > 0 ? options[0] : "";
+        ItemName = options.Length > 1 ? options[1] : "";
+        LibraryName = options.Length > 2 ? options[2] : "Default Library";
     }
 
     public override bool IsValid()
@@ -77,7 +77,7 @@ public class AddItemCommand : Command
     
     public override string UsageInstructions()
     {
-        return "Usage: flexlib add-item <library name> <item origin> [item name]";
+        return "Usage: flexlib add-item <item origin> [item name] [library name]";
     }
 }
 
@@ -89,7 +89,7 @@ public class RefreshCommand : Command
     public RefreshCommand(string[] options)
     {
         Options = options;
-        LibraryName = options.Length > 0 ? options[0] : null;
+        LibraryName = options.Length > 0 ? options[0] : "Default Library";
     }
 
     public override bool IsValid()
@@ -115,7 +115,7 @@ public class AddPropertyCommand : Command
         Options = options;
         PropName = options.Length > 0 ? options[0] : "";
         PropType = options.Length > 1 ? options[1] : "string";
-        LibName = options.Length > 2 ? options[2] : "";
+        LibName = options.Length > 2 ? options[2] : "Default Library";
     }
 
     public override bool IsValid()
@@ -144,7 +144,7 @@ public class ListPropertiesCommand : Command
     public ListPropertiesCommand(string[] options)
     {
         Options = options;
-        LibName = options.Length > 0 ? options[0] : "";
+        LibName = options.Length > 0 ? options[0] : "Default Library";
         ItemName = options.Length > 1 ? options[1] : "";
     }
 
@@ -174,8 +174,8 @@ public class EditPropertyCommand : Command
         Options = options;
         PropName = options.Length > 0 ? options[0] : "";
         NewValue = options.Length > 1 ? options[1] : "";
-        LibName = options.Length > 2 ? options[2] : "";
-        ItemName = options.Length > 3 ? options[3] : "";
+        ItemName = options.Length > 2 ? options[2] : "";
+        LibName = options.Length > 3 ? options[3] : "Default Library";
     }
 
     public override bool IsValid()
@@ -186,7 +186,7 @@ public class EditPropertyCommand : Command
     public override string UsageInstructions()
     {
         return
-            "Usage:  flexlib edit-prop <property name> <new value> <library name> <item name>\n";
+            "Usage:  flexlib edit-prop <property name> <new value> <item name> <library name>\n";
     }
 
 }

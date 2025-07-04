@@ -1,3 +1,4 @@
+using Flexlib.Application.UseCases.Common;
 using Flexlib.Application.Ports;
 using Flexlib.Common;
 using Flexlib.Domain;
@@ -59,6 +60,10 @@ public static class AddProperty
 
     private static Result IsOperationAllowed(ParsedArgs parsedArgs)
     {
+        
+        if (parsedArgs.LibName == "Default Library" && AssureDefaultLibrary.Execute(parsedArgs.Repo).IsFailure)
+            return Result.Fail($"Default Library not found.");
+
         if (string.IsNullOrWhiteSpace(parsedArgs.PropName))
             return Result.Fail("Property name must be provided.");
 

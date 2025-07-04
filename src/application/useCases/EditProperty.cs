@@ -1,4 +1,5 @@
 using Flexlib.Application.Ports;
+using Flexlib.Application.UseCases.Common;
 using Flexlib.Common;
 using Flexlib.Domain;
 using System;
@@ -22,6 +23,10 @@ public static class EditProperty
 
     private static Result IsOperationAllowed(ParsedArgs args)
     {
+        
+        if (args.LibName == "Default Library" && AssureDefaultLibrary.Execute(args.Repo).IsFailure)
+            return Result.Fail($"Default Library not found.");
+
         if (string.IsNullOrWhiteSpace(args.PropName))
             return Result.Fail("Property name must be provided.");
 
