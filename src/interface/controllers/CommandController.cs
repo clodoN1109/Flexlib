@@ -42,6 +42,26 @@ public static class CommandController
                 result = EditProperty.Execute(editProp.PropName, editProp.NewValue, editProp.LibName, editProp.ItemName, _repo);
                 break;
             
+            case MakeCommentCommand makeCom:
+                string? text = Read.ReadText();
+
+                if (string.IsNullOrWhiteSpace(text))
+                {
+                    result = Result.Fail("Failed to get text input.");
+                    break;
+                }
+
+                result = MakeComment.Execute(makeCom.ItemName, makeCom.LibName, text, _repo);
+                break;
+
+            case ListCommentsCommand listCom:
+                result = ListComments.Execute(listCom.ItemName, listCom.LibName, _repo);
+                break;
+            
+            case EditCommentCommand editCom:
+                result = EditComment.Execute(editCom.ItemName, editCom.LibName, _repo);
+                break;
+            
             case UnknownCommand UnknownCmd:
                 result = Result.Fail(UnknownCmd.Message);
                 break;

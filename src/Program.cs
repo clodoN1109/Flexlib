@@ -5,7 +5,7 @@ class Program
     static void Main(string[] args)
     {
     
-        var parsedInput = Input.Parse(args);
+        var parsedInput = Parsing.Parse(args);
 
         Router.Route(parsedInput); 
         

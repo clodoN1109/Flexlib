@@ -2,33 +2,6 @@ using Flexlib.Common;
 
 namespace Flexlib.Interface;
 
-public static class Input
-{
-    public static ParsedInput Parse(string[] args)
-    {
-        if (args.Length == 0)
-            return new UnknownCommand("");
-
-        string command = args[0];
-        string[] options = args.Skip(1).ToArray();
-
-        return command.ToLower() switch
-        {
-            "new" => new NewLibraryCommand(options),
-            "add-item" => new AddItemCommand(options),
-            "add-prop" => new AddPropertyCommand(options),
-            "list-props" => new ListPropertiesCommand(options),
-            "edit-prop" => new EditPropertyCommand(options),
-            "refresh" => new RefreshCommand(options), 
-            _     => new UnknownCommand($"Unknown command: {command}")
-        };
-    }
-}
-
-public abstract class ParsedInput
-{
-    public abstract bool IsValid();
-}
 
 public abstract class Command : ParsedInput
 {
@@ -156,7 +129,7 @@ public class ListPropertiesCommand : Command
     public override string UsageInstructions()
     {
         return
-            "Usage:  flexlib list-props <library name> [item name]\n";
+            "Usage:  flexlib list-props <library name> [item name]";
     }
 
 }
@@ -186,9 +159,58 @@ public class EditPropertyCommand : Command
     public override string UsageInstructions()
     {
         return
-            "Usage:  flexlib edit-prop <property name> <new value> <item name> <library name>\n";
+            "Usage:  flexlib edit-prop <property name> <new value> <item name> <library name>";
     }
 
+}
+
+public abstract class CommentCommand : Command
+{
+    public string[] Options { get; }
+    public string ItemName { get; }
+    public string LibName { get; }
+
+    protected CommentCommand(string[] options)
+    {
+        Options = options;
+        ItemName = options.Length > 0 ? options[0] : "";
+        LibName = options.Length > 1 ? options[1] : "Default Library";
+    }
+
+    public override bool IsValid()
+    {
+        return Options.Length > 0 && Options.Length <= 2;
+    }
+}
+
+public class MakeCommentCommand : CommentCommand
+{
+    public MakeCommentCommand(string[] options) : base(options) { }
+
+    public override string UsageInstructions()
+    {
+        return "Usage: flexlib make-comment <item name> [library name]\n";
+    }
+}
+
+public class ListCommentsCommand : CommentCommand
+{
+    public ListCommentsCommand(string[] options) : base(options) { }
+
+    public override string UsageInstructions()
+    {
+        return "Usage: flexlib list-comments <item name> [library name]\n";
+    }
+}
+
+public class EditCommentCommand : CommentCommand
+{
+    public EditCommentCommand(string[] options) : base(options) { }
+
+    public override string UsageInstructions()
+    {
+        return "Usage: flexlib edit-comment <item name> [library name]\n";
+    }
 }
 
 public class UnknownCommand : Command
@@ -204,7 +226,7 @@ public class UnknownCommand : Command
 
     public override string UsageInstructions()
     {
-        var availableCommands = Commands.GetAvailableCommandsList();
+        var availableCommands = CommandsList.GetAvailableCommandsList();
         var commandsLine = string.Join(" ", availableCommands);
 
         return
@@ -214,21 +236,25 @@ public class UnknownCommand : Command
     }
 }
 
-public class Commands{
+public static class CommandsList{
     
     public static List<string> GetAvailableCommandsList()
     {
         return new List<string>{
 
             "new",
-            "add-item",
-            "add-prop",
+            "\n\tadd-item",
+            "\n\tmake-comment",
+            "list-comment",
+            "edit-comment",
+            "\n\tadd-prop",
             "list-props",
             "edit-props",
-            "refresh"
+            "\n\trefresh"
 
         };
 
     }
 
 }
+
