@@ -1,3 +1,6 @@
+using System;
+using System.IO;
+
 namespace Flexlib.Domain;
 
 public class Library
@@ -10,7 +13,7 @@ public class Library
     public Library(string? name, string path)
     {
         Name = name;
-        Path = path;
+        Path = System.IO.Path.GetFullPath(path);
         PropertyDefinitions = new();
         Items = new();
     }

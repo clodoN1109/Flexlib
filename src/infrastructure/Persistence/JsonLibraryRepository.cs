@@ -81,6 +81,12 @@ public class JsonLibraryRepository : ILibraryRepository
        
     }
 
+    public void RemoveLibraryByName(string name)
+    {
+        _cache.RemoveAll(l => l.Name == name);
+        JsonHelpers.WriteJson(_metaFile, _cache);
+    }
+
     private void UpdateItems(Library lib)
     {
         string itemsDir = Path.Combine(lib.Path, "items/");

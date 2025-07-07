@@ -1,0 +1,52 @@
+[
+  {
+    "Name": "Item1",
+    "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\3-MakingComments/data/input/Item1.pdf",
+    "Comments": [
+      {
+        "Id": "1",
+        "Text": "This is a comment.",
+        "References": []
+      }
+    ],
+    "PropertyValues": {}
+  },
+  {
+    "Name": "Item2",
+    "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\3-MakingComments/data/input/Item2.pdf",
+    "Comments": [
+      {
+        "Id": "1",
+        "Text": "This is a comment quoting {TestLibrary/Item1}.",
+        "References": [
+          {
+            "ItemName": "Item1",
+            "LibraryName": "TestLibrary"
+          }
+        ]
+      }
+    ],
+    "PropertyValues": {}
+  },
+  {
+    "Name": "Item3",
+    "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\3-MakingComments/data/input/Item3.pdf",
+    "Comments": [
+      {
+        "Id": "1",
+        "Text": "This is a comment quoting {TestLibrary/Item1} and {TestLibrary/Item2}.",
+        "References": [
+          {
+            "ItemName": "Item1",
+            "LibraryName": "TestLibrary"
+          },
+          {
+            "ItemName": "Item2",
+            "LibraryName": "TestLibrary"
+          }
+        ]
+      }
+    ],
+    "PropertyValues": {}
+  }
+]

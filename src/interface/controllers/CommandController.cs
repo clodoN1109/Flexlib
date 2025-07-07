@@ -18,7 +18,6 @@ public static class CommandController
         switch (command)
         {
             case NewLibraryCommand newLib:
-
                 result = NewLibrary.Execute(newLib.Name, newLib.Path, _repo); 
                 break;
 
@@ -43,15 +42,19 @@ public static class CommandController
                 break;
             
             case MakeCommentCommand makeCom:
-                string? text = Read.ReadText();
 
-                if (string.IsNullOrWhiteSpace(text))
+                if (string.IsNullOrWhiteSpace(makeCom.Comment))
+                {
+                    makeCom.Comment = Read.ReadText();
+                }
+
+                if (string.IsNullOrWhiteSpace(makeCom.Comment))
                 {
                     result = Result.Fail("Failed to get text input.");
                     break;
                 }
 
-                result = MakeComment.Execute(makeCom.ItemName, makeCom.LibName, text, _repo);
+                result = MakeComment.Execute(makeCom.ItemName, makeCom.LibName, makeCom.Comment, _repo);
                 break;
 
             case ListCommentsCommand listCom:
@@ -60,6 +63,10 @@ public static class CommandController
             
             case EditCommentCommand editCom:
                 result = EditComment.Execute(editCom.ItemName, editCom.LibName, _repo);
+                break;
+            
+            case RemoveLibraryCommand removeLib:
+                result = RemoveLibrary.Execute(removeLib.Name, _repo); 
                 break;
             
             case UnknownCommand UnknownCmd:

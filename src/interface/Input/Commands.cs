@@ -30,6 +30,26 @@ public class NewLibraryCommand : Command
     } 
 }
 
+public class RemoveLibraryCommand : Command
+{
+    public string Name { get; }
+
+    public RemoveLibraryCommand(string[] options)
+    {
+        Name = options.Length > 0 ? options[0] : "";
+    }
+
+    public override bool IsValid()
+    {
+        return !string.IsNullOrWhiteSpace(Name);
+    }
+
+    public override string UsageInstructions()
+    {
+        return "Usage: flexlib remove-lib <name>";
+    } 
+}
+
 public class AddItemCommand : Command
 {
     public string LibraryName { get; }
@@ -185,11 +205,21 @@ public abstract class CommentCommand : Command
 
 public class MakeCommentCommand : CommentCommand
 {
-    public MakeCommentCommand(string[] options) : base(options) { }
+    public string? Comment { get; set; }
+
+    public MakeCommentCommand(string[] options) : base(options) 
+    {
+        Comment = options.Length > 2 ? options[2] : "";
+    }
+    
+    public override bool IsValid()
+    {
+        return Options.Length > 0 && Options.Length <= 3;
+    }
 
     public override string UsageInstructions()
     {
-        return "Usage: flexlib make-comment <item name> [library name]\n";
+        return "Usage: flexlib make-comment <item name> [library name] [comment]\n";
     }
 }
 
@@ -249,8 +279,13 @@ public static class CommandsList{
             "edit-comment",
             "\n\tadd-prop",
             "list-props",
-            "edit-props",
-            "\n\trefresh"
+            "edit-prop",
+            "\n\trefresh",
+            "\n\tremove-lib",
+            "remove-item",
+            "remove-prop",
+            "remove-comment"
+
 
         };
 

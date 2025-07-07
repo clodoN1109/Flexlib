@@ -24,6 +24,7 @@ public static class Parsing
             "list-comments" => new ListCommentsCommand(options),
             "edit-comment" => new EditCommentCommand(options),
             "refresh" => new RefreshCommand(options), 
+            "remove-lib" => new RemoveLibraryCommand(options),    
             _     => new UnknownCommand($"Unknown command: {command}")
         };
     }
