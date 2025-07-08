@@ -1,4 +1,5 @@
 using Flexlib.Common;
+using System.IO;
 
 namespace Flexlib.Interface;
 
@@ -15,8 +16,13 @@ public class NewLibraryCommand : Command
 
     public NewLibraryCommand(string[] options)
     {
+        string? assemblyLocation = Env.GetExecutingAssemblyLocation();
+        string defaultLocation = string.IsNullOrWhiteSpace(assemblyLocation)
+            ? ""
+            : System.IO.Path.Combine(assemblyLocation, "data");
+
         Name = options.Length > 0 ? options[0] : "";
-        Path = options.Length > 1 ? options[1] : "";
+        Path = options.Length > 1 ? options[1] : defaultLocation;
     }
 
     public override bool IsValid()
@@ -26,7 +32,7 @@ public class NewLibraryCommand : Command
 
     public override string UsageInstructions()
     {
-        return "Usage: flexlib new <name> <path>";
+        return "Usage: flexlib new <name> [path]";
     } 
 }
 
