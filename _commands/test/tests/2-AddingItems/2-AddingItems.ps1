@@ -15,9 +15,9 @@ Remove-Item "$flexlibDataPath/*" -Recurse -Force -ErrorAction SilentlyContinue
 
 # Run test
 & $flexlibPath new TestLibrary $resultsPath
-& $flexlibPath add-item $item1 Item1 TestLibrary
-& $flexlibPath add-item $item2 Item2 TestLibrary
-& $flexlibPath add-item $item3 Item3 TestLibrary
+& $flexlibPath add-item $item1 TestLibrary Item1
+& $flexlibPath add-item $item2 TestLibrary Item2
+& $flexlibPath add-item $item3 TestLibrary Item3
 
 # Compare artifacts
 $diff_1 = Compare-Folders -Expected "$referencePath/TestLibrary" -Actual "$resultsPath/TestLibrary"

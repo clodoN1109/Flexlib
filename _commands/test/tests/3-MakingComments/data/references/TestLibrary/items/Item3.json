@@ -4,14 +4,14 @@
   "Comments": [
     {
       "Id": "1",
-      "Text": "This is a comment quoting {TestLibrary/Item1} and {TestLibrary/Item2}.",
+      "Text": "This is a comment quoting {TestLibrary/Item1} and {TestLibrary/Compound Name}.",
       "References": [
         {
           "ItemName": "Item1",
           "LibraryName": "TestLibrary"
         },
         {
-          "ItemName": "Item2",
+          "ItemName": "Compound Name",
           "LibraryName": "TestLibrary"
         }
       ]
