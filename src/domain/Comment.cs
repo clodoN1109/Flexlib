@@ -20,8 +20,8 @@ public class Comment
     {
         var references = new List<LibraryItemReference>();
 
-        // Updated pattern: optionally matches {lib/item} OR {item}
-        var pattern = @"\{(?:(?<lib>[^/\s{}]+)/)?(?<item>[^{}\s]+)\}";
+        // Matches {library/item} OR {item} patterns including compound names.
+        var pattern = @"\{(?:(?<lib>[^/{}]+?)/)?(?<item>[^{}]+?)\}";
         var matches = Regex.Matches(text, pattern);
 
         foreach (Match match in matches)
