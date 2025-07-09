@@ -10,11 +10,11 @@ public static class Router {
                 if ( cmd.IsValid() )
                     CommandController.Handle(cmd);
                 else 
-                    Output.ExplainUsage(cmd.UsageInstructions());
+                    (new Output()).ExplainUsage(cmd.UsageInstructions());
                 break;
             
             default:
-                Output.ExplainUsage();
+                (new Output()).ExplainUsage();
                 break;
         }
 

@@ -5,7 +5,7 @@ namespace Flexlib.Domain;
 public class Comment
 {
     public string Id { get; }
-    public string Text { get; }
+    public string Text { get; set; }
     public List<LibraryItemReference> References { get; }
     
     public Comment(string id, string text)

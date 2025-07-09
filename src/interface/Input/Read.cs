@@ -1,17 +1,23 @@
+using Flexlib.Application.Ports;
 using Flexlib.Common;
 using System.Diagnostics;
 
 namespace Flexlib.Interface;
 
 
-public static class Read
+public class Read : IRead
 {
-    public static string? ReadText()
+    public string? ReadText( string? initialText = null)
     {
         string tempPath = Path.GetTempFileName();
 
         try
         {
+            if (!string.IsNullOrEmpty(initialText))
+            {
+                File.WriteAllText(tempPath, initialText);
+            }
+
             string? editor = Environment.GetEnvironmentVariable("EDITOR");
 
             if (string.IsNullOrWhiteSpace(editor))
