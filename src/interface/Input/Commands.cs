@@ -194,13 +194,11 @@ public abstract class CommentCommand : Command
 {
     public string[] Options { get; }
     public string ItemName { get; }
-    public string LibName { get; set; }
 
     protected CommentCommand(string[] options)
     {
         Options = options;
         ItemName = options.Length > 0 ? options[0] : "";
-        LibName = options.Length > 1 ? options[1] : "Default Library";
     }
 
 }
@@ -208,9 +206,11 @@ public abstract class CommentCommand : Command
 public class MakeCommentCommand : CommentCommand
 {
     public string? Comment { get; set; }
+    public string LibName { get; set; }
 
     public MakeCommentCommand(string[] options) : base(options) 
     {
+        LibName = options.Length > 1 ? options[1] : "Default Library";
         Comment = options.Length > 2 ? options[2] : "";
     }
     
@@ -227,7 +227,12 @@ public class MakeCommentCommand : CommentCommand
 
 public class ListCommentsCommand : CommentCommand
 {
-    public ListCommentsCommand(string[] options) : base(options) { }
+    public string LibName { get; set; }
+    
+    public ListCommentsCommand(string[] options) : base(options) 
+    {
+        LibName = options.Length > 1 ? options[1] : "Default Library";
+    }
 
     public override bool IsValid()
     {
@@ -243,6 +248,7 @@ public class ListCommentsCommand : CommentCommand
 public class EditCommentCommand : CommentCommand
 {
     public string CommentId;
+    public string LibName { get; set; }
 
     public EditCommentCommand(string[] options) : base(options) { 
         

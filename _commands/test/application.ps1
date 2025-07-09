@@ -20,19 +20,18 @@ function Run-Test($test) {
     } catch {
         Write-Host "`r💥 Error in ${displayName}: $_" -ForegroundColor Red
     }
-
     Write-Host ('-' * [System.Console]::WindowWidth)
 }
 
 function Run-Tests($selectedTests) {
-    Clear-Host
     Write-Host ('=' * [System.Console]::WindowWidth)
-    Write-Host "`n  TEST SUITE`n"
-    Write-Host ('=' * [System.Console]::WindowWidth)
+    Write-Host "`nTEST SUITE`n"
+    Write-Host ('-' * [System.Console]::WindowWidth)
 
     foreach ($test in $selectedTests) {
         Run-Test $test
     }
+    Write-Host ''
 }
 
 function Compare-Folders {
