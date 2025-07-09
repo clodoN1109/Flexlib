@@ -66,9 +66,9 @@ foreach ($project in $grouped.Keys) {
     }
 }
 
-Write-Host "`nBUILD PROCESS COMPLETED SUCCESSFULLY"
-Write-Host "`nInitiating runtime test suite..."
-Start-Sleep 2
 if (($errorCount -eq 0) -and ($warningCount -eq 0)) {
+    Write-Host "`nBUILD PROCESS COMPLETED SUCCESSFULLY"
+    Write-Host "`nInitiating runtime test suite...`n"
+    Start-Sleep 2
     & "$PSScriptRoot/test.ps1" run
 }

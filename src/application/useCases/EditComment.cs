@@ -30,7 +30,7 @@ public static class EditComment
 
         var currentText = selectedComment!.Text; 
 
-        selectedComment.Text = parsedArgs.Read.ReadText(currentText) ?? "";
+        selectedComment.Text = (parsedArgs.Read.ReadText(currentText) ?? "").Trim();
 
         parsedArgs.Repo.Save(selectedLibrary);
 
@@ -69,7 +69,7 @@ public static class EditComment
         public IRead Read { get; }
         public ILibraryRepository Repo { get; }
 
-        public ParsedArgs(string itemName, string libName, string commentId, IRead read, ILibraryRepository repo)
+        public ParsedArgs(string itemName, string commentId, string libName, IRead read, ILibraryRepository repo)
         {
             LibName = libName;
             CommentId = commentId;

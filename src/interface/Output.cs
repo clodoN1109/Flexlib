@@ -49,12 +49,13 @@ public class Output : IOutput
         int idWidth = Math.Min(Math.Max("ID".Length, comments.Max(c => c.Id.Length)) + 2, consoleWidth / 3);
         int textWidth = consoleWidth - idWidth;
 
-        string divider = new string('-', consoleWidth);
+        string largeDivider = new string('=', consoleWidth);
+        string thinDivider = new string('-', consoleWidth);
 
         // Header
-        Console.WriteLine(divider);
+        Console.WriteLine(largeDivider);
         Console.WriteLine($"{"ID".PadRight(idWidth)}{"Text".PadRight(textWidth)}");
-        Console.WriteLine(divider);
+        Console.WriteLine(largeDivider);
 
         // Rows
         foreach (var comment in comments)
@@ -64,10 +65,10 @@ public class Output : IOutput
                 ? comment.Text.Substring(0, textWidth - 3) + "..."
                 : comment.Text.PadRight(textWidth);
 
-            Console.WriteLine($"{id}{text}\n");
+            Console.WriteLine($"{id}{text}");
+            Console.WriteLine(thinDivider);
         }
 
-        Console.WriteLine(divider);
     }
 
 
