@@ -2,6 +2,7 @@ using Flexlib.Common;
 using Flexlib.Application.Ports;
 using Flexlib.Application.UseCases;
 using Flexlib.Infrastructure.Persistence;
+using Flexlib.Interface;
 
 namespace Flexlib.Interface;
 
@@ -11,6 +12,8 @@ public static class CommandController
     static Result? result;
     
     private static readonly ILibraryRepository _repo = new JsonLibraryRepository();
+    private static readonly IOutput _output = new Output();
+    private static readonly IRead _read = new Read();
 
     public static void Handle(Command command)
     {
@@ -45,7 +48,7 @@ public static class CommandController
 
                 if (string.IsNullOrWhiteSpace(makeCom.Comment))
                 {
-                    makeCom.Comment = Read.ReadText();
+                    makeCom.Comment = (new Read()).ReadText();
                 }
 
                 if (string.IsNullOrWhiteSpace(makeCom.Comment))
@@ -58,11 +61,11 @@ public static class CommandController
                 break;
 
             case ListCommentsCommand listCom:
-                result = ListComments.Execute(listCom.ItemName, listCom.LibName, _repo);
+                result = ListComments.Execute(listCom.ItemName, listCom.LibName, _repo, _output);
                 break;
             
             case EditCommentCommand editCom:
-                result = EditComment.Execute(editCom.ItemName, editCom.LibName, _repo);
+                result = EditComment.Execute(editCom.ItemName, editCom.CommentId, editCom.LibName, _read, _repo);
                 break;
             
             case RemoveLibraryCommand removeLib:
@@ -79,9 +82,9 @@ public static class CommandController
         }
 
         if (result.IsSuccess)
-            Output.Success(result.SuccessMessage);
+            (new Output()).Success(result.SuccessMessage);
         else
-            Output.Failure(result.ErrorMessage);
+            (new Output()).Failure(result.ErrorMessage);
 
     }
 }

@@ -194,19 +194,15 @@ public abstract class CommentCommand : Command
 {
     public string[] Options { get; }
     public string ItemName { get; }
-    public string LibName { get; }
+    public string LibName { get; set; }
 
     protected CommentCommand(string[] options)
     {
         Options = options;
         ItemName = options.Length > 0 ? options[0] : "";
-        LibName = options.Length > 2 ? options[2] : "Default Library";
+        LibName = options.Length > 1 ? options[1] : "Default Library";
     }
 
-    public override bool IsValid()
-    {
-        return Options.Length > 0 && Options.Length <= 2;
-    }
 }
 
 public class MakeCommentCommand : CommentCommand
@@ -215,7 +211,7 @@ public class MakeCommentCommand : CommentCommand
 
     public MakeCommentCommand(string[] options) : base(options) 
     {
-        Comment = options.Length > 1 ? options[1] : "";
+        Comment = options.Length > 2 ? options[2] : "";
     }
     
     public override bool IsValid()
@@ -225,7 +221,7 @@ public class MakeCommentCommand : CommentCommand
 
     public override string UsageInstructions()
     {
-        return "Usage: flexlib make-comment <item name> [comment] [library name]\n";
+        return "Usage: flexlib make-comment <item name> [library name] [comment] \n";
     }
 }
 
@@ -233,6 +229,11 @@ public class ListCommentsCommand : CommentCommand
 {
     public ListCommentsCommand(string[] options) : base(options) { }
 
+    public override bool IsValid()
+    {
+        return Options.Length > 0 && Options.Length < 3;
+    }
+    
     public override string UsageInstructions()
     {
         return "Usage: flexlib list-comments <item name> [library name]\n";
@@ -241,11 +242,23 @@ public class ListCommentsCommand : CommentCommand
 
 public class EditCommentCommand : CommentCommand
 {
-    public EditCommentCommand(string[] options) : base(options) { }
+    public string CommentId;
+
+    public EditCommentCommand(string[] options) : base(options) { 
+        
+        CommentId = options.Length > 1 ? options[1] : "";
+        LibName = options.Length > 2 ? options[2] : "Default Library"; 
+   
+    }
+
+    public override bool IsValid()
+    {
+        return Options.Length > 1 && Options.Length < 4;
+    }
 
     public override string UsageInstructions()
     {
-        return "Usage: flexlib edit-comment <item name> [library name]\n";
+        return "Usage: flexlib edit-comment <item name> <comment id> [library name]\n";
     }
 }
 
@@ -281,7 +294,7 @@ public static class CommandsList{
             "new",
             "\n\tadd-item",
             "\n\tmake-comment",
-            "list-comment",
+            "list-comments",
             "edit-comment",
             "\n\tadd-prop",
             "list-props",

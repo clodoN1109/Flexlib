@@ -4,13 +4,14 @@ using Flexlib.Common;
 using Flexlib.Domain;
 using System.Text;
 
+
 namespace Flexlib.Application.UseCases;
 
 public static class ListComments
 {
-    public static Result Execute(string itemName, string libName, ILibraryRepository repo)
+    public static Result Execute(string itemName, string libName, ILibraryRepository repo, IOutput output)
     {
-        var parsedArgs = new ParsedArgs(itemName, libName, repo); 
+        var parsedArgs = new ParsedArgs(itemName, libName, repo, output); 
 
         var validation = IsOperationAllowed(parsedArgs);
 
@@ -29,8 +30,10 @@ public static class ListComments
 
         if (selectedItem == null)
             return Result.Fail($"Item '{parsedArgs.ItemName}' not found in library '{selectedLibrary.Name}'.");
-        
-        return Result.Success("");
+       
+        parsedArgs.Output.ListComments(selectedItem.Comments);
+
+        return Result.Success($"");
 
     }
 
@@ -57,12 +60,14 @@ public static class ListComments
         public string ItemName { get; }
         public string LibName { get; }
         public ILibraryRepository Repo { get; }
+        public IOutput Output { get; }
 
-        public ParsedArgs(string itemName, string libName, ILibraryRepository repo)
+        public ParsedArgs(string itemName, string libName, ILibraryRepository repo, IOutput output)
         {
             LibName = libName;
             ItemName = itemName;
             Repo = repo;
+            Output = output;
         }
     }
 }
