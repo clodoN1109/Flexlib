@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using System.Collections.Generic;
 using System.Linq;
+using Flexlib.Common;
 
 namespace Flexlib.Domain;
 
@@ -16,9 +17,9 @@ public class LibraryItem
 
     public Dictionary<string, object?> PropertyValues { get; set; }
 
-    public LibraryItem(string? name, string origin, Library library)
+    public LibraryItem(string name, string origin, Library library)
     {
-        Name = name;
+        Name = TextUtil.Truncate(name, 50);
         Origin = origin;
         _library = library;
         Comments = new List<Comment>();

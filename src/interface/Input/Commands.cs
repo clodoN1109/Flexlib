@@ -65,8 +65,8 @@ public class AddItemCommand : Command
     public AddItemCommand(string[] options)
     {
         ItemOrigin = options.Length > 0 ? options[0] : "";
-        ItemName = options.Length > 1 ? options[1] : "";
-        LibraryName = options.Length > 2 ? options[2] : "Default Library";
+        LibraryName = options.Length > 1 ? options[1] : "Default Library";
+        ItemName = options.Length > 2 ? options[2] : Infer.ItemNameFromOrigin(ItemOrigin);
     }
 
     public override bool IsValid()
@@ -76,7 +76,7 @@ public class AddItemCommand : Command
     
     public override string UsageInstructions()
     {
-        return "Usage: flexlib add-item <item origin> [item name] [library name]";
+        return "Usage: flexlib add-item <item origin> [library name] [item name]";
     }
 }
 
@@ -113,8 +113,8 @@ public class AddPropertyCommand : Command
     {
         Options = options;
         PropName = options.Length > 0 ? options[0] : "";
-        PropType = options.Length > 1 ? options[1] : "string";
-        LibName = options.Length > 2 ? options[2] : "Default Library";
+        LibName = options.Length > 1 ? options[1] : "Default Library";
+        PropType = options.Length > 2 ? options[2] : "string";
     }
 
     public override bool IsValid()
@@ -125,7 +125,7 @@ public class AddPropertyCommand : Command
     public override string UsageInstructions()
     {
         return
-            "Usage:  flexlib add-prop <property name> [property type] [library name]\n\n" +
+            "Usage:  flexlib add-prop <property name> [library name] [property type] \n\n" +
             "   <property name>   The name of the new property.\n\n" +
             "   [property type]   (Optional) The type of the property.\n\n" +
             "       Supported types: string (default), integer, decimal, float, bool, list\n\n" +
@@ -155,7 +155,7 @@ public class ListPropertiesCommand : Command
     public override string UsageInstructions()
     {
         return
-            "Usage:  flexlib list-props <library name> [item name]";
+            "Usage:  flexlib list-props [library name] [item name]";
     }
 
 }
@@ -185,7 +185,7 @@ public class EditPropertyCommand : Command
     public override string UsageInstructions()
     {
         return
-            "Usage:  flexlib edit-prop <property name> <new value> <item name> <library name>";
+            "Usage:  flexlib edit-prop <property name> <new value> <item name> [library name]";
     }
 
 }
@@ -200,7 +200,7 @@ public abstract class CommentCommand : Command
     {
         Options = options;
         ItemName = options.Length > 0 ? options[0] : "";
-        LibName = options.Length > 1 ? options[1] : "Default Library";
+        LibName = options.Length > 2 ? options[2] : "Default Library";
     }
 
     public override bool IsValid()
@@ -215,7 +215,7 @@ public class MakeCommentCommand : CommentCommand
 
     public MakeCommentCommand(string[] options) : base(options) 
     {
-        Comment = options.Length > 2 ? options[2] : "";
+        Comment = options.Length > 1 ? options[1] : "";
     }
     
     public override bool IsValid()
@@ -225,7 +225,7 @@ public class MakeCommentCommand : CommentCommand
 
     public override string UsageInstructions()
     {
-        return "Usage: flexlib make-comment <item name> [library name] [comment]\n";
+        return "Usage: flexlib make-comment <item name> [comment] [library name]\n";
     }
 }
 

@@ -15,12 +15,12 @@ Remove-Item "$flexlibDataPath/*" -Recurse -Force -ErrorAction SilentlyContinue
 
 # Run test
 & $flexlibPath new TestLibrary $resultsPath
-& $flexlibPath add-item $item1 Item1 TestLibrary
-& $flexlibPath add-item $item2 Item2 TestLibrary
-& $flexlibPath add-item $item3 Item3 TestLibrary
-& $flexlibPath make-comment Item1 TestLibrary 'This is a comment.'
-& $flexlibPath make-comment Item2 TestLibrary 'This is a comment quoting {TestLibrary/Item1}.'
-& $flexlibPath make-comment Item3 TestLibrary 'This is a comment quoting {TestLibrary/Item1} and {TestLibrary/Item2}.'
+& $flexlibPath add-item $item1 TestLibrary Item1
+& $flexlibPath add-item $item2 TestLibrary 'Compound Name'
+& $flexlibPath add-item $item3 TestLibrary Item3
+& $flexlibPath make-comment Item1 'This is a comment.' TestLibrary
+& $flexlibPath make-comment Item2 'This is a comment quoting {TestLibrary/Item1}.' TestLibrary
+& $flexlibPath make-comment Item3 'This is a comment quoting {TestLibrary/Item1} and {TestLibrary/Compound Name}.' TestLibrary
 
 
 # Compare artifacts

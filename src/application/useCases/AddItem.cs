@@ -7,9 +7,8 @@ namespace Flexlib.Application.UseCases;
 
 public static class AddItem
 {
-    public static Result Execute(string libName, string itemOrigin, string? itemName, ILibraryRepository repo)
+    public static Result Execute(string libName, string itemOrigin, string itemName, ILibraryRepository repo)
     {
-        itemName = AssureItemName(libName, itemName, itemOrigin, repo);
 
         Result validation = IsOperationAllowed(libName, itemOrigin, itemName, repo);
 
@@ -24,42 +23,7 @@ public static class AddItem
 
     }
 
-    private static string AssureItemName(string libName, string? name, string origin, ILibraryRepository repo)
-    {
-        if (!string.IsNullOrWhiteSpace(name))
-            return TextUtil.Truncate(name);
-
-        AddressType addrType = AddressAnalysis.GetAddressType(origin);
-        string? baseName = null;
-
-        switch (addrType)
-        {
-            case AddressType.Url:
-                baseName = Path.GetFileNameWithoutExtension(new Uri(origin).AbsolutePath);
-                break;
-
-            case AddressType.Unc:
-            case AddressType.LocalFile:
-                baseName = Path.GetFileNameWithoutExtension(origin);
-                break;
-
-            case AddressType.IPAddress:
-            case AddressType.Unknown:
-            default:
-                var selectedLibrary = repo.GetByName(libName);
-                if (selectedLibrary == null)
-                    throw new InvalidOperationException($"Library '{libName}' not found.");
-
-                baseName = $"item-{selectedLibrary.Items.Count + 1}";
-                break;
-        }
-
-        return TextUtil.Truncate(baseName ?? "unnamed");
-    }
-
-
-
-    private static Result AddItemToLib(string libName, string itemOrigin, string? itemName, ILibraryRepository repo)
+    private static Result AddItemToLib(string libName, string itemOrigin, string itemName, ILibraryRepository repo)
     {
         Library? lib = repo.GetByName(libName);
         if (lib != null)

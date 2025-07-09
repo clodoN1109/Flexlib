@@ -18,7 +18,7 @@ public class Library
         Items = new();
     }
 
-    public Library AddItem(string? name, string origin)
+    public Library AddItem(string name, string origin)
     {
         var newItem = new LibraryItem(name, origin, this);
 

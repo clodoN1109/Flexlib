@@ -15,11 +15,11 @@ Remove-Item "$flexlibDataPath/*" -Recurse -Force -ErrorAction SilentlyContinue
 
 # Run test
 & $flexlibPath new TestLibrary $resultsPath
-& $flexlibPath add-item $item1 Item1 TestLibrary
-& $flexlibPath add-item $item2 Item2 TestLibrary
-& $flexlibPath add-item $item3 Item3 TestLibrary
-& $flexlibPath add-prop Property1 string TestLibrary
-& $flexlibPath add-prop Property2 string TestLibrary
+& $flexlibPath add-item $item1 TestLibrary Item1
+& $flexlibPath add-item $item2 TestLibrary Item2
+& $flexlibPath add-item $item3 TestLibrary Item3
+& $flexlibPath add-prop Property1 TestLibrary string
+& $flexlibPath add-prop Property2 TestLibrary string
 & $flexlibPath edit-prop Property1 NewValue Item1 TestLibrary 
 & $flexlibPath edit-prop Property2 NewValue Item2 TestLibrary 
 
