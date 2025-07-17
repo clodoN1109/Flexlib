@@ -1,7 +1,7 @@
 using Flexlib.Common;
 using System.IO;
 
-namespace Flexlib.Interface;
+namespace Flexlib.Interface.Input;
 
 
 public abstract class Command : ParsedInput
@@ -32,7 +32,7 @@ public class NewLibraryCommand : Command
 
     public override string UsageInstructions()
     {
-        return "Usage: flexlib new <name> [path]";
+        return "Usage: flexlib new-lib <name> [path]";
     } 
 }
 
@@ -56,17 +56,17 @@ public class RemoveLibraryCommand : Command
     } 
 }
 
-public class AddItemCommand : Command
+public class NewItemCommand : Command
 {
     public string LibraryName { get; }
     public string ItemName { get; }
     public string ItemOrigin { get; }
 
-    public AddItemCommand(string[] options)
+    public NewItemCommand(string[] options)
     {
         ItemOrigin = options.Length > 0 ? options[0] : "";
-        LibraryName = options.Length > 1 ? options[1] : "Default Library";
-        ItemName = options.Length > 2 ? options[2] : Infer.ItemNameFromOrigin(ItemOrigin);
+        ItemName = options.Length > 1 ? options[1] : Infer.ItemNameFromOrigin(ItemOrigin);
+        LibraryName = options.Length > 2 ? options[2] : "Default Library";
     }
 
     public override bool IsValid()
@@ -76,9 +76,109 @@ public class AddItemCommand : Command
     
     public override string UsageInstructions()
     {
-        return "Usage: flexlib add-item <item origin> [library name] [item name]";
+        return "Usage: flexlib new-item <item origin> [item name] [library name]";
     }
 }
+
+public class ListItemsCommand : Command
+{
+    string[] Options;
+    public string LibraryName { get; }
+    public string FilterSequence { get; }
+    public string SortSequence { get; }
+
+    public ListItemsCommand(string[] options)
+    {
+        Options = options;
+        LibraryName = options.Length > 0 ? options[0] : "Default Library";
+        FilterSequence = options.Length > 1 ? options[1] : "";
+        SortSequence = options.Length > 2 ? options[2] : "";
+    }
+
+    public override bool IsValid()
+    {
+
+        if ((Options.Length > 0) && (Options.Length < 4))
+        {
+            return true;
+        }
+
+        return false;
+        
+    }
+    
+    public override string UsageInstructions()
+    {
+        return "Usage: flexlib list-items <library name> [filter sequence] [sort sequence]\n\n" +
+            "[filter sequence]: <property-value>[/property-value ...] \n\n" +
+            "[sort sequence]: <property>[/<property ...] "
+            ;
+    }
+}
+
+public class GetLibraryLayoutCommand : Command
+{
+    string[] Options;
+    public string LibraryName { get; }
+
+    public GetLibraryLayoutCommand(string[] options)
+    {
+        Options = options;
+        LibraryName = options.Length > 0 ? options[0] : "Default Library";
+    }
+
+    public override bool IsValid()
+    {
+
+        if ((Options.Length > 0) && (Options.Length < 2))
+        {
+            return true;
+        }
+
+        return false;
+        
+    }
+    
+    public override string UsageInstructions()
+    {
+        return "Usage: flexlib get-layout <library name>\n\n"
+            ;
+    }
+}
+
+public class SetLibraryLayoutCommand : Command
+{
+    string[] Options;
+    public string LibraryName { get; }
+    public string LayoutString { get; }
+
+    public SetLibraryLayoutCommand(string[] options)
+    {
+        Options = options;
+        LibraryName = options.Length > 0 ? options[0] : "Default Library";
+        LayoutString = options.Length > 1 ? options[1] : "";
+    }
+
+    public override bool IsValid()
+    {
+
+        if (Options.Length == 2)
+        {
+            return true;
+        }
+
+        return false;
+        
+    }
+    
+    public override string UsageInstructions()
+    {
+        return "Usage: flexlib set-layout <library name> <layout>\n\n" +
+            "<layout>: <property>[/property ...] \n\n"
+            ;
+    }
+}
+
 
 public class RefreshCommand : Command
 {
@@ -102,14 +202,14 @@ public class RefreshCommand : Command
     }
 }
 
-public class AddPropertyCommand : Command
+public class NewPropertyCommand : Command
 {
     string[] Options;
     public string PropName { get; } 
     public string PropType { get; } 
     public string LibName { get; } 
 
-    public AddPropertyCommand(string[] options)
+    public NewPropertyCommand(string[] options)
     {
         Options = options;
         PropName = options.Length > 0 ? options[0] : "";
@@ -125,7 +225,7 @@ public class AddPropertyCommand : Command
     public override string UsageInstructions()
     {
         return
-            "Usage:  flexlib add-prop <property name> [library name] [property type] \n\n" +
+            "Usage:  flexlib new-prop <property name> [library name] [property type] \n\n" +
             "   <property name>   The name of the new property.\n\n" +
             "   [property type]   (Optional) The type of the property.\n\n" +
             "       Supported types: string (default), integer, decimal, float, bool, list\n\n" +
@@ -149,7 +249,7 @@ public class ListPropertiesCommand : Command
 
     public override bool IsValid()
     {
-        return (Options.Length >= 1 && Options.Length <=2);
+        return (Options.Length > 0 && Options.Length < 3);
     }
     
     public override string UsageInstructions()
@@ -203,12 +303,12 @@ public abstract class CommentCommand : Command
 
 }
 
-public class MakeCommentCommand : CommentCommand
+public class NewCommentCommand : CommentCommand
 {
     public string? Comment { get; set; }
     public string LibName { get; set; }
 
-    public MakeCommentCommand(string[] options) : base(options) 
+    public NewCommentCommand(string[] options) : base(options) 
     {
         LibName = options.Length > 1 ? options[1] : "Default Library";
         Comment = options.Length > 2 ? options[2] : "";
@@ -221,7 +321,7 @@ public class MakeCommentCommand : CommentCommand
 
     public override string UsageInstructions()
     {
-        return "Usage: flexlib make-comment <item name> [library name] [comment] \n";
+        return "Usage: flexlib new-comment <item name> [library name] [comment] \n";
     }
 }
 
@@ -285,9 +385,13 @@ public class UnknownCommand : Command
         var commandsLine = string.Join(" ", availableCommands);
 
         return
-            "Usage: flexlib {command}\n\n" +
+            "░░░░ Flexlib CLI ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░\n\n" + 
+            "   usage:      flexlib {command}\n\n" +
             "commands:\n" +
-            "\n\t" + commandsLine;
+            "\n\t" + 
+            $"{commandsLine}\n\n" + 
+            "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░\n\n"
+            ;
     }
 }
 
@@ -297,19 +401,26 @@ public static class CommandsList{
     {
         return new List<string>{
 
-            "new",
-            "\n\tadd-item",
-            "\n\tmake-comment",
+            "❔     help",
+            "\n\n\t🏛      new-lib",
+            "list-libs",
+            "remove-lib",
+            "set-layout",
+            "get-layout",
+            "\n\n\t🕮      new-item", 
+            "list-items",
+            "remove-items",
+            "view-item",
+            "\n\n\t𝒜      new-comment",
             "list-comments",
             "edit-comment",
-            "\n\tadd-prop",
+            "remove-comment",
+            "\n\n\t📐     new-prop",
             "list-props",
             "edit-prop",
-            "\n\trefresh",
-            "\n\tremove-lib",
-            "remove-item",
             "remove-prop",
-            "remove-comment"
+            "\n\n\t↻      refresh",
+            "\n\n\t🗔      tui",
 
 
         };
@@ -317,4 +428,3 @@ public static class CommandsList{
     }
 
 }
-

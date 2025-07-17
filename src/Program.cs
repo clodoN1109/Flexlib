@@ -1,4 +1,5 @@
-﻿using Flexlib.Interface;
+﻿using Flexlib.Interface.Input;
+using Flexlib.Interface.Router;
 
 class Program 
 {
