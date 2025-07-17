@@ -2,9 +2,12 @@
 
 ## A lightweight system for building flexible and interconnected libraries with just a few keystrokes.
 ###
-<img width="1896" height="1052" alt="image" src="https://github.com/user-attachments/assets/02ca656e-ee22-4f49-9c62-01b91bbd9858" />
+<p align="center">
+  <img width="1896" height="1052" alt="image" src="https://github.com/user-attachments/assets/02ca656e-ee22-4f49-9c62-01b91bbd9858" />
+</p>
+<p align="center"><em>Figure 1:</em> Flexlib layout design (in development)</p>
 
-Flexlib was born out of the frustration of trying to organize a digital library using traditional operating system file systems. While folders and filenames offer a basic form of organization, they quickly become cumbersome and inflexible when you need to:
+Flexlib is being designed of the frustration of trying to organize a digital library using traditional operating system file systems. While folders and filenames offer a basic form of organization, they quickly become cumbersome and inflexible when you need to:
 
     Classify items using multiple properties (e.g. author, theme, rating)
 
