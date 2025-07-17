@@ -9,9 +9,9 @@ namespace Flexlib.Application.UseCases;
 
 public static class ListComments
 {
-    public static Result Execute(string itemName, string libName, ILibraryRepository repo, IOutput output)
+    public static Result Execute(string itemName, string libName, ILibraryRepository repo, IPresenter presenter)
     {
-        var parsedArgs = new ParsedArgs(itemName, libName, repo, output); 
+        var parsedArgs = new ParsedArgs(itemName, libName, repo, presenter); 
 
         var validation = IsOperationAllowed(parsedArgs);
 
@@ -31,7 +31,7 @@ public static class ListComments
         if (selectedItem == null)
             return Result.Fail($"Item '{parsedArgs.ItemName}' not found in library '{selectedLibrary.Name}'.");
        
-        parsedArgs.Output.ListComments(selectedItem.Comments);
+        parsedArgs.Presenter.ListComments(selectedItem.Comments);
 
         return Result.Success($"");
 
@@ -60,14 +60,14 @@ public static class ListComments
         public string ItemName { get; }
         public string LibName { get; }
         public ILibraryRepository Repo { get; }
-        public IOutput Output { get; }
+        public IPresenter Presenter { get; }
 
-        public ParsedArgs(string itemName, string libName, ILibraryRepository repo, IOutput output)
+        public ParsedArgs(string itemName, string libName, ILibraryRepository repo, IPresenter presenter)
         {
             LibName = libName;
             ItemName = itemName;
             Repo = repo;
-            Output = output;
+            Presenter = presenter;
         }
     }
 }

@@ -9,9 +9,9 @@ namespace Flexlib.Application.UseCases;
 
 public static class EditComment
 {
-    public static Result Execute(string itemName, string commentId, string libName, IRead read, ILibraryRepository repo)
+    public static Result Execute(string itemName, string commentId, string libName, IReader reader, ILibraryRepository repo)
     {
-        var parsedArgs = new ParsedArgs(itemName, commentId, libName, read, repo); 
+        var parsedArgs = new ParsedArgs(itemName, commentId, libName, reader, repo); 
 
         var validation = IsOperationAllowed(parsedArgs);
 
@@ -30,7 +30,7 @@ public static class EditComment
 
         var currentText = selectedComment!.Text; 
 
-        selectedComment.Text = (parsedArgs.Read.ReadText(currentText) ?? "").Trim();
+        selectedComment.Text = (parsedArgs.Reader.ReadText(currentText) ?? "").Trim();
 
         parsedArgs.Repo.Save(selectedLibrary);
 
@@ -66,15 +66,15 @@ public static class EditComment
         public string ItemName { get; }
         public string CommentId { get; }
         public string LibName { get; }
-        public IRead Read { get; }
+        public IReader Reader { get; }
         public ILibraryRepository Repo { get; }
 
-        public ParsedArgs(string itemName, string commentId, string libName, IRead read, ILibraryRepository repo)
+        public ParsedArgs(string itemName, string commentId, string libName, IReader reader, ILibraryRepository repo)
         {
             LibName = libName;
             CommentId = commentId;
             ItemName = itemName;
-            Read = read;
+            Reader = reader;
             Repo = repo;
         }
     }

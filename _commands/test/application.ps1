@@ -20,13 +20,14 @@ function Run-Test($test) {
     } catch {
         Write-Host "`r💥 Error in ${displayName}: $_" -ForegroundColor Red
     }
-    Write-Host ('-' * [System.Console]::WindowWidth)
+    Write-Host ('-' * [System.Console]::WindowWidth) -ForegroundColor DarkGray
 }
 
 function Run-Tests($selectedTests) {
-    Write-Host ('=' * [System.Console]::WindowWidth)
-    Write-Host "`nTEST SUITE`n"
-    Write-Host ('-' * [System.Console]::WindowWidth)
+    Write-Host ('=' * [System.Console]::WindowWidth) -ForegroundColor DarkGray
+    Write-Host "`nRUNTIME TEST SUITE`n"
+    Write-Host ('-' * [System.Console]::WindowWidth) -ForegroundColor DarkGray
+    Start-Sleep 1
 
     foreach ($test in $selectedTests) {
         Run-Test $test
