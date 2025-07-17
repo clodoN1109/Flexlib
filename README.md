@@ -14,6 +14,4 @@ Flexlib was born out of the frustration of trying to organize a digital library 
 
     Add comments and create references between items, across a single or multiple libraries.
 
-Flexlib introduces a structured yet flexible model for managing digital collections — whether they consist of books, PDFs, videos, or any kind of media. Rather than relying on rigid directory structures, Flexlib treats your collection as a queryable, shapeable dataset, allowing you to define property-based views, nested layouts, and rich filters.
-
-It brings the power of database-style filtering and sorting, without needing to set up a database.
+Flexlib introduces a structured yet flexible model with an intuitive and minimalistic sintax for managing physical or digital collections — whether they consist of books, PDFs, videos, or any kind of media. Rather than relying on rigid directory structures, Flexlib treats your collection as a queryable, shapeable dataset, allowing you to define property-based views and nested layouts.
