@@ -1,6 +1,6 @@
 # Resolve paths
 $flexlibPath       = Resolve-Path "$PSScriptRoot/../../../flexlib.ps1"
-$flexlibDataPath   = "$HOME/Projects/Incubator/FlexLib/Dev/builds/temp/Debug/net8.0/data"
+$flexlibDataPath   = "$HOME/Projects/Incubator/FlexLib/Dev/builds/last/Debug/net8.0/data"
 $dataPath          = "$PSScriptRoot/data"  
 $resultsPath       = "$dataPath/results"
 $referencePath     = "$dataPath/references"

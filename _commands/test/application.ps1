@@ -24,14 +24,14 @@ function Run-Test($test) {
 }
 
 function Run-Tests($selectedTests) {
-    Write-Host ('=' * [System.Console]::WindowWidth) -ForegroundColor DarkGray
-    Write-Host "`nRUNTIME TEST SUITE`n"
+    Write-Host "`n░░░░ RUNTIME TEST SUIT ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░`n"
     Write-Host ('-' * [System.Console]::WindowWidth) -ForegroundColor DarkGray
     Start-Sleep 1
 
     foreach ($test in $selectedTests) {
         Run-Test $test
     }
+    Write-Host "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░"
     Write-Host ''
 }
 

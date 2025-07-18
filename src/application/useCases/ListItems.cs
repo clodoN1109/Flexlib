@@ -22,7 +22,6 @@ public static class ListItems
 
     private static Result _ListItems(ParsedArgs parsedArgs)
     {
-        
         var selectedLibrary = parsedArgs.Repo.GetByName(parsedArgs.LibName)!;
         if (selectedLibrary == null)
             return Result.Fail($"Library '{parsedArgs.LibName}' not found.");
@@ -38,7 +37,6 @@ public static class ListItems
         
         parsedArgs.Presenter.ListItems(selectedItems);
         
-
         return Result.Success($"");
 
     }

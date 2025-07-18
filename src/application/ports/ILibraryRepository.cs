@@ -9,4 +9,5 @@ public interface ILibraryRepository
     Library? GetByName(string name);
     void RemoveLibraryByName(string name);
     IEnumerable<Library> GetAll();
+    string GetDataDirectory();
 }

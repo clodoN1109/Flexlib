@@ -47,6 +47,4 @@ function PrintABeautifulLog( $logsGroupedByProjectAndFile, [int]$errorCount, [in
         DrawSadFace
     }
 
-    Write-Host "`n░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░`n`n"
-
 }
