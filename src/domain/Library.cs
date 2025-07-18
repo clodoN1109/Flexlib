@@ -27,7 +27,14 @@ public class Library
 
     public Result SetLayout(string layoutSequence)
     {
+
         List<ItemPropertyDefinition> validSequence = new();
+
+        if ( string.IsNullOrWhiteSpace( layoutSequence ))
+        {
+            LayoutSequence = validSequence;
+            return RenderLayout();
+        }
 
         List<string> layoutPropertyNames = layoutSequence.Split('/').ToList();
 
@@ -50,6 +57,9 @@ public class Library
 
     public Result RenderLayout()
     { 
+
+        if (LayoutSequence.Count == 0) 
+            RenderedLayout = Items.ToList();
 
         var root = new Dictionary<string, object>();
         
@@ -204,6 +214,9 @@ public class Library
 
     private object ExtractLayoutBranch(FilterSequence filterSequence)
     {
+        if (filterSequence.Elements.Count == 0)
+            return new List<LibraryItem>( Items );
+
         if (RenderedLayout is not Dictionary<string, object> layout)
             return new List<LibraryItem>();
 

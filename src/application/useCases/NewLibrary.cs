@@ -14,9 +14,8 @@ public static class NewLibrary
 
         if (validation.IsSuccess)
         {
-            NewLib(name, path, repo);
+            return NewLib(name, path, repo);
            
-            return Result.Success($"Library {name} created in {path}.");
         }
         else 
         {
@@ -25,10 +24,15 @@ public static class NewLibrary
                 
     }
 
-    private static void NewLib(string name, string path, ILibraryRepository repo)
+    private static Result NewLib(string name, string path, ILibraryRepository repo)
     {
+        if ( string.IsNullOrWhiteSpace(path) )
+            path = repo.GetDataDirectory();
+
         var lib = new Library(name, path);
         repo.Save(lib);
+        
+        return Result.Success($"Library {name} created in {path}.");
     }
 
     private static Result IsOperationAllowed(string name, string path, ILibraryRepository repo)

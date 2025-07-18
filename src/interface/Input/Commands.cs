@@ -17,17 +17,14 @@ public class NewLibraryCommand : Command
     public NewLibraryCommand(string[] options)
     {
         string? assemblyLocation = Env.GetExecutingAssemblyLocation();
-        string defaultLocation = string.IsNullOrWhiteSpace(assemblyLocation)
-            ? ""
-            : System.IO.Path.Combine(assemblyLocation, "data");
 
         Name = options.Length > 0 ? options[0] : "";
-        Path = options.Length > 1 ? options[1] : defaultLocation;
+        Path = options.Length > 1 ? options[1] : "";
     }
 
     public override bool IsValid()
     {
-        return !string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(Path);
+        return !string.IsNullOrWhiteSpace(Name);
     }
 
     public override string UsageInstructions()

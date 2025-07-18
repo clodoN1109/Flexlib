@@ -11,9 +11,19 @@ public class JsonLibraryRepository : ILibraryRepository
     private readonly string _dataDirectory;
     private readonly string _metaFile;
     private List<Library> _cache;
+    private string? ExeFolder;
+    private string? AppDataFolder;
 
     public JsonLibraryRepository()
     {
+        ExeFolder = Env.GetExecutingAssemblyLocation();
+        if (ExeFolder == null || !Directory.Exists(ExeFolder))
+            throw new DirectoryNotFoundException($"Executable file directory not found: {ExeFolder}");
+
+        AppDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        if (AppDataFolder == null || !Directory.Exists(AppDataFolder))
+            throw new DirectoryNotFoundException($"AppData file directory not found: {AppDataFolder}");
+        
         _cache = new List<Library>();
 
         _dataDirectory = EnsureDataDirectory();
@@ -25,20 +35,21 @@ public class JsonLibraryRepository : ILibraryRepository
     private string EnsureDataDirectory()
     {
 #if DEBUG
-        
-        string? exeFolder = Env.GetExecutingAssemblyLocation();
-
-        if (!Directory.Exists(exeFolder))
-            throw new DirectoryNotFoundException($"Executable file directory not found: {exeFolder}");
-        
-        string dataDirectory = Path.Combine(exeFolder, "data/");
+        string dataDirectory = Path.Combine(ExeFolder!, "data");
+        Directory.CreateDirectory(dataDirectory);
 #else
-        string dataDirectory = "~/AppData/Flexlib/data/";
-#endif
-
+        string flexlibDir = Path.Combine(AppDataFolder!, "Flexlib");
+        string dataDirectory =  Path.Combine(flexlibDir, "data");
+        Directory.CreateDirectory(flexlibDir);
+#endif 
         Directory.CreateDirectory(dataDirectory);
     
         return dataDirectory;
+    }
+
+    public string GetDataDirectory()
+    {
+        return _dataDirectory;
     }
     
     private string EnsureMetaFile()
@@ -48,11 +59,7 @@ public class JsonLibraryRepository : ILibraryRepository
         if (!Directory.Exists(exeFolder))
             throw new DirectoryNotFoundException($"Directory not found: {exeFolder}");
 
-#if DEBUG
-        string metaFile = Path.Combine(exeFolder, "data/libraries.json");
-#else 
-        string metaFile = Path.Combine(exeFolder, "data/libraries.json");
-#endif
+        string metaFile = Path.Combine(_dataDirectory, "libraries.json");
 
         if (File.Exists(metaFile))
         {
@@ -69,6 +76,11 @@ public class JsonLibraryRepository : ILibraryRepository
 
     public void Save(Library lib)
     {
+        if ( string.IsNullOrWhiteSpace(lib.Path) )
+        {
+            lib.Path = _dataDirectory;
+        }
+
         _cache.RemoveAll(l => l.Name == lib.Name && l.Path == lib.Path);
         
         _cache.Add(lib);

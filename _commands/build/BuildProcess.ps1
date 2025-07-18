@@ -1,8 +1,11 @@
-function ExecuteBuildProcess () {
+function ExecuteBuildProcess {
+    param (
+        [string]$Configuration = "Debug"  # Default to Debug if not provided
+    )
 
-# 2>&1 is a PowerShell redirection operator that merges the error stream with the output stream.
-    $output = dotnet build "$PSScriptRoot\..\..\src\Flexlib.csproj" -v:q 2>&1
+    $projectPath = Join-Path $PSScriptRoot "..\..\src\Flexlib.csproj"
+    $output = dotnet build $projectPath -c $Configuration -v:q 2>&1
 
     return $output
-
 }
+
