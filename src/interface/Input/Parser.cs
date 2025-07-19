@@ -23,7 +23,7 @@ public static class Parsing
             "set-layout"    => new SetLibraryLayoutCommand(options),
             "new-prop"      => new NewPropertyCommand(options),
             "list-props"    => new ListPropertiesCommand(options),
-            "edit-prop"     => new EditPropertyCommand(options),
+            "set-prop"     => new SetPropertyCommand(options),
             "new-comment"  => new NewCommentCommand(options),
             "list-comments" => new ListCommentsCommand(options),
             "edit-comment"  => new EditCommentCommand(options),

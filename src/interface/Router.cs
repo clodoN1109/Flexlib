@@ -24,7 +24,7 @@ public static class Router {
             case GUIStartUp gui:
                 if ( gui.IsValid() ) 
                 {  
-                    presenter.Message("Launching terminal user interface.");
+                    presenter.Message("Launching Flexlib GUI.");
                     //TUIController.Handle(tui);
                 }
                 break;

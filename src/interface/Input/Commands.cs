@@ -257,7 +257,7 @@ public class ListPropertiesCommand : Command
 
 }
 
-public class EditPropertyCommand : Command
+public class SetPropertyCommand : Command
 {
     string[] Options;
     public string PropName { get; } 
@@ -265,7 +265,7 @@ public class EditPropertyCommand : Command
     public string ItemName { get; } 
     public string LibName { get; } 
 
-    public EditPropertyCommand(string[] options)
+    public SetPropertyCommand(string[] options)
     {
         Options = options;
         PropName = options.Length > 0 ? options[0] : "";
@@ -282,7 +282,7 @@ public class EditPropertyCommand : Command
     public override string UsageInstructions()
     {
         return
-            "Usage:  flexlib edit-prop <property name> <new value> <item name> [library name]";
+            "Usage:  flexlib set-prop <property name> <new value> <item name> [library name]";
     }
 
 }
@@ -414,7 +414,7 @@ public static class CommandsList{
             "remove-comment",
             "\n\n\t📐     new-prop",
             "list-props",
-            "edit-prop",
+            "set-prop",
             "remove-prop",
             "\n\n\t🢃      fetch-files",
             "\n\n\t🗔      gui",
