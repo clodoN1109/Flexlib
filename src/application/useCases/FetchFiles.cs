@@ -5,7 +5,7 @@ using Flexlib.Common;
 
 namespace Flexlib.Application.UseCases;
 
-public static class Refresh
+public static class FetchFiles
 {
     public static Result Execute(string? libName, ILibraryRepository repo)
     {
@@ -16,11 +16,11 @@ public static class Refresh
         {
             if (libName != null)
             {
-                return RefreshLibrary(libName, repo);
+                return FetchLibraryFiles(libName, repo);
             }
             else
             {
-                RefreshAllLibraries(repo);
+                FetchAllLibrariesFiles(repo);
                 return Result.Success("All Libraries refreshed.");
             }
         }
@@ -31,7 +31,7 @@ public static class Refresh
 
     }
 
-    private static Result RefreshLibrary(string libName, ILibraryRepository repo)
+    private static Result FetchLibraryFiles(string libName, ILibraryRepository repo)
     {
         Library? lib = repo.GetByName(libName);
 
@@ -46,7 +46,7 @@ public static class Refresh
         }
     }
     
-    private static void RefreshAllLibraries(ILibraryRepository repo)
+    private static void FetchAllLibrariesFiles(ILibraryRepository repo)
     {
         foreach (Library lib in repo.GetAll().ToList())
         {

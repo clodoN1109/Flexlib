@@ -41,8 +41,8 @@ public static class ConsoleController
                 result = SetLibraryLayout.Execute(setLayout.LibraryName, setLayout.LayoutString, _repo, _presenter);
                 break;
             
-            case RefreshCommand refresh:
-                result = Refresh.Execute(refresh.LibraryName, _repo);
+            case FetchFilesCommand fetchFiles:
+                result = FetchFiles.Execute(fetchFiles.LibraryName, _repo);
                 break;
             
             case NewPropertyCommand addProp:

@@ -177,12 +177,12 @@ public class SetLibraryLayoutCommand : Command
 }
 
 
-public class RefreshCommand : Command
+public class FetchFilesCommand : Command
 {
     string[] Options;
     public string? LibraryName { get; } 
 
-    public RefreshCommand(string[] options)
+    public FetchFilesCommand(string[] options)
     {
         Options = options;
         LibraryName = options.Length > 0 ? options[0] : "Default Library";
@@ -195,7 +195,7 @@ public class RefreshCommand : Command
     
     public override string UsageInstructions()
     {
-        return "Usage: flexlib refresh [library name]";
+        return "Usage: flexlib refetch [library name]";
     }
 }
 
@@ -416,8 +416,8 @@ public static class CommandsList{
             "list-props",
             "edit-prop",
             "remove-prop",
-            "\n\n\t↻      refresh",
-            "\n\n\t🗔      tui",
+            "\n\n\t🢃      fetch-files",
+            "\n\n\t🗔      gui",
 
 
         };
