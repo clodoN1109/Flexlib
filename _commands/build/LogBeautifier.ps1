@@ -2,7 +2,6 @@
 
 function PrintABeautifulLog( $logsGroupedByProjectAndFile, [int]$errorCount, [int]$warningCount) {
     
-    Clear-Host
     $rest = Write-NoNewLine "░░░░ BUILD LOG ░░░░░░░░░░░░"
     $rest = write-NoNewLine " $errorCount" -ForegroundColor Red -Rest $rest
     $rest = Write-NoNewLine " ERRORS " -Rest $rest
