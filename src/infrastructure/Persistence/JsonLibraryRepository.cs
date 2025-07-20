@@ -20,7 +20,7 @@ public class JsonLibraryRepository : ILibraryRepository
         if (ExeFolder == null || !Directory.Exists(ExeFolder))
             throw new DirectoryNotFoundException($"Executable file directory not found: {ExeFolder}");
 
-        AppDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        AppDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         if (AppDataFolder == null || !Directory.Exists(AppDataFolder))
             throw new DirectoryNotFoundException($"AppData file directory not found: {AppDataFolder}");
         

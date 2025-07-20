@@ -18,7 +18,7 @@ $newEntry = SaveBuildHistory $Configuration $ErrorCount $WarningCount
 
 $buildID = $newEntry.id
 
-Write-Host "`n░░░░ BUILD Nº $buildID COMPLETED ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░"
+Write-Fill "BUILD Nº $buildID COMPLETED"
 
 if (($configuration -eq "Debug") -and ($WithRuntimeTests) -and ($errorCount -eq 0) -and ($warningCount -eq 0)) {
      
