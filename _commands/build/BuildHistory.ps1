@@ -28,7 +28,7 @@ function SaveBuildHistory {
 
     $history = GetBuildHistory $BuildHistoryPath
 
-    $timestamp = [int][double]::Parse((Get-Date -UFormat %s))
+    $timestamp  = (Get-Date).ToString("s")  # ISO 8601 format
 
     $newEntry = [PSCustomObject]@{
         id = $buildID
