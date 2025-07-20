@@ -1,12 +1,17 @@
 param (
     [switch]$WithRuntimeTests,
-    [string]$Configuration = "Debug"
+    [string]$Configuration = "Debug",
+    [switch]$NoClearHost
 )
 
 . "$PSScriptRoot\build\LogHandler.ps1"
 . "$PSScriptRoot\build\BuildProcess.ps1"
 . "$PSScriptRoot\build\BuildHistory.ps1"
 . "$PSScriptRoot\build\Utils.ps1"
+
+If (-not $NoClearHost) {
+    Clear-Host
+}
 
 $env:DOTNET_CLI_UI_LANGUAGE = "en"
 
