@@ -1,7 +1,7 @@
 using Flexlib.Interface.Controllers;
 using Flexlib.Interface.Input;
 using Flexlib.Interface.Output;
-using Flexlib.Interface.TUI;
+using Flexlib.Interface.GUI;
 
 namespace Flexlib.Interface.Router;
 
@@ -21,10 +21,10 @@ public static class Router {
                     presenter.ExplainUsage(cmd.UsageInstructions());
                 break;
 
-            case TUIStartUp tui:
-                if ( tui.IsValid() ) 
+            case GUIStartUp gui:
+                if ( gui.IsValid() ) 
                 {  
-                    presenter.Message("Launching terminal user interface.");
+                    presenter.Message("Launching Flexlib GUI.");
                     //TUIController.Handle(tui);
                 }
                 break;

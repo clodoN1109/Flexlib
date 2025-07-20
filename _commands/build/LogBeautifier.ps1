@@ -3,13 +3,14 @@
 function PrintABeautifulLog( $logsGroupedByProjectAndFile, [int]$errorCount, [int]$warningCount) {
     
     Clear-Host
-    Write-Host "░░░░ BUILD LOG ░░░░░░░░░░░░" -NoNewLine
-    Write-Host " $errorCount" -ForegroundColor Red -NoNewLine
-    Write-Host " ERRORS " -NoNewLine
-    Write-Host "░░" -NoNewLine
-    Write-Host " $warningCount" -ForegroundColor Yellow -NoNewLine
-    Write-Host " WARNINGS ░░░░░░░░░░░░"
-    Write-Host ''
+    $rest = Write-NoNewLine "░░░░ BUILD LOG ░░░░░░░░░░░░"
+    $rest = write-NoNewLine " $errorCount" -ForegroundColor Red -Rest $rest
+    $rest = Write-NoNewLine " ERRORS " -Rest $rest
+    $rest = Write-NoNewLine "░░" -Rest $rest
+    $rest = Write-NoNewLine " $warningCount" -ForegroundColor Yellow -Rest $rest
+    $rest = Write-NoNewLine " WARNINGS ░░░░░░░░░░░░" -Rest $rest
+    Write-Host ("░" * $rest)
+    Write-Host
         
     foreach ($projectName in $logsGroupedByProjectAndFile.Keys) {
         Write-Host "PROJECT: $projectName" -ForegroundColor Cyan

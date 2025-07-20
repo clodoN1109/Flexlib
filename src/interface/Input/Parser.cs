@@ -1,5 +1,5 @@
 using Flexlib.Common;
-using Flexlib.Interface.TUI;
+using Flexlib.Interface.GUI;
 
 namespace Flexlib.Interface.Input;
 
@@ -9,7 +9,7 @@ public static class Parsing
     public static ParsedInput Parse(string[] args)
     {
         if (args.Length == 0)
-            return new TUIStartUp(new TUIConfig());
+            return new GUIStartUp(new GUIConfig());
 
         string command = args[0];
         string[] options = args.Skip(1).ToArray();
@@ -23,11 +23,11 @@ public static class Parsing
             "set-layout"    => new SetLibraryLayoutCommand(options),
             "new-prop"      => new NewPropertyCommand(options),
             "list-props"    => new ListPropertiesCommand(options),
-            "edit-prop"     => new EditPropertyCommand(options),
+            "set-prop"     => new SetPropertyCommand(options),
             "new-comment"  => new NewCommentCommand(options),
             "list-comments" => new ListCommentsCommand(options),
             "edit-comment"  => new EditCommentCommand(options),
-            "refresh"       => new RefreshCommand(options), 
+            "fetch-files"       => new FetchFilesCommand(options), 
             "remove-lib"    => new RemoveLibraryCommand(options),
             "help"          => new UnknownCommand($"Unknown command: {command}"),
             _               => new UnknownCommand($"Unknown command: {command}")

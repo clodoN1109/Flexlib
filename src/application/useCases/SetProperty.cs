@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace Flexlib.Application.UseCases;
 
-public static class EditProperty
+public static class SetProperty
 {
     public static Result Execute(string propName, string newValue, string libName, string itemName, ILibraryRepository repo)
     {
@@ -18,7 +18,7 @@ public static class EditProperty
         if (!validation.IsSuccess)
             return validation;
 
-        return ApplyEdit(args);
+        return _SetProperty(args);
     }
 
     private static Result IsOperationAllowed(ParsedArgs args)
@@ -53,7 +53,7 @@ public static class EditProperty
         return Result.Success("Operation allowed.");
     }
 
-    private static Result ApplyEdit(ParsedArgs args)
+    private static Result _SetProperty(ParsedArgs args)
     {
         var targetLibraries = string.IsNullOrWhiteSpace(args.LibName)
             ? args.Repo.GetAll()

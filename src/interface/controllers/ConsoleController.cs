@@ -41,8 +41,8 @@ public static class ConsoleController
                 result = SetLibraryLayout.Execute(setLayout.LibraryName, setLayout.LayoutString, _repo, _presenter);
                 break;
             
-            case RefreshCommand refresh:
-                result = Refresh.Execute(refresh.LibraryName, _repo);
+            case FetchFilesCommand fetchFiles:
+                result = FetchFiles.Execute(fetchFiles.LibraryName, _repo);
                 break;
             
             case NewPropertyCommand addProp:
@@ -53,8 +53,8 @@ public static class ConsoleController
                 result = ListProperties.Execute(listProps.LibName, listProps.ItemName, _repo);
                 break;
             
-            case EditPropertyCommand editProp:
-                result = EditProperty.Execute(editProp.PropName, editProp.NewValue, editProp.LibName, editProp.ItemName, _repo);
+            case SetPropertyCommand setProp:
+                result = SetProperty.Execute(setProp.PropName, setProp.NewValue, setProp.LibName, setProp.ItemName, _repo);
                 break;
             
             case NewCommentCommand makeCom:

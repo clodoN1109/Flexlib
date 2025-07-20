@@ -1,11 +1,11 @@
 using Flexlib.Interface;
 using Flexlib.Interface.Input;
 
-namespace Flexlib.Interface.TUI;
+namespace Flexlib.Interface.GUI;
     
-public class TUIStartUp : ParsedInput {
+public class GUIStartUp : ParsedInput {
 
-    public TUIStartUp(TUIConfig tuiConfig)
+    public GUIStartUp(GUIConfig guiConfig)
     {
 
         
@@ -24,4 +24,4 @@ public class TUIStartUp : ParsedInput {
 
 }
 
-public class TUIConfig{}
+public class GUIConfig{}
