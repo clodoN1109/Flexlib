@@ -25,76 +25,6 @@ public class Library
         LayoutSequence = new();
     }
 
-    public Result SetLayout(string layoutSequence)
-    {
-
-        List<ItemPropertyDefinition> validSequence = new();
-
-        if ( string.IsNullOrWhiteSpace( layoutSequence ))
-        {
-            LayoutSequence = validSequence;
-            return RenderLayout();
-        }
-
-        List<string> layoutPropertyNames = layoutSequence.Split('/').ToList();
-
-        foreach (var propertyName in layoutPropertyNames)
-        {
-            if (HasPropertyDefinition(propertyName))
-            {
-                validSequence.Add(GetPropertyDefinition(propertyName)!);
-            }
-            else
-            {
-                return Result.Fail($"Invalid property name {propertyName} passed as layout sequence element.");
-            }
-        }
-
-        LayoutSequence = validSequence;
-
-        return RenderLayout();
-    }
-
-    public Result RenderLayout()
-    { 
-
-        if (LayoutSequence.Count == 0) 
-            RenderedLayout = Items.ToList();
-
-        var root = new Dictionary<string, object>();
-        
-        var maxDepth = LayoutSequence.Count - 1;
-
-        foreach (var item in Items)
-        {
-            var current = root;
-            for (int i = 0; i <= maxDepth; i++)
-            {
-                var propDef = LayoutSequence[i];
-                var key = item.PropertyValues[propDef.Name]?.ToString() ?? "<null>";
-
-                if (!current.ContainsKey(key))
-                {
-                    current[key] = (i == maxDepth)
-                        ? new List<LibraryItem>()
-                        : new Dictionary<string, object>();
-                }
-
-                if (i < maxDepth)
-                {
-                    current = (Dictionary<string, object>) current[key];
-                }
-                else
-                {
-                    ( (List<LibraryItem>) current[key]).Add(item);
-                }
-            }
-        }
-
-        RenderedLayout = root;
-        return Result.Success($"Layout successfully rendered.");
-    }
-
     public Library AddItem(string name, string origin)
     {
         var newItem = new LibraryItem(name, origin, this);
@@ -182,6 +112,75 @@ public class Library
         return sortedItems;
     }
 
+    public Result SetLayout(string layoutSequence)
+    {
+
+        List<ItemPropertyDefinition> validSequence = new();
+
+        if ( string.IsNullOrWhiteSpace( layoutSequence ))
+        {
+            LayoutSequence = validSequence;
+            return RenderLayout();
+        }
+
+        List<string> layoutPropertyNames = layoutSequence.Split('/').ToList();
+
+        foreach (var propertyName in layoutPropertyNames)
+        {
+            if (HasPropertyDefinition(propertyName))
+            {
+                validSequence.Add(GetPropertyDefinition(propertyName)!);
+            }
+            else
+            {
+                return Result.Fail($"Invalid property name {propertyName} passed as layout sequence element.");
+            }
+        }
+
+        LayoutSequence = validSequence;
+
+        return RenderLayout();
+    }
+
+    public Result RenderLayout()
+    { 
+
+        if (LayoutSequence.Count == 0) 
+            RenderedLayout = Items.ToList();
+
+        var root = new Dictionary<string, object>();
+        
+        var maxDepth = LayoutSequence.Count - 1;
+
+        foreach (var item in Items)
+        {
+            var current = root;
+            for (int i = 0; i <= maxDepth; i++)
+            {
+                var propDef = LayoutSequence[i];
+                var key = item.PropertyValues[propDef.Name]?.ToString() ?? "<null>";
+
+                if (!current.ContainsKey(key))
+                {
+                    current[key] = (i == maxDepth)
+                        ? new List<LibraryItem>()
+                        : new Dictionary<string, object>();
+                }
+
+                if (i < maxDepth)
+                {
+                    current = (Dictionary<string, object>) current[key];
+                }
+                else
+                {
+                    ( (List<LibraryItem>) current[key]).Add(item);
+                }
+            }
+        }
+
+        RenderedLayout = root;
+        return Result.Success($"Layout successfully rendered.");
+    }
 
     private List<LibraryItem> SortLibraryList(List<LibraryItem> items, SortSequence sortSequence)
     {
@@ -267,9 +266,12 @@ public class Library
             keyValues = new List<string> { dictKey };
         }
 
-        return filterValues.Any(fv => keyValues.Contains(fv, StringComparer.OrdinalIgnoreCase));
+        return filterValues.Any( fv =>
+                keyValues.Any( kv =>
+                kv?.IndexOf(fv, StringComparison.OrdinalIgnoreCase) >= 0
+            )
+        );
     }
-
     
     private List<LibraryItem> FlattenToItemList(object node)
     {
