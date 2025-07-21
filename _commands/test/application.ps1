@@ -24,15 +24,14 @@ function Run-Test($test) {
 }
 
 function Run-Tests($selectedTests) {
-    Write-Host "`n░░░░ RUNTIME TEST SUIT ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░`n"
+    Write-Fill "`RUNTIME TEST SUIT"
     Write-Host ('-' * [System.Console]::WindowWidth) -ForegroundColor DarkGray
     Start-Sleep 1
 
     foreach ($test in $selectedTests) {
         Run-Test $test
     }
-    Write-Host "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░"
-    Write-Host ''
+    Write-Fill
 }
 
 function Compare-Folders {
