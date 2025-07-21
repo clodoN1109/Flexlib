@@ -38,6 +38,13 @@ public static class AddressAnalysis
 
         return AddressType.Unknown;
     }
+
+    public static bool IsAnyPathType(string address) 
+    {
+        
+        return ( IsUrl(address) || IsFilePath(address) || IsUNCPath(address) || IsIPAddress(address) ); 
+
+    }
 }
 
 public enum AddressType
