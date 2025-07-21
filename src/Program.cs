@@ -5,8 +5,8 @@ class Program
 {
     static void Main(string[] args)
     {
-    
-        var parsedInput = Parsing.Parse(args);
+        string[] normalizedInput  = Normalizer.Normalize(args);
+        ParsedInput parsedInput  = Parsing.Parse(normalizedInput);   
 
         Router.Route(parsedInput); 
         

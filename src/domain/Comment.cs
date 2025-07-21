@@ -4,23 +4,33 @@ namespace Flexlib.Domain;
 
 public class Comment
 {
+    private string _text;
+
     public string Id { get; }
-    public string Text { get; set; }
-    public List<LibraryItemReference> References { get; }
-    
+
+    public string Text
+    {
+        get => _text;
+        set
+        {
+            _text = value;
+            References = ExtractReferencesFromText(_text);
+        }
+    }
+
+    public List<LibraryItemReference> References { get; private set; }
+
     public Comment(string id, string text)
     {
         Id = id;
-        Text = text;
-        References = GetInTextReferences(text); 
+        _text = text;
+        References = ExtractReferencesFromText(_text);
     }
-    
 
-    private List<LibraryItemReference> GetInTextReferences(string text)
+    private List<LibraryItemReference> ExtractReferencesFromText(string text)
     {
         var references = new List<LibraryItemReference>();
 
-        // Matches {library/item} OR {item} patterns including compound names.
         var pattern = @"\{(?:(?<lib>[^/{}]+?)/)?(?<item>[^{}]+?)\}";
         var matches = Regex.Matches(text, pattern);
 
@@ -43,8 +53,5 @@ public class Comment
 
         return references;
     }
-
-
-    
-
 }
+

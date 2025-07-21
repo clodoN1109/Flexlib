@@ -23,7 +23,17 @@ $newEntry = SaveBuildHistory $Configuration $ErrorCount $WarningCount
 
 $buildID = $newEntry.id
 
-Write-Fill "BUILD Nº $buildID COMPLETED"
+if ( $errorCount -eq 0) {
+    
+    Write-Fill "BUILD Nº $buildID COMPLETED"
+
+} else {
+
+    Write-Fill "BUILD Nº $buildID FAILED" -ForegroundColor Red
+    return
+
+}
+
 
 if (($configuration -eq "Debug") -and ($WithRuntimeTests) -and ($errorCount -eq 0) -and ($warningCount -eq 0)) {
      

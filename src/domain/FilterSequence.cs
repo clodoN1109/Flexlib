@@ -18,17 +18,59 @@ public class FilterSequence
         }
     }
 
+
     private List<string> ParseValues(string input)
     {
+        input = input.Trim();
+
+        if (string.IsNullOrWhiteSpace(input))
+            return new List<string>();
+
         if (input.Contains('-'))
         {
-            var parts = input.Split('-', 2, StringSplitOptions.RemoveEmptyEntries);
+            var parts = input.Split('-', 2, StringSplitOptions.RemoveEmptyEntries)
+                             .Select(p => p.Trim())
+                             .ToArray();
+
             if (parts.Length == 2)
             {
-                return new List<string> { parts[0].Trim(), parts[1].Trim() };
+                var startStr = parts[0];
+                var endStr = parts[1];
+
+                if (int.TryParse(startStr, out int startInt) && int.TryParse(endStr, out int endInt))
+                {
+                    // Integer range
+                    return Enumerable.Range(startInt, endInt - startInt + 1)
+                                     .Select(i => i.ToString())
+                                     .ToList();
+                }
+
+                if (decimal.TryParse(startStr, out decimal startDec) && decimal.TryParse(endStr, out decimal endDec))
+                {
+                    // Determine step based on decimal precision of the inputs
+                    int GetDecimalPlaces(string s)
+                    {
+                        var index = s.IndexOf('.');
+                        return index < 0 ? 0 : s.Length - index - 1;
+                    }
+
+                    int precision = Math.Max(GetDecimalPlaces(startStr), GetDecimalPlaces(endStr));
+                    decimal step = (decimal)Math.Pow(10, -precision);
+
+                    var result = new List<string>();
+                    for (decimal d = startDec; d <= endDec; d += step)
+                    {
+                        result.Add(d.ToString($"F{precision}").TrimEnd('0').TrimEnd('.'));
+                    }
+                    return result;
+                }
+
+                // If not numeric, fallback to literal endpoints
+                return new List<string> { startStr, endStr };
             }
         }
 
+        // Fallback: comma-separated values
         return input
             .Split(',', StringSplitOptions.RemoveEmptyEntries)
             .Select(s => s.Trim())

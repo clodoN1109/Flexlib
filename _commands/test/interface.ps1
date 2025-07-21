@@ -1,5 +1,6 @@
 function Interface ([string]$Cmd, [string[]]$TestsList) {
-    . "$PSScriptRoot/Application.ps1"
+    . "$PSScriptRoot/application.ps1"
+    . "$PSScriptRoot/utils.ps1"
 
     $TestsFiles = Get-ChildItem -Path "$PSScriptRoot/tests" -Recurse -Filter "*.ps1"
 
