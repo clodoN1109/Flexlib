@@ -1,0 +1,80 @@
+# Resolve paths
+$flexlibPath       = Resolve-Path "$PSScriptRoot/../../../flexlib.ps1"
+$flexlibDataPath   = "$HOME/Projects/Incubator/FlexLib/Dev/builds/last/Debug/net8.0/data"
+$dataPath          = "$PSScriptRoot/data"  
+$resultsPath       = "$dataPath/results"
+$referencePath     = "$dataPath/references"
+$item1             = "$dataPath/input/Item1.pdf"
+$item2             = "$dataPath/input/Item2.pdf"
+$item3             = "$dataPath/input/Item3.pdf"
+
+# Clean up previous test output
+$ProgressPreference = 'SilentlyContinue'
+Remove-Item "$resultsPath/*" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item "$flexlibDataPath/*" -Recurse -Force -ErrorAction SilentlyContinue
+
+# Run test
+& $flexlibPath new-lib TestLibrary $resultsPath
+# --------------------------------------------------------
+& $flexlibPath new-item $item1 Item1 TestLibrary
+& $flexlibPath new-item $item2 Item2 TestLibrary
+& $flexlibPath new-item $item3 Item3 TestLibrary
+& $flexlibPath new-item $item3 Item4 TestLibrary
+# --------------------------------------------------------
+& $flexlibPath new-prop author TestLibrary string
+& $flexlibPath new-prop publisher TestLibrary string
+& $flexlibPath new-prop theme TestLibrary list
+& $flexlibPath new-prop year TestLibrary int
+# --------------------------------------------------------
+& $flexlibPath set-prop author newton Item1 TestLibrary 
+& $flexlibPath set-prop author pascal Item2 TestLibrary 
+& $flexlibPath set-prop author einstein Item3 TestLibrary 
+& $flexlibPath set-prop author euler Item4 TestLibrary 
+
+& $flexlibPath set-prop publisher dover Item1 TestLibrary 
+& $flexlibPath set-prop publisher dover Item2 TestLibrary 
+& $flexlibPath set-prop publisher 'nova fronteira' Item3 TestLibrary 
+& $flexlibPath set-prop publisher 'alta books' Item4 TestLibrary 
+
+& $flexlibPath set-prop theme mathematics Item1 TestLibrary 
+& $flexlibPath set-prop theme physics Item1 TestLibrary 
+
+& $flexlibPath set-prop theme mathematics Item2 TestLibrary 
+& $flexlibPath set-prop theme philosophy Item2 TestLibrary 
+
+& $flexlibPath set-prop theme mathematics Item3 TestLibrary 
+& $flexlibPath set-prop theme history Item3 TestLibrary 
+
+& $flexlibPath set-prop theme history Item4 TestLibrary 
+& $flexlibPath set-prop theme physics Item4 TestLibrary 
+
+& $flexlibPath set-prop year 1920 Item1 TestLibrary 
+& $flexlibPath set-prop year 1940 Item2 TestLibrary 
+& $flexlibPath set-prop year 1945 Item3 TestLibrary 
+& $flexlibPath set-prop year 2001 Item4 TestLibrary 
+# --------------------------------------------------------
+& $flexlibPath set-layout TestLibrary theme/publisher/author/year
+# --------------------------------------------------------
+$output = & $flexlibPath list-items TestLibrary 'mathematics/*/newton,pascal,euler/1935-2002'
+$output | Set-Content "$resultsPath/output.txt"
+# --------------------------------------------------------
+
+# Compare artifacts
+$diff_1 = Compare-Folders -Expected "$referencePath/TestLibrary" -Actual "$resultsPath/TestLibrary"
+$diff_2 = Compare-Object `
+    (Get-Content "$flexlibDataPath/libraries.json") `
+    (Get-Content "$referencePath/libraries.json")
+$diff_3 = Compare-Object `
+    (Get-Content "$resultsPath/output.txt") `
+    (Get-Content "$referencePath/output.txt")
+
+# Clean up after test
+Remove-Item "$resultsPath/*" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item "$flexlibDataPath/*" -Recurse -Force -ErrorAction SilentlyContinue
+
+# Return result
+if ($diff_1 -or $diff_2 -or $diff_3) {
+    return $false
+} else {
+    return $true
+}

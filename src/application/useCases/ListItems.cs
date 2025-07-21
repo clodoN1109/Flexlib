@@ -22,6 +22,7 @@ public static class ListItems
 
     private static Result _ListItems(ParsedArgs parsedArgs)
     {
+
         var selectedLibrary = parsedArgs.Repo.GetByName(parsedArgs.LibName)!;
         if (selectedLibrary == null)
             return Result.Fail($"Library '{parsedArgs.LibName}' not found.");
@@ -29,7 +30,6 @@ public static class ListItems
         var filterSequence = new FilterSequence( parsedArgs.FilterSequenceString );
         var sortSequence   = new SortSequence( parsedArgs.SortSequenceString );
         
-        selectedLibrary.RenderLayout();
         var selectedItems = selectedLibrary.GetItems(filterSequence, sortSequence); 
 
         if ( selectedItems == null || selectedItems.Count == 0 )
