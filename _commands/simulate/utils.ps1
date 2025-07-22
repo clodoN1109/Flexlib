@@ -23,8 +23,8 @@ function Safe-Cleanup {
     }
 
     # Optionally: confirm (remove for automation)
-    Write-Host "`nAbout to delete contents of '$resolvedPath'. Are you sure? [y/N]`n"
-    $confirm = Read-Host
+    Write-Host "`nAbout to delete contents of '$resolvedPath'. Are you sure? [y/N] : " -NoNewLine -ForegroundColor Yellow
+    $confirm = [Console]::ReadLine()
     if ($confirm -ne 'y') {
         Write-Host "`nSkipped cleanup of '$resolvedPath'.`n"
         return
@@ -32,7 +32,5 @@ function Safe-Cleanup {
 
     Get-ChildItem -Path $resolvedPath.Path -Force |
         Remove-Item -Recurse -Force -ErrorAction Stop
-
-    Write-Host "`nCleaned: $resolvedPath`n"
 }
 

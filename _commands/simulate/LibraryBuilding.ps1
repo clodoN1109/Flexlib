@@ -13,6 +13,7 @@ $ProgressPreference = 'SilentlyContinue'
 Safe-Cleanup $resultsPath
 Safe-Cleanup $flexlibDataPath
 
+Write-Host ""
 # Run test
 & $flexlibPath new-lib TestLibrary $resultsPath
 # --------------------------------------------------------

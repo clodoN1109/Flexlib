@@ -17,9 +17,9 @@ public class Renderer
             : "\n Usage: flexlib {command} [options] \n";
     }
 
-    public string Success(string message) => $"✔{message}";
+    public string Success(string message) => $"✔  {message}";
 
-    public string Failure(string message) => $"✖{message}";
+    public string Failure(string message) => $"✖  {message}";
 
     public string Error(string message) => $"\nError: {message}\n";
 
