@@ -10,9 +10,8 @@ $item3             = "$dataPath/input/Item3.pdf"
 
 # Clean up previous test output
 $ProgressPreference = 'SilentlyContinue'
-Remove-Item "$resultsPath/*" -Recurse -Force -ErrorAction SilentlyContinue
-Remove-Item "$flexlibDataPath/*" -Recurse -Force -ErrorAction SilentlyContinue
-
+Safe-Cleanup $resultsPath
+Safe-Cleanup $flexlibDataPath
 # Run test
 & $flexlibPath new-lib TestLibrary $resultsPath
 & $flexlibPath new-item $item1 Item1 TestLibrary
@@ -30,9 +29,8 @@ $diff_2 = Compare-Object `
     (Get-Content "$referencePath/libraries.json")
 
 # Clean up after test
-Remove-Item "$resultsPath/*" -Recurse -Force -ErrorAction SilentlyContinue
-Remove-Item "$flexlibDataPath/*" -Recurse -Force -ErrorAction SilentlyContinue
-
+Safe-Cleanup $resultsPath
+Safe-Cleanup $flexlibDataPath
 # Return result
 if ($diff_1 -or $diff_2) {
     return $false

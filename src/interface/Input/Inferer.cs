@@ -30,4 +30,19 @@ public static class Infer{
         return (baseName ?? "unnamed");
     }
 
+
+    public static string AbsolutePath(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            throw new ArgumentException("Path cannot be null or empty.", nameof(path));
+
+        if (path.StartsWith("~/") || path.StartsWith("~\\") || path == "~")
+        {
+            var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            path = Path.Combine(home, path.Substring(2)); // remove ~/
+        }
+
+        return Path.GetFullPath(path);
+    }
+
 }

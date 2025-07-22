@@ -103,6 +103,9 @@ public class Library
     public List<LibraryItem> GetItems(FilterSequence filterSequence, SortSequence sortSequence)
     {        
 
+        if ( !RenderLayout().IsSuccess )
+            return new List<LibraryItem>();
+        
         object branch = ExtractLayoutBranch(filterSequence);
 
         List<LibraryItem> selectedItems = FlattenToItemList(branch);
@@ -142,7 +145,7 @@ public class Library
         return RenderLayout();
     }
 
-    public Result RenderLayout()
+    private Result RenderLayout()
     { 
 
         if (LayoutSequence.Count == 0) 
@@ -214,7 +217,7 @@ public class Library
     private object ExtractLayoutBranch(FilterSequence filterSequence)
     {
         if (filterSequence.Elements.Count == 0)
-            return new List<LibraryItem>( Items );
+            return new List<LibraryItem>(Items);
 
         if (RenderedLayout is not Dictionary<string, object> layout)
             return new List<LibraryItem>();
@@ -236,14 +239,42 @@ public class Library
                 if (dictValue is Dictionary<string, object> subDict)
                 {
                     foreach (var kvp in subDict)
-                        nextLevel[kvp.Key] = kvp.Value;
+                    {
+                        if (nextLevel.TryGetValue(kvp.Key, out var existing))
+                        {
+                            if (existing is List<LibraryItem> existingList && kvp.Value is List<LibraryItem> newList)
+                            {
+                                existingList.AddRange(newList);
+                            }
+                            else if (existing is Dictionary<string, object> existingDict && kvp.Value is Dictionary<string, object> newDict)
+                            {
+                                foreach (var newItem in newDict)
+                                {
+                                    existingDict[newItem.Key] = newItem.Value;
+                                }
+
+                            }
+                            else
+                            {
+                                nextLevel[kvp.Key] = kvp.Value;
+                            }
+                        }
+                        else
+                        {
+                            nextLevel[kvp.Key] = kvp.Value;
+                        }
+                    }
                 }
                 else if (dictValue is List<LibraryItem> itemList)
                 {
-                    if (!nextLevel.ContainsKey("_"))
-                        nextLevel["_"] = new List<LibraryItem>();
-
-                    ((List<LibraryItem>)nextLevel["_"]).AddRange(itemList);
+                    if (!nextLevel.TryGetValue("_", out var existing))
+                    {
+                        nextLevel["_"] = new List<LibraryItem>(itemList);
+                    }
+                    else if (existing is List<LibraryItem> existingList)
+                    {
+                        existingList.AddRange(itemList);
+                    }
                 }
             }
 
@@ -255,6 +286,9 @@ public class Library
 
     private bool KeyMatchesFilter(string dictKey, List<string> filterValues)
     {
+        if (filterValues.Contains("*"))
+            return true;
+
         List<string> keyValues;
 
         try

@@ -1,7 +1,8 @@
 using Flexlib.Common;
 using System.IO;
+using Flexlib.Interface.Input;
 
-namespace Flexlib.Interface.Input;
+namespace Flexlib.Interface.CLI;
 
 
 public abstract class Command : ParsedInput
@@ -74,6 +75,33 @@ public class NewItemCommand : Command
     public override string UsageInstructions()
     {
         return "Usage: flexlib new-item <item origin> [item name] [library name]";
+    }
+}
+
+public class ListLibrariesCommand : Command
+{
+    string[] Options;
+
+    public ListLibrariesCommand(string[] options)
+    {
+        Options = options;
+    }
+
+    public override bool IsValid()
+    {
+
+        if ( Options.Length == 0 )
+        {
+            return true;
+        }
+
+        return false;
+        
+    }
+    
+    public override string UsageInstructions()
+    {
+        return "Usage: flexlib list-libs\n\n";
     }
 }
 
