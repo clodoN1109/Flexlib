@@ -1,6 +1,6 @@
 [
   {
-    "Name": "testlibrary",
+    "Name": "TestLibrary",
     "Path": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\5-ListingItems\\data\\results",
     "PropertyDefinitions": [
       {
@@ -22,8 +22,8 @@
     ],
     "Items": [
       {
-        "Name": "item1",
-        "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\5-ListingItems/data/input/Item1.pdf",
+        "Name": "Item1",
+        "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\5-ListingItems\\data\\input\\Item1.pdf",
         "Comments": [],
         "PropertyValues": {
           "author": "newton",
@@ -36,8 +36,8 @@
         }
       },
       {
-        "Name": "item2",
-        "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\5-ListingItems/data/input/Item2.pdf",
+        "Name": "Item2",
+        "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\5-ListingItems\\data\\input\\Item2.pdf",
         "Comments": [],
         "PropertyValues": {
           "author": "pascal",
@@ -50,8 +50,8 @@
         }
       },
       {
-        "Name": "item3",
-        "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\5-ListingItems/data/input/Item3.pdf",
+        "Name": "Item3",
+        "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\5-ListingItems\\data\\input\\Item3.pdf",
         "Comments": [],
         "PropertyValues": {
           "author": "einstein",

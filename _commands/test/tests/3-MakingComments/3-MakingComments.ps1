@@ -30,8 +30,6 @@ $diff_2 = Compare-Object `
     (Get-Content "$referencePath/libraries.json")
 
 # Clean up after test
-Remove-Item "$resultsPath/*" -Recurse -Force -ErrorAction SilentlyContinue
-Remove-Item "$flexlibDataPath/*" -Recurse -Force -ErrorAction SilentlyContinue
 
 # Return result
 if ($diff_1 -or $diff_2) {

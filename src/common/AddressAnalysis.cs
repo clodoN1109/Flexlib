@@ -14,9 +14,17 @@ public static class AddressAnalysis
 
     public static bool IsFilePath(string address)
     {
-        return !string.IsNullOrWhiteSpace(address)
-               && !IsUrl(address)
-               && Path.IsPathRooted(address);
+        if (string.IsNullOrWhiteSpace(address))
+            return false;
+
+        if (IsUrl(address))
+            return false;
+
+        // Consider ~ or ~/ as a file path (home-relative)
+        if (address.StartsWith("~") && (address.Length == 1 || address[1] == '/' || address[1] == '\\'))
+            return true;
+
+        return Path.IsPathRooted(address);
     }
 
     public static bool IsUNCPath(string address)
