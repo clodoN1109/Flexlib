@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using System.Text.Json;
 using System.Collections.Generic;
 using System.Linq;
 using Flexlib.Common;
@@ -75,4 +76,55 @@ public class LibraryItem
             LibraryName = _library?.Name ?? ""
         };
     }
+   
+    public Dictionary<string, List<string>> GetPropertyValuesAsListOfStrings()
+    {
+        var result = new Dictionary<string, List<string>>();
+
+        if (PropertyValues == null)
+            return result;
+
+        foreach (var (key, value) in PropertyValues)
+        {
+            if (value == null)
+            {
+                result[key] = new List<string>();
+            }
+            else if (value is string s)
+            {
+                result[key] = new List<string> { s };
+            }
+            else if (value is IEnumerable<string> stringList)
+            {
+                result[key] = stringList.ToList();
+            }
+            else if (value is JsonElement je)
+            {
+                if (je.ValueKind == JsonValueKind.String)
+                {
+                    result[key] = new List<string> { je.GetString() ?? "" };
+                }
+                else if (je.ValueKind == JsonValueKind.Array)
+                {
+                    var strings = je.EnumerateArray()
+                        .Where(e => e.ValueKind == JsonValueKind.String)
+                        .Select(e => e.GetString() ?? "")
+                        .ToList();
+
+                    result[key] = strings;
+                }
+                else
+                {
+                    result[key] = new List<string> { je.ToString() };
+                }
+            }
+            else
+            {
+                result[key] = new List<string> { value.ToString() ?? "" };
+            }
+        }
+
+        return result;
+    }
+
 }

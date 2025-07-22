@@ -1,35 +1,3 @@
-function Write-NoNewLine {
-    param (
-        [string]$Text = "",
-        [int]$Rest = $Host.UI.RawUI.WindowSize.Width,
-        [string]$ForegroundColor = "White"
-    )
-    
-    $Rest = $Rest - $Text.Length
-    if ($Rest -lt 0) { $Rest = 0 }
-    
-    Write-Host $Text -NoNewLine -ForegroundColor $ForegroundColor
-
-    return $Rest
-
-}
-
-function Write-Fill {
-    param (
-        [string]$Text = "",
-        [char]$FillChar = '░',
-        [string]$ForegroundColor = 'White'
-    )
-
-    $Prefix = [string]$FillChar * 4
-    $width = $Host.UI.RawUI.WindowSize.Width
-    $fillLength = $width - $Text.Length - $Prefix.Length
-    if ($fillLength -lt 0) { $fillLength = 0 }
-
-    Write-Host "`n$Prefix $Text $([string]$FillChar * ($fillLength - 2))`n" -ForegroundColor $ForegroundColor
-
-}
-
 function Safe-Cleanup {
     param (
         [string]$TargetPath
@@ -54,8 +22,17 @@ function Safe-Cleanup {
         return
     }
 
+    # Optionally: confirm (remove for automation)
+    Write-Host "`nAbout to delete contents of '$resolvedPath'. Are you sure? [y/N]`n"
+    $confirm = Read-Host
+    if ($confirm -ne 'y') {
+        Write-Host "`nSkipped cleanup of '$resolvedPath'.`n"
+        return
+    }
+
     Get-ChildItem -Path $resolvedPath.Path -Force |
         Remove-Item -Recurse -Force -ErrorAction Stop
 
+    Write-Host "`nCleaned: $resolvedPath`n"
 }
 

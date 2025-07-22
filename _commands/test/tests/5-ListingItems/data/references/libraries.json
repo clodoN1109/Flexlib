@@ -62,6 +62,20 @@
           ],
           "year": "1945"
         }
+      },
+      {
+        "Name": "Item4",
+        "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\5-ListingItems\\data\\input\\Item4.pdf",
+        "Comments": [],
+        "PropertyValues": {
+          "author": "euler",
+          "publisher": "alta books",
+          "theme": [
+            "history",
+            "physics"
+          ],
+          "year": "2001"
+        }
       }
     ],
     "LayoutSequence": [
