@@ -44,7 +44,12 @@ public class ConsolePresenter : IPresenter
         var lines = _renderer.FormatItemTable(items, Console.WindowWidth);
         _emitter.PrintLines(lines);
     }
-
+    
+    public void ListLibs(List<Library> libs)
+    {
+        var lines = _renderer.FormatLibraryTable(libs, Console.WindowWidth);
+        _emitter.PrintLines(lines);
+    }
 
     public void ListLayoutSequence(List<string> layoutSequence)
     {

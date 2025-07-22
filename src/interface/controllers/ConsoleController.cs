@@ -3,6 +3,7 @@ using Flexlib.Application.Ports;
 using Flexlib.Application.UseCases;
 using Flexlib.Infrastructure.Persistence;
 using Flexlib.Interface.Input;
+using Flexlib.Interface.CLI;
 using Flexlib.Interface.Output;
 
 namespace Flexlib.Interface.Controllers;
@@ -27,6 +28,10 @@ public static class ConsoleController
 
             case NewItemCommand addItem:
                 result = AddItem.Execute(addItem.LibraryName, addItem.ItemOrigin, addItem.ItemName, _repo);
+                break;
+            
+            case ListLibrariesCommand listLibs:
+                result = ListLibs.Execute(_repo, _presenter);
                 break;
             
             case ListItemsCommand listItems:

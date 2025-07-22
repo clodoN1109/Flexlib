@@ -1,5 +1,6 @@
 using Flexlib.Common;
 using Flexlib.Interface.GUI;
+using Flexlib.Interface.CLI;
 
 namespace Flexlib.Interface.Input;
 
@@ -18,6 +19,7 @@ public static class Parsing
         {
             "new-lib"           => new NewLibraryCommand(options),
             "new-item"      => new NewItemCommand(options),
+            "list-libs"    => new ListLibrariesCommand(options),
             "list-items"    => new ListItemsCommand(options),
             "get-layout"    => new GetLibraryLayoutCommand(options),
             "set-layout"    => new SetLibraryLayoutCommand(options),

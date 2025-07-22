@@ -1,5 +1,6 @@
 using Flexlib.Interface.Controllers;
 using Flexlib.Interface.Input;
+using Flexlib.Interface.CLI;
 using Flexlib.Interface.Output;
 using Flexlib.Interface.GUI;
 

@@ -68,6 +68,18 @@ public class Renderer
 
         return formattedTable;
     }
+    
+    public List<string> FormatLibraryTable(List<Library> items, int consoleWidth)
+    {
+        List<string> formattedTable = new List<string>();
+
+        foreach (var item in items)
+        {
+            formattedTable.Add(item?.Name ?? "");
+        }
+
+        return formattedTable;
+    }
 
 }
 
