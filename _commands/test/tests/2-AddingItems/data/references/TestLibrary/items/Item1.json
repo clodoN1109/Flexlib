@@ -1,6 +1,8 @@
 {
   "Name": "Item1",
   "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\2-AddingItems\\data\\input\\Item1.pdf",
+  "Id": 0,
+  "FileExtension": ".pdf",
   "Comments": [],
   "PropertyValues": {}
 }

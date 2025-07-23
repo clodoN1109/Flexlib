@@ -1,0 +1,17 @@
+{
+  "Name": "Item9",
+  "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\simulate\\data\\input\\Item9.pdf",
+  "Id": 3,
+  "FileExtension": ".pdf",
+  "Comments": [],
+  "PropertyValues": {
+    "author": "Camus",
+    "publisher": "gallimard",
+    "theme": [
+      "absurd"
+    ],
+    "year": "1942",
+    "language": "french",
+    "difficulty": "medium"
+  }
+}

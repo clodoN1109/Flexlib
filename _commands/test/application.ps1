@@ -5,13 +5,30 @@ function Get-TestFilesByNames($names, $testsFiles) {
     }
 }
 
-function Run-Test($test) {
+function Run-Test() {
+
+    param (
+        
+        $test,
+        [switch]$UpdateReferences
+        
+    )
+
     $displayName = ($test.BaseName -split "-", 2)[1]
     Write-Host -NoNewline "❔  $displayName"
     Start-Sleep -Milliseconds 300
 
     try {
-        $result = & $test.FullName
+        
+        if ($UpdateReferences) {
+            SetCursorX 40;
+            Write-Host "Updating References" -ForegroundColor Yellow -NoNewLine
+            $result = & $test.FullName -UpdateReferences:$true    
+
+        } else {
+            $result = & $test.FullName
+        }
+
         if ($result -eq $true) {
             Write-Host "`r✅  $displayName" -ForegroundColor Green
         } else {
@@ -23,14 +40,25 @@ function Run-Test($test) {
     Write-Host ('-' * [System.Console]::WindowWidth) -ForegroundColor DarkGray
 }
 
-function Run-Tests($selectedTests) {
-    Write-Fill "`RUNTIME TEST SUIT"
+function Run-Tests() {
+    
+    param (
+        $selectedTests,
+        [switch]$UpdateReferences
+    )
+
+    Write-Fill "RUNTIME TEST SUIT"
     Write-Host ('-' * [System.Console]::WindowWidth) -ForegroundColor DarkGray
     Start-Sleep 1
-
+    
     foreach ($test in $selectedTests) {
-        Run-Test $test
+        if ($UpdateReferences) {
+            Run-Test $test -UpdateReferences:$true
+        } else {
+            Run-Test $test
+        }
     }
+
     Write-Fill
 }
 
@@ -62,7 +90,7 @@ function Compare-Folders {
 }
 
 function ShowUsage($testsFiles) {
-    Write-Host "`nUsage: .\test.ps1 run [<test name 1>, <test name 2>, ...]" -ForegroundColor Yellow
+    Write-Host "`nUsage: .\test.ps1 <run|update-references|help> [<test name 1>, <test name 2>, ...]" -ForegroundColor Yellow
     Write-Host "       .\test.ps1 help`n"
     Write-Host "Available tests:" -ForegroundColor Green
 

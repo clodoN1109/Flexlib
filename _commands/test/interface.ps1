@@ -20,6 +20,19 @@ function Interface ([string]$Cmd, [string[]]$TestsList) {
             Run-Tests $selectedTests
         }
 
+        "update-references" {
+
+            $selectedTests =
+                if ($TestsList.Length -eq 0) {
+                    $TestsFiles
+                } else {
+                    Get-TestFilesByNames -names $TestsList -testsFiles $TestsFiles
+                }
+
+            Run-Tests $selectedTests -UpdateReferences
+            
+        }
+
         default {
             Write-Host "❌ Unknown command '$Cmd'. Use 'help' for usage." -ForegroundColor Red
             exit 1

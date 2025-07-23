@@ -17,9 +17,9 @@ public class Renderer
             : "\n Usage: flexlib {command} [options] \n";
     }
 
-    public string Success(string message) => $"✔  {message}";
+    public string Success(string message) => $"\n✔  {message}\n";
 
-    public string Failure(string message) => $"✖  {message}";
+    public string Failure(string message) => $"\n✖  {message}\n";
 
     public string Error(string message) => $"\nError: {message}\n";
 
@@ -117,7 +117,7 @@ public class Renderer
             .OrderBy(k => k)
             .ToList();
 
-        var headers = new[] { "Name" }.Concat(allKeys).ToList();
+        var headers = new[] { "Id", "Name" }.Concat(allKeys).ToList();
         int columnCount = headers.Count;
 
         // Step 1: Build all rows
@@ -126,7 +126,8 @@ public class Renderer
         foreach (var item in items)
         {
             var row = new string[columnCount];
-            row[0] = item.Name ?? "";
+            row[0] = item.Id.ToString() ?? "";
+            row[1] = item.Name ?? "";
 
             var propertyDict = item.GetPropertyValuesAsListOfStrings();
 
@@ -134,9 +135,9 @@ public class Renderer
             {
                 var key = allKeys[i];
                 if (propertyDict.TryGetValue(key, out var valueList) && valueList is not null)
-                    row[i + 1] = string.Join(", ", valueList);
+                    row[i + 2] = string.Join(", ", valueList);
                 else
-                    row[i + 1] = "";
+                    row[i + 2] = "";
             }
 
             rows.Add(row);

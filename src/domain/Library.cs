@@ -39,6 +39,8 @@ public class Library
         return this;
     }
 
+    public int GetHighestItemId() => Items.Any() ? Items.Max(i => i.Id) : 0;
+    
     public void AddPropertyDefinition(string propName, string propType)
     {
         var def = new ItemPropertyDefinition(propName, propType);
@@ -98,6 +100,14 @@ public class Library
     public LibraryItem? GetItemByOrigin(string origin)
     {
         return Items.FirstOrDefault(i => i.Origin == origin);
+    }
+    
+    public LibraryItem? GetItemById(object id)
+    {
+        if (int.TryParse(id?.ToString(), out int parsed))
+            return Items.FirstOrDefault(i => i.Id == parsed);
+        else
+            return null;
     }
 
     public List<LibraryItem> GetItems(FilterSequence filterSequence, SortSequence sortSequence)

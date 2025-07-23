@@ -19,6 +19,7 @@ public static class Parsing
         {
             "new-lib"           => new NewLibraryCommand(options),
             "new-item"      => new NewItemCommand(options),
+            "remove-item"      => new RemoveItemCommand(options),
             "list-libs"    => new ListLibrariesCommand(options),
             "list-items"    => new ListItemsCommand(options),
             "get-layout"    => new GetLibraryLayoutCommand(options),

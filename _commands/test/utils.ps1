@@ -59,3 +59,75 @@ function Safe-Cleanup {
 
 }
 
+function Safe-CopyItems {
+    param (
+        [string]$Source,
+        [string]$Destination
+    )
+
+    # Guard against null, empty, or unsafe-looking paths
+    if ([string]::IsNullOrWhiteSpace($Source) -or $Source -match '^[\\\/]$') {
+        Write-Warning "Aborting copy: Invalid or unsafe source path: '$Source'"
+        return
+    }
+
+    if ([string]::IsNullOrWhiteSpace($Destination) -or $Destination -match '^[\\\/]$') {
+        Write-Warning "Aborting copy: Invalid or unsafe destination path: '$Destination'"
+        return
+    }
+
+    if (!(Test-Path $Source)) {
+        Write-Warning "Source path does not exist: $Source"
+        return
+    }
+
+    if (!(Test-Path $Destination)) {
+        try {
+            New-Item -ItemType Directory -Path $Destination -Force | Out-Null
+        } catch {
+            Write-Warning "Failed to create destination directory: $Destination"
+            return
+        }
+    }
+
+    try {
+        Copy-Item "$Source/*" -Destination $Destination -Recurse -Force -ErrorAction Stop
+    } catch {
+        Write-Warning "Failed to copy from '$Source' to '$Destination'. $_"
+    }
+}
+
+function CursorMoveX {
+    param (
+        [int]$Offset
+    )
+
+    $left = [System.Console]::CursorLeft + $Offset
+    $top  = [System.Console]::CursorTop
+
+    $left = [Math]::Max(0, $left)
+    [System.Console]::SetCursorPosition($left, $top)
+}
+
+function SetCursorX {
+    param (
+        [int]$XPosition
+    )
+
+    $top  = [System.Console]::CursorTop
+
+    [System.Console]::SetCursorPosition($XPosition, $top)
+}
+
+function CursorMoveY {
+    param (
+        [int]$Offset
+    )
+
+    $left = [System.Console]::CursorLeft
+    $top  = [System.Console]::CursorTop + $Offset
+
+    $top = [Math]::Max(0, $top)
+    [System.Console]::SetCursorPosition($left, $top)
+}
+

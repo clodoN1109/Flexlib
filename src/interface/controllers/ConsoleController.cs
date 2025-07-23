@@ -30,6 +30,10 @@ public static class ConsoleController
                 result = AddItem.Execute(addItem.LibraryName, addItem.ItemOrigin, addItem.ItemName, _repo);
                 break;
             
+            case RemoveItemCommand removeItem:
+                result = RemoveItem.Execute(removeItem.ItemId, removeItem.LibraryName, _repo);
+                break;
+            
             case ListLibrariesCommand listLibs:
                 result = ListLibs.Execute(_repo, _presenter);
                 break;

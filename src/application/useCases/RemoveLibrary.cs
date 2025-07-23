@@ -28,8 +28,7 @@ public static class RemoveLibrary
         Library? lib = repo.GetByName(libName);
         if (lib != null)
         {
-            repo.RemoveLibraryByName(libName); 
-            return Result.Success($"Library {libName} was removed.");
+            return repo.RemoveLibraryByName(libName); 
         }
         else {
             return Result.Fail($"Library '{libName}' not found.");
@@ -40,7 +39,7 @@ public static class RemoveLibrary
     private static Result IsOperationAllowed(string name, ILibraryRepository repo)
     {
         if (!repo.Exists(name))
-            return Result.Fail("Library can't be removed, since it doesn't even exist. But you should be satisfied then anyway");
+            return Result.Fail("Library can't be removed because it doesn't even exist — which, if you think about it, is kind of a win already.");
         else 
             return Result.Success("Operation allowed. Library exists and maybe can be removed. Let's see.");
 

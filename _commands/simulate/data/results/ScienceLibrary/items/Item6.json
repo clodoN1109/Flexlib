@@ -1,0 +1,17 @@
+{
+  "Name": "Item6",
+  "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\simulate\\data\\input\\Item6.pdf",
+  "Id": 3,
+  "FileExtension": ".pdf",
+  "Comments": [],
+  "PropertyValues": {
+    "author": "Feynman",
+    "publisher": "mit press",
+    "theme": [
+      "quantum"
+    ],
+    "year": "1965",
+    "language": "english",
+    "difficulty": "medium"
+  }
+}

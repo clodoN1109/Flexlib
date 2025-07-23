@@ -24,12 +24,29 @@ public class JsonLibraryRepository : ILibraryRepository
         if (AppDataFolder == null || !Directory.Exists(AppDataFolder))
             throw new DirectoryNotFoundException($"AppData file directory not found: {AppDataFolder}");
         
-        _cache = new List<Library>();
-
         _dataDirectory = EnsureDataDirectory();
 
         _metaFile = EnsureMetaFile();
 
+        _cache = LoadCache(_metaFile);
+
+    }
+
+    private List<Library> LoadCache(string metaFile) {
+       
+        List<Library> cache;
+
+        if (File.Exists(metaFile))
+        {
+            var json = File.ReadAllText(metaFile);
+            cache = JsonHelpers.ReadJson(json) ?? new List<Library>();
+        }
+        else
+        {
+            cache = new List<Library>();
+        }
+
+        return cache;
     }
 
     private string EnsureDataDirectory()
@@ -61,16 +78,6 @@ public class JsonLibraryRepository : ILibraryRepository
 
         string metaFile = Path.Combine(_dataDirectory, "libraries.json");
 
-        if (File.Exists(metaFile))
-        {
-            var json = File.ReadAllText(metaFile);
-            _cache = JsonHelpers.ReadJson(json) ?? new List<Library>();
-        }
-        else
-        {
-            _cache = new List<Library>();
-        }
-
         return metaFile;
     }
 
@@ -93,10 +100,106 @@ public class JsonLibraryRepository : ILibraryRepository
        
     }
 
-    public void RemoveLibraryByName(string name)
+    public Result RemoveLibraryByName(string name)
     {
-        _cache.RemoveAll(l => l.Name == name);
-        JsonHelpers.WriteJson(_metaFile, _cache);
+        var selectedLibrary = _cache.FirstOrDefault(l => l.Name == name);
+
+        if (selectedLibrary == null || string.IsNullOrWhiteSpace(selectedLibrary.Name))
+        {
+            return Result.Fail("Library can't be removed because it doesn't exist — which, honestly, is already kind of a win.");
+        }
+
+        string libraryPath = Path.Combine(selectedLibrary.Path ?? "", selectedLibrary.Name);
+
+        Console.WriteLine($"\nAre you sure you want to delete the library '{name}' at path:\n\n  {libraryPath} ?\n");
+        Console.Write("(y/N) > ");
+        string? input = Console.ReadLine();
+
+        if (!string.Equals(input, "y", StringComparison.OrdinalIgnoreCase))
+        {
+            return Result.Fail("Deletion cancelled by user.");
+        }
+
+        if (string.IsNullOrWhiteSpace(libraryPath) || !Directory.Exists(libraryPath))
+        {
+            return Result.Fail($"Path '{libraryPath}' does not exist.");
+        }
+
+        // Safety: avoid deleting suspiciously short root-level paths
+        if (Path.GetFullPath(libraryPath).Length < 10)
+        {
+            return Result.Fail("Library path is suspiciously short. Aborting deletion to protect your filesystem.");
+        }
+
+        try
+        {
+            foreach (var file in Directory.GetFiles(libraryPath, "*", SearchOption.AllDirectories))
+            {
+                File.SetAttributes(file, FileAttributes.Normal);
+            }
+
+            Directory.Delete(libraryPath, recursive: true);
+           
+            _cache.RemoveAll(l => l.Name == name);
+            JsonHelpers.WriteJson(_metaFile, _cache);
+            
+            return Result.Success($"Library '{name}' was successfully removed.");
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail($"Failed to delete library local files in '{libraryPath}': {ex.Message}");
+        }
+
+    }
+
+    public Result RemoveItem(LibraryItem item, Library lib)
+    {
+        if (item == null || lib == null)
+            return Result.Fail("Invalid library or item.");
+
+        if (string.IsNullOrWhiteSpace(lib.Path) || string.IsNullOrWhiteSpace(lib.Name))
+            return Result.Fail("Library path or name is missing.");
+
+        string libraryFolder = Path.Combine(lib.Path, lib.Name);
+        if (!Directory.Exists(libraryFolder))
+            return Result.Fail($"Library folder '{libraryFolder}' does not exist.");
+
+        string itemsFolder = Path.Combine(libraryFolder, "items");
+        string localItemsFolder = Path.Combine(itemsFolder, "local");
+
+        string itemJsonPath = Path.Combine(itemsFolder, $"{item.Name}.json");
+        string itemDataPath = Path.Combine(localItemsFolder, $"{item.Name}{item.FileExtension}");
+
+        Console.WriteLine($"\nAre you sure you want to delete the item '{item.Name}' from library '{lib.Name}'?\n\n");
+        Console.Write("(y/N) > ");
+        string? input = Console.ReadLine();
+        if (!string.Equals(input, "y", StringComparison.OrdinalIgnoreCase))
+            return Result.Fail("Deletion cancelled.");
+
+        try
+        {
+
+            string libFilePath = Path.Combine(libraryFolder, $"{lib.Name}.json");
+            JsonHelpers.WriteJson(libFilePath, lib);
+
+            JsonHelpers.WriteJson(_metaFile, _cache); // Assuming `lib` is a reference within `_cache`
+
+            if (File.Exists(itemJsonPath))
+                File.Delete(itemJsonPath);
+
+            if (File.Exists(itemDataPath))
+                File.Delete(itemDataPath);
+
+            lib.Items.RemoveAll(i => i.Id == item.Id);
+
+            Save(lib);
+            
+            return Result.Success($"Item '{item.Name}' removed from library '{lib.Name}'.");
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail($"Failed to remove item '{item.Name}': {ex.Message}");
+        }
     }
 
     private void UpdateItems(Library lib)

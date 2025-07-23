@@ -10,6 +10,8 @@ public class LibraryItem
 {
     public string? Name { get; set; }
     public string? Origin { get; set; }
+    public int Id { get; set; }
+    public string? FileExtension { get; set; }
 
     [JsonIgnore]
     public readonly Library? _library;
@@ -22,6 +24,10 @@ public class LibraryItem
     {
         Name = TextUtil.Truncate(name, 50);
         Origin = origin;
+        Id = library.GetHighestItemId() + 1;
+        if (Origin != null)
+            FileExtension = Path.GetExtension(Origin) ?? "";
+
         _library = library;
         Comments = new List<Comment>();
         PropertyValues = new Dictionary<string, object?>();

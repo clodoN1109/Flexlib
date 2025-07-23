@@ -16,6 +16,8 @@
       {
         "Name": "Item1",
         "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\4-CreatingItemProperties\\data\\input\\Item1.pdf",
+        "Id": 0,
+        "FileExtension": ".pdf",
         "Comments": [],
         "PropertyValues": {
           "Property1": "NewValue",
@@ -25,6 +27,8 @@
       {
         "Name": "Item2",
         "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\4-CreatingItemProperties\\data\\input\\Item2.pdf",
+        "Id": 0,
+        "FileExtension": ".pdf",
         "Comments": [],
         "PropertyValues": {
           "Property1": null,
@@ -34,6 +38,8 @@
       {
         "Name": "Item3",
         "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\4-CreatingItemProperties\\data\\input\\Item3.pdf",
+        "Id": 0,
+        "FileExtension": ".pdf",
         "Comments": [],
         "PropertyValues": {
           "Property1": null,

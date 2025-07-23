@@ -30,7 +30,7 @@ public static class SetLibraryLayout
 
         parsedArgs.Repo.Save(selectedLibrary);
 
-        return Result.Success("Layout updated.");
+        return Result.Success($"'{parsedArgs.LibName}' library layout updated.");
     }
 
     private static Result IsOperationAllowed(ParsedArgs parsedArgs)
