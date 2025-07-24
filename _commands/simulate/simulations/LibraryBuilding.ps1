@@ -54,80 +54,80 @@ foreach ($lib in $allLibs) {
 # ========== PROPERTIES VALUES ==========
 
 # GeneralLibrary Items
-& $flexlibPath set-prop author      Newton              Item1 GeneralLibrary
-& $flexlibPath set-prop author      Pascal              Item2 GeneralLibrary
-& $flexlibPath set-prop author      Leibniz             Item3 GeneralLibrary
+& $flexlibPath set-prop author      Newton              1 GeneralLibrary
+& $flexlibPath set-prop author      Pascal              2 GeneralLibrary
+& $flexlibPath set-prop author      Leibniz             3 GeneralLibrary
 
-& $flexlibPath set-prop publisher   dover               Item1 GeneralLibrary
-& $flexlibPath set-prop publisher   springer            Item2 GeneralLibrary
-& $flexlibPath set-prop publisher   'cambridge press'   Item3 GeneralLibrary
+& $flexlibPath set-prop publisher   dover               1 GeneralLibrary
+& $flexlibPath set-prop publisher   springer            2 GeneralLibrary
+& $flexlibPath set-prop publisher   'cambridge press'   3 GeneralLibrary
 
-& $flexlibPath set-prop theme       mathematics         Item1 GeneralLibrary
-& $flexlibPath set-prop theme       physics             Item1 GeneralLibrary
-& $flexlibPath set-prop theme       logic               Item2 GeneralLibrary
-& $flexlibPath set-prop theme       philosophy          Item3 GeneralLibrary
+& $flexlibPath set-prop theme       mathematics         1 GeneralLibrary
+& $flexlibPath set-prop theme       physics             1 GeneralLibrary
+& $flexlibPath set-prop theme       logic               2 GeneralLibrary
+& $flexlibPath set-prop theme       philosophy          3 GeneralLibrary
 
-& $flexlibPath set-prop year        1687                Item1 GeneralLibrary
-& $flexlibPath set-prop year        1654                Item2 GeneralLibrary
-& $flexlibPath set-prop year        1710                Item3 GeneralLibrary
+& $flexlibPath set-prop year        1687                1 GeneralLibrary
+& $flexlibPath set-prop year        1654                2 GeneralLibrary
+& $flexlibPath set-prop year        1710                3 GeneralLibrary
 
-& $flexlibPath set-prop language    latin               Item1 GeneralLibrary
-& $flexlibPath set-prop language    french              Item2 GeneralLibrary
-& $flexlibPath set-prop language    german              Item3 GeneralLibrary
+& $flexlibPath set-prop language    latin               1 GeneralLibrary
+& $flexlibPath set-prop language    french              2 GeneralLibrary
+& $flexlibPath set-prop language    german              3 GeneralLibrary
 
-& $flexlibPath set-prop difficulty  hard                Item1 GeneralLibrary
-& $flexlibPath set-prop difficulty  medium              Item2 GeneralLibrary
-& $flexlibPath set-prop difficulty  hard                Item3 GeneralLibrary
+& $flexlibPath set-prop difficulty  hard                1 GeneralLibrary
+& $flexlibPath set-prop difficulty  medium              2 GeneralLibrary
+& $flexlibPath set-prop difficulty  hard                3 GeneralLibrary
 
-# ScienceLibrary Items
-& $flexlibPath set-prop author      Curie               Item4 ScienceLibrary
-& $flexlibPath set-prop author      Einstein            Item5 ScienceLibrary
-& $flexlibPath set-prop author      Feynman             Item6 ScienceLibrary
+# ScienceLibrary s
+& $flexlibPath set-prop author      Curie               1 ScienceLibrary
+& $flexlibPath set-prop author      Einstein            2 ScienceLibrary
+& $flexlibPath set-prop author      Feynman             3 ScienceLibrary
 
-& $flexlibPath set-prop publisher   "nobel house"       Item4 ScienceLibrary
-& $flexlibPath set-prop publisher   "princeton"         Item5 ScienceLibrary
-& $flexlibPath set-prop publisher   "mit press"         Item6 ScienceLibrary
+& $flexlibPath set-prop publisher   "nobel house"       1 ScienceLibrary
+& $flexlibPath set-prop publisher   "princeton"         2 ScienceLibrary
+& $flexlibPath set-prop publisher   "mit press"         3 ScienceLibrary
 
-& $flexlibPath set-prop theme       chemistry           Item4 ScienceLibrary
-& $flexlibPath set-prop theme       physics             Item5 ScienceLibrary
-& $flexlibPath set-prop theme       quantum             Item6 ScienceLibrary
+& $flexlibPath set-prop theme       chemistry           1 ScienceLibrary
+& $flexlibPath set-prop theme       physics             2 ScienceLibrary
+& $flexlibPath set-prop theme       quantum             3 ScienceLibrary
 
-& $flexlibPath set-prop year        1911                Item4 ScienceLibrary
-& $flexlibPath set-prop year        1916                Item5 ScienceLibrary
-& $flexlibPath set-prop year        1965                Item6 ScienceLibrary
+& $flexlibPath set-prop year        1911                1 ScienceLibrary
+& $flexlibPath set-prop year        1916                2 ScienceLibrary
+& $flexlibPath set-prop year        1965                3 ScienceLibrary
 
-& $flexlibPath set-prop language    french              Item4 ScienceLibrary
-& $flexlibPath set-prop language    german              Item5 ScienceLibrary
-& $flexlibPath set-prop language    english             Item6 ScienceLibrary
+& $flexlibPath set-prop language    french              1 ScienceLibrary
+& $flexlibPath set-prop language    german              2 ScienceLibrary
+& $flexlibPath set-prop language    english             3 ScienceLibrary
 
-& $flexlibPath set-prop difficulty  hard                Item4 ScienceLibrary
-& $flexlibPath set-prop difficulty  hard                Item5 ScienceLibrary
-& $flexlibPath set-prop difficulty  medium              Item6 ScienceLibrary
+& $flexlibPath set-prop difficulty  hard                1 ScienceLibrary
+& $flexlibPath set-prop difficulty  hard                2 ScienceLibrary
+& $flexlibPath set-prop difficulty  medium              3 ScienceLibrary
 
-# CultureLibrary Items
-& $flexlibPath set-prop author      Homer               Item7 CultureLibrary
-& $flexlibPath set-prop author      Shakespeare         Item8 CultureLibrary
-& $flexlibPath set-prop author      Camus               Item9 CultureLibrary
+# CultureLibrary s
+& $flexlibPath set-prop author      Homer               1 CultureLibrary
+& $flexlibPath set-prop author      Shakespeare         2 CultureLibrary
+& $flexlibPath set-prop author      Camus               3 CultureLibrary
 
-& $flexlibPath set-prop publisher   penguin             Item7 CultureLibrary
-& $flexlibPath set-prop publisher   'oxford press'        Item8 CultureLibrary
-& $flexlibPath set-prop publisher   gallimard           Item9 CultureLibrary
+& $flexlibPath set-prop publisher   penguin             1 CultureLibrary
+& $flexlibPath set-prop publisher   'oxford press'      2 CultureLibrary
+& $flexlibPath set-prop publisher   gallimard           3 CultureLibrary
 
-& $flexlibPath set-prop theme       literature          Item7 CultureLibrary
-& $flexlibPath set-prop theme       tragedy             Item8 CultureLibrary
-& $flexlibPath set-prop theme       absurd              Item9 CultureLibrary
+& $flexlibPath set-prop theme       literature          1 CultureLibrary
+& $flexlibPath set-prop theme       tragedy             2 CultureLibrary
+& $flexlibPath set-prop theme       absurd              3 CultureLibrary
 
-& $flexlibPath set-prop year        '-700'              Item7 CultureLibrary
-& $flexlibPath set-prop year        1603                Item8 CultureLibrary
-& $flexlibPath set-prop year        1942                Item9 CultureLibrary
+& $flexlibPath set-prop year        '-700'              1 CultureLibrary
+& $flexlibPath set-prop year        1603                2 CultureLibrary
+& $flexlibPath set-prop year        1942                3 CultureLibrary
 
-& $flexlibPath set-prop language    greek               Item7 CultureLibrary
-& $flexlibPath set-prop language    english             Item8 CultureLibrary
-& $flexlibPath set-prop language    french              Item9 CultureLibrary
+& $flexlibPath set-prop language    greek               1 CultureLibrary
+& $flexlibPath set-prop language    english             2 CultureLibrary
+& $flexlibPath set-prop language    french              3 CultureLibrary
 
-& $flexlibPath set-prop difficulty  medium              Item7 CultureLibrary
-& $flexlibPath set-prop difficulty  hard                Item8 CultureLibrary
-& $flexlibPath set-prop difficulty  medium              Item9 CultureLibrary
+& $flexlibPath set-prop difficulty  medium              1 CultureLibrary
+& $flexlibPath set-prop difficulty  hard                2 CultureLibrary
+& $flexlibPath set-prop difficulty  medium              3 CultureLibrary
 
 # ========== LAYOUTS ==========
 

@@ -31,32 +31,32 @@ Safe-Cleanup $flexlibDataPath
 & $flexlibPath new-prop theme TestLibrary list
 & $flexlibPath new-prop year TestLibrary int
 # --------------------------------------------------------
-& $flexlibPath set-prop author newton Item1 TestLibrary 
-& $flexlibPath set-prop author pascal Item2 TestLibrary 
-& $flexlibPath set-prop author einstein Item3 TestLibrary 
-& $flexlibPath set-prop author euler Item4 TestLibrary 
+& $flexlibPath set-prop author newton 1 TestLibrary 
+& $flexlibPath set-prop author pascal 2 TestLibrary 
+& $flexlibPath set-prop author einstein 3 TestLibrary 
+& $flexlibPath set-prop author euler 4 TestLibrary 
 
-& $flexlibPath set-prop publisher dover Item1 TestLibrary 
-& $flexlibPath set-prop publisher dover Item2 TestLibrary 
-& $flexlibPath set-prop publisher 'nova fronteira' Item3 TestLibrary 
-& $flexlibPath set-prop publisher 'alta books' Item4 TestLibrary 
+& $flexlibPath set-prop publisher dover 1 TestLibrary 
+& $flexlibPath set-prop publisher dover 2 TestLibrary 
+& $flexlibPath set-prop publisher 'nova fronteira' 3 TestLibrary 
+& $flexlibPath set-prop publisher 'alta books' 4 TestLibrary 
 
-& $flexlibPath set-prop theme mathematics Item1 TestLibrary 
-& $flexlibPath set-prop theme physics Item1 TestLibrary 
+& $flexlibPath set-prop theme mathematics 1 TestLibrary 
+& $flexlibPath set-prop theme physics 1 TestLibrary 
 
-& $flexlibPath set-prop theme mathematics Item2 TestLibrary 
-& $flexlibPath set-prop theme philosophy Item2 TestLibrary 
+& $flexlibPath set-prop theme mathematics 2 TestLibrary 
+& $flexlibPath set-prop theme philosophy 2 TestLibrary 
 
-& $flexlibPath set-prop theme mathematics Item3 TestLibrary 
-& $flexlibPath set-prop theme history Item3 TestLibrary 
+& $flexlibPath set-prop theme mathematics 3 TestLibrary 
+& $flexlibPath set-prop theme history 3 TestLibrary 
 
-& $flexlibPath set-prop theme history Item4 TestLibrary 
-& $flexlibPath set-prop theme physics Item4 TestLibrary 
+& $flexlibPath set-prop theme history 4 TestLibrary 
+& $flexlibPath set-prop theme physics 4 TestLibrary 
 
-& $flexlibPath set-prop year 1920 Item1 TestLibrary 
-& $flexlibPath set-prop year 1940 Item2 TestLibrary 
-& $flexlibPath set-prop year 1945 Item3 TestLibrary 
-& $flexlibPath set-prop year 2001 Item4 TestLibrary 
+& $flexlibPath set-prop year 1920 1 TestLibrary 
+& $flexlibPath set-prop year 1940 2 TestLibrary 
+& $flexlibPath set-prop year 1945 3 TestLibrary 
+& $flexlibPath set-prop year 2001 4 TestLibrary 
 # --------------------------------------------------------
 & $flexlibPath set-layout TestLibrary theme/publisher/author/year
 # --------------------------------------------------------
