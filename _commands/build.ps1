@@ -1,7 +1,8 @@
 param (
     [switch]$WithRuntimeTests,
     [string]$Configuration = "Debug",
-    [switch]$NoClearHost
+    [switch]$NoClearHost,
+    [switch]$PlotHistoryGraph
 )
 
 . "$PSScriptRoot\build\LogHandler.ps1"
@@ -9,7 +10,7 @@ param (
 . "$PSScriptRoot\build\BuildHistory.ps1"
 . "$PSScriptRoot\build\Utils.ps1"
 
-If (-not $NoClearHost) {
+if (-not $NoClearHost) {
     Clear-Host
 }
 
@@ -30,7 +31,6 @@ if ( $errorCount -eq 0) {
 } else {
 
     Write-Fill "BUILD Nº $buildID FAILED" -ForegroundColor Red
-    return
 
 }
 
@@ -42,9 +42,17 @@ if (($configuration -eq "Debug") -and ($WithRuntimeTests) -and ($errorCount -eq 
 
 }
 
+if ($PlotHistoryGraph) 
+{
+    $history = GetBuildHistory 
+
+    Write-Fill "BUILD HISTORY"
+    PlotHistoryGraph $history
+    Write-Fill
+}
+
 $ResultRequestedByAnotherScript = ( $MyInvocation.ScriptName -ne "" )
 
 if ($ResultRequestedByAnotherScript) {
     return $newEntry;
 }
-

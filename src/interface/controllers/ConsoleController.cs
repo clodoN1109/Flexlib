@@ -63,7 +63,7 @@ public static class ConsoleController
                 break;
             
             case SetPropertyCommand setProp:
-                result = SetProperty.Execute(setProp.PropName, setProp.NewValue, setProp.LibName, setProp.ItemName, _repo);
+                result = SetProperty.Execute(setProp.PropName, setProp.NewValue, setProp.LibName, setProp.ItemId, _repo);
                 break;
             
             case RemovePropertyCommand removeProp:
@@ -83,19 +83,19 @@ public static class ConsoleController
                     break;
                 }
 
-                result = MakeComment.Execute(makeCom.ItemName, makeCom.LibName, makeCom.Comment, _repo);
+                result = MakeComment.Execute(makeCom.ItemId, makeCom.LibName, makeCom.Comment, _repo);
                 break;
 
             case ListCommentsCommand listCom:
-                result = ListComments.Execute(listCom.ItemName, listCom.LibName, _repo, _presenter);
+                result = ListComments.Execute(listCom.ItemId, listCom.LibName, _repo, _presenter);
                 break;
             
             case EditCommentCommand editCom:
-                result = EditComment.Execute(editCom.ItemName, editCom.CommentId, editCom.LibName, _read, _repo);
+                result = EditComment.Execute(editCom.ItemId, editCom.CommentId, editCom.LibName, _read, _repo);
                 break;
             
             case RemoveCommentCommand removeCom:
-                result = RemoveComment.Execute(removeCom.ItemName, removeCom.CommentId, removeCom.LibName, _repo);
+                result = RemoveComment.Execute(removeCom.ItemId, removeCom.CommentId, removeCom.LibName, _repo);
                 break;
             
             case RemoveLibraryCommand removeLib:

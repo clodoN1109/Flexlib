@@ -312,7 +312,7 @@ public class SetPropertyCommand : Command
     string[] Options;
     public string PropName { get; } 
     public string NewValue { get; } 
-    public string ItemName { get; } 
+    public object ItemId { get; } 
     public string LibName { get; } 
 
     public SetPropertyCommand(string[] options)
@@ -320,7 +320,7 @@ public class SetPropertyCommand : Command
         Options = options;
         PropName = options.Length > 0 ? options[0] : "";
         NewValue = options.Length > 1 ? options[1] : "";
-        ItemName = options.Length > 2 ? options[2] : "";
+        ItemId = options.Length > 2 ? options[2] : "";
         LibName = options.Length > 3 ? options[3] : "Default Library";
     }
 
@@ -332,7 +332,7 @@ public class SetPropertyCommand : Command
     public override string UsageInstructions()
     {
         return
-            "Usage:  flexlib set-prop <property name> <new value> <item name> [library name]";
+            "Usage:  flexlib set-prop <property name> <new value> <item id> [library name]";
     }
 
 }
@@ -366,12 +366,12 @@ public class RemovePropertyCommand : Command
 public abstract class CommentCommand : Command
 {
     public string[] Options { get; }
-    public string ItemName { get; }
+    public object ItemId { get; } 
 
     protected CommentCommand(string[] options)
     {
         Options = options;
-        ItemName = options.Length > 0 ? options[0] : "";
+        ItemId = options.Length > 0 ? options[0] : "";
     }
 
 }

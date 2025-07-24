@@ -9,9 +9,9 @@ namespace Flexlib.Application.UseCases;
 
 public static class ListComments
 {
-    public static Result Execute(string itemName, string libName, ILibraryRepository repo, IPresenter presenter)
+    public static Result Execute(object itemId, string libName, ILibraryRepository repo, IPresenter presenter)
     {
-        var parsedArgs = new ParsedArgs(itemName, libName, repo, presenter); 
+        var parsedArgs = new ParsedArgs(itemId, libName, repo, presenter); 
 
         var validation = IsOperationAllowed(parsedArgs);
 
@@ -26,10 +26,10 @@ public static class ListComments
         if (selectedLibrary == null)
             return Result.Fail($"Library '{parsedArgs.LibName}' not found.");
         
-        var selectedItem = selectedLibrary.GetItemByName(parsedArgs.ItemName);
+        var selectedItem = selectedLibrary.GetItemById(parsedArgs.ItemId);
 
         if (selectedItem == null)
-            return Result.Fail($"Item '{parsedArgs.ItemName}' not found in library '{selectedLibrary.Name}'.");
+            return Result.Fail($"Item '{parsedArgs.ItemId}' not found in library '{selectedLibrary.Name}'.");
        
         parsedArgs.Presenter.ListComments(selectedItem.Comments);
 
@@ -49,23 +49,23 @@ public static class ListComments
         if (selectedLibrary == null)
             return Result.Fail($"Library '{parsedArgs.LibName}' not found.");
 
-        if (!selectedLibrary.ContainsName(parsedArgs.ItemName))
-            return Result.Fail($"Library '{parsedArgs.LibName}' has no item named '{parsedArgs.ItemName}'.");
+        if (!selectedLibrary.ContainsId(parsedArgs.ItemId))
+            return Result.Fail($"Library '{parsedArgs.LibName}' has no item named '{parsedArgs.ItemId}'.");
 
         return Result.Success("Operation allowed.");
     }
 
     public class ParsedArgs
     {
-        public string ItemName { get; }
+        public object ItemId { get; }
         public string LibName { get; }
         public ILibraryRepository Repo { get; }
         public IPresenter Presenter { get; }
 
-        public ParsedArgs(string itemName, string libName, ILibraryRepository repo, IPresenter presenter)
+        public ParsedArgs(object itemId, string libName, ILibraryRepository repo, IPresenter presenter)
         {
             LibName = libName;
-            ItemName = itemName;
+            ItemId = itemId;
             Repo = repo;
             Presenter = presenter;
         }

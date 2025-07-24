@@ -23,8 +23,8 @@ Safe-Cleanup $flexlibDataPath
 & $flexlibPath new-item $item3 Item3 TestLibrary
 & $flexlibPath new-prop Property1 TestLibrary string
 & $flexlibPath new-prop Property2 TestLibrary string
-& $flexlibPath set-prop Property1 NewValue Item1 TestLibrary 
-& $flexlibPath set-prop Property2 NewValue Item2 TestLibrary
+& $flexlibPath set-prop Property1 NewValue 1 TestLibrary 
+& $flexlibPath set-prop Property2 NewValue 2 TestLibrary
 
 if ($UpdateReferences) {
     Safe-Cleanup $referencesPath

@@ -135,6 +135,19 @@ public class Library
     {
         return Items.Any(i => i.Name == name);
     }
+    
+    public bool ContainsId(object id)
+    {
+        if (id == null)
+            return false;
+
+        if (int.TryParse(id.ToString(), out int idValue))
+        {
+            return Items.Any(i => i.Id == idValue);
+        }
+
+        return false;
+    }
 
     public LibraryItem? GetItemByName(string name)
     {

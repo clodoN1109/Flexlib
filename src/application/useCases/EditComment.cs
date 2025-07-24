@@ -9,9 +9,9 @@ namespace Flexlib.Application.UseCases;
 
 public static class EditComment
 {
-    public static Result Execute(string itemName, string commentId, string libName, IReader reader, ILibraryRepository repo)
+    public static Result Execute(object itemId, string commentId, string libName, IReader reader, ILibraryRepository repo)
     {
-        var parsedArgs = new ParsedArgs(itemName, commentId, libName, reader, repo); 
+        var parsedArgs = new ParsedArgs(itemId, commentId, libName, reader, repo); 
 
         var validation = IsOperationAllowed(parsedArgs);
 
@@ -24,7 +24,7 @@ public static class EditComment
     {
         var selectedLibrary = parsedArgs.Repo.GetByName(parsedArgs.LibName)!;
         
-        var selectedItem = selectedLibrary.GetItemByName(parsedArgs.ItemName);
+        var selectedItem = selectedLibrary.GetItemById(parsedArgs.ItemId);
 
         var selectedComment = selectedItem!.Comments.FirstOrDefault(c => c.Id == parsedArgs.CommentId);
 
@@ -50,10 +50,10 @@ public static class EditComment
         if (selectedLibrary == null)
             return Result.Fail($"Library '{parsedArgs.LibName}' not found.");
 
-        var selectedItem = selectedLibrary.GetItemByName(parsedArgs.ItemName);
+        var selectedItem = selectedLibrary.GetItemById(parsedArgs.ItemId);
         
         if (selectedItem == null)
-            return Result.Fail($"Library '{parsedArgs.LibName}' has no item named '{parsedArgs.ItemName}'.");
+            return Result.Fail($"Library '{parsedArgs.LibName}' has no item named '{parsedArgs.ItemId}'.");
         
         if (!selectedItem.Comments.Any(c => c.Id == parsedArgs.CommentId))
             return Result.Fail($"Comment with id {parsedArgs.CommentId} not found.");
@@ -63,17 +63,17 @@ public static class EditComment
 
     public class ParsedArgs
     {
-        public string ItemName { get; }
+        public object ItemId { get; }
         public string CommentId { get; }
         public string LibName { get; }
         public IReader Reader { get; }
         public ILibraryRepository Repo { get; }
 
-        public ParsedArgs(string itemName, string commentId, string libName, IReader reader, ILibraryRepository repo)
+        public ParsedArgs(object itemId, string commentId, string libName, IReader reader, ILibraryRepository repo)
         {
             LibName = libName;
             CommentId = commentId;
-            ItemName = itemName;
+            ItemId = itemId;
             Reader = reader;
             Repo = repo;
         }

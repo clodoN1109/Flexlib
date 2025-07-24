@@ -46,15 +46,6 @@ public static class AddItem
         if (selectedLibrary == null)
             return Result.Fail($"Library '{libName}' not found.");
 
-        LibraryItem? sameNameItem = selectedLibrary.GetItemByName(itemName);
-        LibraryItem? sameOriginItem = selectedLibrary.GetItemByOrigin(itemOrigin);
-
-        if (sameNameItem != null)
-            return Result.Fail($"An item named '{sameNameItem.Name}' already exists in library '{libName}' with origin '{sameNameItem!.Origin}'.");
-
-        if (sameOriginItem != null)
-            return Result.Fail($"An item with the same origin '{sameOriginItem!.Origin}' already exists in library '{libName}' as '{sameOriginItem!.Name}'.");
-
         return Result.Success("Operation allowed.");
     }
 }
