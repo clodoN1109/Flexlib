@@ -39,6 +39,11 @@ public class LibraryItem
         PropertyValues = new Dictionary<string, object?>();
     }
 
+    public void RemoveComment(string commentID)
+    {
+        Comments.RemoveAll(c => c.Id == commentID);
+    }
+        
     public T? GetValue<T>(string propertyName)
     {
         return PropertyValues.TryGetValue(propertyName, out var value) && value is T casted

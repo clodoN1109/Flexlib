@@ -40,7 +40,51 @@ public class Library
     }
 
     public int GetHighestItemId() => Items.Any() ? Items.Max(i => i.Id) : 0;
-    
+        
+    public Result RemovePropertyByName(string propertyName)
+    {
+        // Remove from property definitions
+        PropertyDefinitions.RemoveAll(p => p.Name == propertyName);
+
+        // Remove from items' PropertyValues
+        foreach (var item in Items)
+        {
+            item.PropertyValues?.Remove(propertyName);
+        }
+
+        // Remove from layout sequence
+        LayoutSequence?.RemoveAll(l => l.Name == propertyName);
+
+        // Recompute layout
+        RenderLayout();
+
+        // Verify removal from PropertyDefinitions
+        bool stillInDefinitions = PropertyDefinitions.Any(p => p.Name == propertyName);
+
+        // Verify removal from all PropertyValues
+        bool stillInAnyItem = Items.Any(item =>
+            item.PropertyValues != null &&
+            item.PropertyValues.ContainsKey(propertyName));
+
+        // Verify removal from LayoutSequence
+        bool stillInLayout = LayoutSequence != null &&
+                             LayoutSequence.Any(p => p.Name == propertyName);
+
+        if (!stillInDefinitions && !stillInAnyItem && !stillInLayout)
+        {
+            return Result.Success($"Property '{propertyName}' fully removed from library '{Name}'.");
+        }
+        else
+        {
+            return Result.Fail(
+                $"Failed to fully remove property '{propertyName}' from library '{Name}'." +
+                (stillInDefinitions ? " Still in PropertyDefinitions." : "") +
+                (stillInAnyItem ? " Still in one or more PropertyValues." : "") +
+                (stillInLayout ? " Still in LayoutSequence." : "")
+            );
+        }
+    }
+
     public void AddPropertyDefinition(string propName, string propType)
     {
         var def = new ItemPropertyDefinition(propName, propType);

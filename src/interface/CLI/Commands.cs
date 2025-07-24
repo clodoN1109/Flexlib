@@ -337,6 +337,32 @@ public class SetPropertyCommand : Command
 
 }
 
+public class RemovePropertyCommand : Command
+{
+    string[] Options;
+    public string PropName { get; } 
+    public string LibName { get; } 
+
+    public RemovePropertyCommand(string[] options)
+    {
+        Options = options;
+        PropName = options.Length > 0 ? options[0] : "";
+        LibName = options.Length > 1 ? options[1] : "Default Library";
+    }
+
+    public override bool IsValid()
+    {
+        return (Options.Length > 1 && Options.Length < 3);
+    }
+    
+    public override string UsageInstructions()
+    {
+        return
+            "Usage:  flexlib remove-prop <property name> [library name]";
+    }
+
+}
+
 public abstract class CommentCommand : Command
 {
     public string[] Options { get; }
@@ -414,6 +440,30 @@ public class EditCommentCommand : CommentCommand
         return "Usage: flexlib edit-comment <item name> <comment id> [library name]\n";
     }
 }
+
+public class RemoveCommentCommand : CommentCommand
+{
+    public string CommentId;
+    public string LibName { get; set; }
+
+    public RemoveCommentCommand(string[] options) : base(options) { 
+        
+        CommentId = options.Length > 1 ? options[1] : "";
+        LibName = options.Length > 2 ? options[2] : "Default Library"; 
+   
+    }
+
+    public override bool IsValid()
+    {
+        return Options.Length > 1 && Options.Length < 4;
+    }
+
+    public override string UsageInstructions()
+    {
+        return "Usage: flexlib remove-comment <item name> <comment id> [library name]\n";
+    }
+}
+
 
 public class UnknownCommand : Command
 {
