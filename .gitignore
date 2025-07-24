@@ -1,2 +1,3 @@
 builds
 _commands/test/tests/*/data/results/**
+_commands/simulate/data/results/**
