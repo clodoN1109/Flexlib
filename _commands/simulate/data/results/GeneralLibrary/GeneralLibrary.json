@@ -1,5 +1,21 @@
 [
   {
+    "Name": "Item1",
+    "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\simulate\\data\\input\\Item1.pdf",
+    "Id": 1,
+    "FileExtension": ".pdf",
+    "Comments": [],
+    "PropertyValues": {
+      "author": "Newton",
+      "theme": [
+        "mathematics",
+        "physics"
+      ],
+      "year": "1687",
+      "difficulty": "hard"
+    }
+  },
+  {
     "Name": "Item2",
     "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\simulate\\data\\input\\Item2.pdf",
     "Id": 2,
@@ -7,12 +23,10 @@
     "Comments": [],
     "PropertyValues": {
       "author": "Pascal",
-      "publisher": "springer",
       "theme": [
         "logic"
       ],
       "year": "1654",
-      "language": "french",
       "difficulty": "medium"
     }
   },
@@ -24,12 +38,10 @@
     "Comments": [],
     "PropertyValues": {
       "author": "Leibniz",
-      "publisher": "cambridge press",
       "theme": [
         "philosophy"
       ],
       "year": "1710",
-      "language": "german",
       "difficulty": "hard"
     }
   }

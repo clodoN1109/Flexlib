@@ -1,8 +1,19 @@
-function Interface ([string]$Cmd, [string[]]$TestsList) {
+function Interface  {
+
+    param (
+        [string]$Cmd,
+        [string[]]$TestsList,
+        [switch]$NoClearHost
+    ) 
+
     . "$PSScriptRoot/application.ps1"
     . "$PSScriptRoot/utils.ps1"
 
     $TestsFiles = Get-ChildItem -Path "$PSScriptRoot/tests" -Recurse -Filter "*.ps1"
+
+    if (-not $NoClearHost) {
+        Clear-Host
+    }
 
     switch ($Cmd) {
         "help" {
@@ -39,4 +50,3 @@ function Interface ([string]$Cmd, [string[]]$TestsList) {
         }
     }
 }
-

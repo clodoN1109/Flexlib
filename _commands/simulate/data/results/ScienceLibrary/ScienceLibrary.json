@@ -17,6 +17,23 @@
     }
   },
   {
+    "Name": "Item5",
+    "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\simulate\\data\\input\\Item5.pdf",
+    "Id": 2,
+    "FileExtension": ".pdf",
+    "Comments": [],
+    "PropertyValues": {
+      "author": "Einstein",
+      "publisher": "princeton",
+      "theme": [
+        "physics"
+      ],
+      "year": "1916",
+      "language": "german",
+      "difficulty": "hard"
+    }
+  },
+  {
     "Name": "Item6",
     "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\simulate\\data\\input\\Item6.pdf",
     "Id": 3,

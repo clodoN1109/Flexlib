@@ -34,12 +34,11 @@ if ( $errorCount -eq 0) {
 
 }
 
-
 if (($configuration -eq "Debug") -and ($WithRuntimeTests) -and ($errorCount -eq 0) -and ($warningCount -eq 0)) {
      
     Start-Sleep 1
 
-    & "$PSScriptRoot/test.ps1" run
+    & "$PSScriptRoot/test.ps1" -Cmd run -NoClearHost
 
 }
 

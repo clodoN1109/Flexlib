@@ -6,12 +6,10 @@
   "Comments": [],
   "PropertyValues": {
     "author": "Pascal",
-    "publisher": "springer",
     "theme": [
       "logic"
     ],
     "year": "1654",
-    "language": "french",
     "difficulty": "medium"
   }
 }
