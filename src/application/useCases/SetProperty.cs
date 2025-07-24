@@ -107,7 +107,7 @@ public static class SetProperty
                 ? $"Property '{args.PropName}' updated for all items in all libraries."
                 : string.IsNullOrWhiteSpace(args.ItemName)
                     ? $"Property '{args.PropName}' updated for all items in library '{args.LibName}'."
-                    : $"Property '{args.PropName}' updated in item '{args.ItemName}'."
+                    : $"Property '{args.PropName}' updated in item '{args.ItemName}' of library '{args.LibName}'."
         );
     }
 

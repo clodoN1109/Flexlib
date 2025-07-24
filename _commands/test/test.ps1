@@ -1,9 +1,10 @@
 param (
     [string]$Cmd = 'help',
-    [string[]]$TestsList = @()
+    [string[]]$TestsList = @(),
+    [switch]$NoClearHost
 )
 
-. "$PSScriptRoot/interface.ps1"
+. "$PSScriptRoot/interface.ps1" 
 
-Interface $Cmd $TestsList
+Interface $Cmd $TestsList -NoClearHost:$NoClearHost
 

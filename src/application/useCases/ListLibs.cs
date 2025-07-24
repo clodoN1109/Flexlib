@@ -3,6 +3,7 @@ using Flexlib.Application.UseCases.Common;
 using Flexlib.Common;
 using Flexlib.Domain;
 using System.Text;
+using System.Linq;
 
 
 namespace Flexlib.Application.UseCases;
@@ -20,15 +21,20 @@ public static class ListLibs
             : validation;
     }
 
+
     private static Result _ListLibs(ParsedArgs parsedArgs)
     {
+        var selectedLibs = parsedArgs.Repo.GetAll();
 
-        var selectedLibs = parsedArgs.Repo.GetAll().ToList();
-
-        parsedArgs.Presenter.ListLibs(selectedLibs);
-        
-        return Result.Success($"");
-
+        if (selectedLibs.Any())
+        {
+            parsedArgs.Presenter.ListLibs(selectedLibs.ToList());
+            return Result.Success($"{selectedLibs.Count()} libraries listed.");
+        }
+        else
+        {
+            return Result.Fail("No libraries found.");
+        }
     }
 
     private static Result IsOperationAllowed(ParsedArgs parsedArgs)

@@ -1,0 +1,51 @@
+[
+  {
+    "Name": "TestLibrary",
+    "Path": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\6-RemovingComments\\data\\results",
+    "PropertyDefinitions": [],
+    "Items": [
+      {
+        "Name": "Item1",
+        "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\6-RemovingComments\\data\\input\\Item1.pdf",
+        "Id": 1,
+        "FileExtension": ".pdf",
+        "Comments": [
+          {
+            "Id": "1",
+            "Text": "This is a comment.",
+            "References": []
+          },
+          {
+            "Id": "2",
+            "Text": "Another comment.",
+            "References": []
+          }
+        ],
+        "PropertyValues": {}
+      },
+      {
+        "Name": "Compound Name",
+        "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\6-RemovingComments\\data\\input\\Item2.pdf",
+        "Id": 2,
+        "FileExtension": ".pdf",
+        "Comments": [],
+        "PropertyValues": {}
+      },
+      {
+        "Name": "Item3",
+        "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\6-RemovingComments\\data\\input\\Item3.pdf",
+        "Id": 3,
+        "FileExtension": ".pdf",
+        "Comments": [
+          {
+            "Id": "2",
+            "Text": "This is a yet another comment.",
+            "References": []
+          }
+        ],
+        "PropertyValues": {}
+      }
+    ],
+    "LayoutSequence": []
+  }
+]

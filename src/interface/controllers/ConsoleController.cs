@@ -30,6 +30,10 @@ public static class ConsoleController
                 result = AddItem.Execute(addItem.LibraryName, addItem.ItemOrigin, addItem.ItemName, _repo);
                 break;
             
+            case RemoveItemCommand removeItem:
+                result = RemoveItem.Execute(removeItem.ItemId, removeItem.LibraryName, _repo);
+                break;
+            
             case ListLibrariesCommand listLibs:
                 result = ListLibs.Execute(_repo, _presenter);
                 break;
@@ -62,6 +66,10 @@ public static class ConsoleController
                 result = SetProperty.Execute(setProp.PropName, setProp.NewValue, setProp.LibName, setProp.ItemName, _repo);
                 break;
             
+            case RemovePropertyCommand removeProp:
+                result = RemoveProperty.Execute(removeProp.PropName, removeProp.LibName, _repo);
+                break;
+            
             case NewCommentCommand makeCom:
 
                 if (string.IsNullOrWhiteSpace(makeCom.Comment))
@@ -84,6 +92,10 @@ public static class ConsoleController
             
             case EditCommentCommand editCom:
                 result = EditComment.Execute(editCom.ItemName, editCom.CommentId, editCom.LibName, _read, _repo);
+                break;
+            
+            case RemoveCommentCommand removeCom:
+                result = RemoveComment.Execute(removeCom.ItemName, removeCom.CommentId, removeCom.LibName, _repo);
                 break;
             
             case RemoveLibraryCommand removeLib:

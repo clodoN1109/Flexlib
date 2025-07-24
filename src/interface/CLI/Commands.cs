@@ -78,6 +78,28 @@ public class NewItemCommand : Command
     }
 }
 
+public class RemoveItemCommand : Command
+{
+    public string LibraryName { get; }
+    public object ItemId { get; }
+
+    public RemoveItemCommand(string[] options)
+    {
+        ItemId =  options.Length > 0 ? options[0] : "";
+        LibraryName = options.Length > 1 ? options[1] : "Default Library";
+    }
+
+    public override bool IsValid()
+    {
+        return !TypeTests.IsNull(ItemId) && ItemId is string s && ( s != "" ) && !string.IsNullOrWhiteSpace(LibraryName);
+    }
+    
+    public override string UsageInstructions()
+    {
+        return "Usage: flexlib remove-item <item id> <library name>";
+    }
+}
+
 public class ListLibrariesCommand : Command
 {
     string[] Options;
@@ -315,6 +337,32 @@ public class SetPropertyCommand : Command
 
 }
 
+public class RemovePropertyCommand : Command
+{
+    string[] Options;
+    public string PropName { get; } 
+    public string LibName { get; } 
+
+    public RemovePropertyCommand(string[] options)
+    {
+        Options = options;
+        PropName = options.Length > 0 ? options[0] : "";
+        LibName = options.Length > 1 ? options[1] : "Default Library";
+    }
+
+    public override bool IsValid()
+    {
+        return (Options.Length > 1 && Options.Length < 3);
+    }
+    
+    public override string UsageInstructions()
+    {
+        return
+            "Usage:  flexlib remove-prop <property name> [library name]";
+    }
+
+}
+
 public abstract class CommentCommand : Command
 {
     public string[] Options { get; }
@@ -393,6 +441,30 @@ public class EditCommentCommand : CommentCommand
     }
 }
 
+public class RemoveCommentCommand : CommentCommand
+{
+    public string CommentId;
+    public string LibName { get; set; }
+
+    public RemoveCommentCommand(string[] options) : base(options) { 
+        
+        CommentId = options.Length > 1 ? options[1] : "";
+        LibName = options.Length > 2 ? options[2] : "Default Library"; 
+   
+    }
+
+    public override bool IsValid()
+    {
+        return Options.Length > 1 && Options.Length < 4;
+    }
+
+    public override string UsageInstructions()
+    {
+        return "Usage: flexlib remove-comment <item name> <comment id> [library name]\n";
+    }
+}
+
+
 public class UnknownCommand : Command
 {
     public string Message { get; }
@@ -409,14 +481,33 @@ public class UnknownCommand : Command
         var availableCommands = CommandsList.GetAvailableCommandsList();
         var commandsLine = string.Join(" ", availableCommands);
 
-        return
-            "░░░░ Flexlib CLI ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░\n\n" + 
-            "   usage:      flexlib {command}\n\n" +
-            "commands:\n" +
-            "\n\t" + 
-            $"{commandsLine}\n\n" + 
-            "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░\n\n"
-            ;
+        int consoleWidth;
+        try
+        {
+            consoleWidth = Console.WindowWidth;
+        }
+        catch
+        {
+            consoleWidth = 80; // fallback if not in console
+        }
+
+        string title = "░░░░ Flexlib CLI ";
+        string titleBar = title + new string('░', Math.Max(0, consoleWidth - title.Length));
+        string bottomBar = new string('░', consoleWidth);
+
+        return string.Join("\n", new[]
+        {
+            titleBar,
+            "",
+            "   usage:      flexlib {command}",
+            "",
+            "commands:",
+            "",
+            "\t" + commandsLine,
+            "",
+            bottomBar,
+            ""
+        });
     }
 }
 
@@ -434,7 +525,7 @@ public static class CommandsList{
             "get-layout",
             "\n\n\t🕮      new-item", 
             "list-items",
-            "remove-items",
+            "remove-item",
             "view-item",
             "\n\n\t𝒜      new-comment",
             "list-comments",

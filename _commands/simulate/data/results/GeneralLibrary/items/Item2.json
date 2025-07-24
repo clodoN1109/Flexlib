@@ -1,14 +1,15 @@
 {
   "Name": "Item2",
   "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\simulate\\data\\input\\Item2.pdf",
+  "Id": 2,
+  "FileExtension": ".pdf",
   "Comments": [],
   "PropertyValues": {
-    "author": "pascal",
-    "publisher": "dover",
+    "author": "Pascal",
     "theme": [
-      "mathematics",
-      "philosophy"
+      "logic"
     ],
-    "year": "1940"
+    "year": "1654",
+    "difficulty": "medium"
   }
 }

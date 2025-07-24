@@ -1,14 +1,17 @@
 {
   "Name": "Item4",
   "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\simulate\\data\\input\\Item4.pdf",
+  "Id": 1,
+  "FileExtension": ".pdf",
   "Comments": [],
   "PropertyValues": {
-    "author": "euler",
-    "publisher": "alta books",
+    "author": "Curie",
+    "publisher": "nobel house",
     "theme": [
-      "history",
-      "physics"
+      "chemistry"
     ],
-    "year": "2001"
+    "year": "1911",
+    "language": "french",
+    "difficulty": "hard"
   }
 }
