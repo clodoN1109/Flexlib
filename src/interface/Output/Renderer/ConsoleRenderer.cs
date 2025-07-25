@@ -156,10 +156,19 @@ public class Renderer
         }
 
         int[] idealColWidths = new int[columnCount];
-        for (int i = 0; i < columnCount; i++)
-        {
-            int maxDataWidth = rows.Max(r => r[i]?.Length ?? 0);
-            idealColWidths[i] = Math.Max(headers[i].Length, maxDataWidth);
+        if ( rows.Count > 0 ) {
+            for (int i = 0; i < columnCount; i++)
+            {
+                int maxDataWidth = rows.Max(r => r[i]?.Length ?? 0);
+                idealColWidths[i] = Math.Max(headers[i].Length, maxDataWidth);
+            }
+        }
+        else {
+            for (int i = 0; i < columnCount; i++)
+            {
+                idealColWidths[i] = headers[i].Length;
+
+            }
         }
 
         int totalPadding = (columnCount - 1) * padding;

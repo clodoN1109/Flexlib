@@ -32,8 +32,8 @@ public static class ListItems
         
         var selectedItems = selectedLibrary.GetItems(filterSequence, sortSequence); 
 
-        if ( selectedItems == null || selectedItems.Count == 0 )
-            return Result.Fail($"No items found.");
+        if (selectedItems is not List<LibraryItem>)
+            return Result.Fail($"List of items could not be obtained.");
         
         parsedArgs.Presenter.ListItems(selectedItems, selectedLibrary, parsedArgs.FilterSequenceString, parsedArgs.SortSequenceString);
         
