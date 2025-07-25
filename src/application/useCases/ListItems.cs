@@ -35,7 +35,7 @@ public static class ListItems
         if ( selectedItems == null || selectedItems.Count == 0 )
             return Result.Fail($"No items found.");
         
-        parsedArgs.Presenter.ListItems(selectedItems);
+        parsedArgs.Presenter.ListItems(selectedItems, selectedLibrary, parsedArgs.FilterSequenceString, parsedArgs.SortSequenceString);
         
         return Result.Success($"");
 

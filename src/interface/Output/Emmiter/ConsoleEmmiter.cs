@@ -13,10 +13,14 @@ public class ConsoleEmitter
             Console.ResetColor();
     }
 
-    public void PrintLines(List<string> lines, ConsoleColor? color = null)
+    public void PrintLines(List<ColoredLine> lines)
     {
+
+        bool isInteractiveTerminal = !Console.IsOutputRedirected && !Console.IsErrorRedirected;
+        if (isInteractiveTerminal) Console.Clear();
+
         foreach (var line in lines)
-            Print(line, color);
+            Print(line.Text, line.Color);
     }
 }
 

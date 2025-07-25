@@ -49,7 +49,7 @@ public static class RemoveComment
         var selectedItem = selectedLibrary.GetItemById(parsedArgs.ItemId);
         
         if (selectedItem == null)
-            return Result.Fail($"Library '{parsedArgs.LibName}' has no item named '{parsedArgs.ItemId}'.");
+            return Result.Fail($"Library '{parsedArgs.LibName}' has no item with ID '{parsedArgs.ItemId}'.");
         
         if (!selectedItem.Comments.Any(c => c.Id == parsedArgs.CommentId))
             return Result.Fail($"Comment with id {parsedArgs.CommentId} not found.");

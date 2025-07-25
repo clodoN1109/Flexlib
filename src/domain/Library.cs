@@ -251,7 +251,7 @@ public class Library
         RenderedLayout = root;
         return Result.Success($"Layout successfully rendered.");
     }
-
+  
     private List<LibraryItem> SortLibraryList(List<LibraryItem> items, SortSequence sortSequence)
     {
         if (sortSequence.Elements.Count == 0)
@@ -268,13 +268,26 @@ public class Library
             Func<LibraryItem, object?> keySelector = item =>
                 item.PropertyValues.TryGetValue(def.Name, out var value) ? value : null;
 
+            // Define a safe comparer that handles nulls and non-IComparable values
+            var comparer = Comparer<object?>.Create((a, b) =>
+            {
+                if (a == null && b == null) return 0;
+                if (a == null) return -1;
+                if (b == null) return 1;
+
+                if (a is IComparable aComp && b.GetType() == a.GetType())
+                    return aComp.CompareTo(b);
+ 
+                return string.Compare(a.ToString(), b.ToString(), StringComparison.OrdinalIgnoreCase);
+            });
+
             if (ordered == null)
             {
-                ordered = items.OrderBy(keySelector, Comparer<object?>.Default);
+                ordered = items.OrderBy(keySelector, comparer);
             }
             else
             {
-                ordered = ordered.ThenBy(keySelector, Comparer<object?>.Default);
+                ordered = ordered.ThenBy(keySelector, comparer);
             }
         }
 

@@ -55,7 +55,7 @@ public static class MakeComment
             return Result.Fail($"Library '{parsedArgs.LibName}' not found.");
 
         if (!selectedLibrary.ContainsId(parsedArgs.ItemId))
-            return Result.Fail($"Library '{parsedArgs.LibName}' has no item named '{parsedArgs.ItemId}'.");
+            return Result.Fail($"Library '{parsedArgs.LibName}' has no item with ID '{parsedArgs.ItemId}'.");
 
         return Result.Success("Operation allowed.");
     }

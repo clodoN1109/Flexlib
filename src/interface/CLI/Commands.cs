@@ -394,7 +394,7 @@ public class NewCommentCommand : CommentCommand
 
     public override string UsageInstructions()
     {
-        return "Usage: flexlib new-comment <item name> [library name] [comment] \n";
+        return "Usage: flexlib new-comment <item id> [library name] [comment] \n";
     }
 }
 
@@ -414,7 +414,7 @@ public class ListCommentsCommand : CommentCommand
     
     public override string UsageInstructions()
     {
-        return "Usage: flexlib list-comments <item name> [library name]\n";
+        return "Usage: flexlib list-comments <item id> [library name]\n";
     }
 }
 
@@ -437,7 +437,7 @@ public class EditCommentCommand : CommentCommand
 
     public override string UsageInstructions()
     {
-        return "Usage: flexlib edit-comment <item name> <comment id> [library name]\n";
+        return "Usage: flexlib edit-comment <item id> <comment id> [library name]\n";
     }
 }
 
@@ -460,7 +460,7 @@ public class RemoveCommentCommand : CommentCommand
 
     public override string UsageInstructions()
     {
-        return "Usage: flexlib remove-comment <item name> <comment id> [library name]\n";
+        return "Usage: flexlib remove-comment <item id> <comment id> [library name]\n";
     }
 }
 

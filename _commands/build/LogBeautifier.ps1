@@ -39,12 +39,8 @@ function PrintABeautifulLog( $logsGroupedByProjectAndFile, [int]$errorCount, [in
         }
     }
 
-    if (($errorCount -eq 0) -and ($warningCount -eq 0)) 
-    {
-        DrawHappyFace
-        
-    } else {
-        DrawSadFace
-    }
+    if ($errorCount     -ne 0)      { DrawSadFace;      return;     }
+    if ($warningCount   -ne 0)      { DrawWorriedFace;  return;     }
+    DrawHappyFace
 
 }
