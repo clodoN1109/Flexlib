@@ -47,7 +47,7 @@ function Run-Tests() {
         [switch]$UpdateReferences
     )
 
-    Write-Fill "RUNTIME TEST SUIT"
+    Write-Fill "RUNTIME TEST SUIT" -ForegroundColor Cyan
     Write-Host ('-' * [System.Console]::WindowWidth) -ForegroundColor DarkGray
     Start-Sleep 1
     
@@ -59,7 +59,7 @@ function Run-Tests() {
         }
     }
 
-    Write-Fill
+    Write-Fill "END" -ForegroundColor Cyan
 }
 
 function Compare-Folders {

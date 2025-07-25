@@ -10,6 +10,6 @@ public interface IPresenter
     void ShowError(string message);
     void ListComments(List<Comment> comments);
     void ListLibs(List<Library> items);
-    void ListItems(List<LibraryItem> items);
+    void ListItems(List<LibraryItem> items, Library lib, string filterSequence, string sortSequence);
     void ListLayoutSequence(List<string> layoutSequence);
 } 

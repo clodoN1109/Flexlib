@@ -14,6 +14,8 @@ if (-not $NoClearHost) {
     Clear-Host
 }
 
+Write-Fill "BUILD" -ForegroundColor Cyan
+
 $env:DOTNET_CLI_UI_LANGUAGE = "en"
 
 $LogStream = ExecuteBuildProcess $Configuration
@@ -46,9 +48,8 @@ if ($PlotHistoryGraph)
 {
     $history = GetBuildHistory 
 
-    Write-Fill "BUILD HISTORY"
+    Write-Fill "BUILD HISTORY" -ForegroundColor Cyan
     PlotHistoryGraph $history
-    Write-Fill
 }
 
 $ResultRequestedByAnotherScript = ( $MyInvocation.ScriptName -ne "" )
@@ -56,3 +57,5 @@ $ResultRequestedByAnotherScript = ( $MyInvocation.ScriptName -ne "" )
 if ($ResultRequestedByAnotherScript) {
     return $newEntry;
 }
+
+Write-Fill "END" -ForegroundColor Cyan
