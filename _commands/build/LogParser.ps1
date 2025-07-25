@@ -2,8 +2,11 @@ function GroupLogsByProjectAndFile ( $LogStream ) {
 
     $logsGroupedByProjectAndFile = @{}
 
+    $pattern1 = "^(?<file>.*\.cs)\((?<line>\d+),\d+\): (?<type>warning|error) (?<code>CS\d{4}): (?<message>.+?) \[(?<project>.+\.csproj)\]"
+    $pattern2 = "^(?<file>.*\.targets)\((?<line>\d+),\d+\): (?<type>warning|error) (?<code>MSB\d{4}): (?<message>.+?) \[(?<project>.+\.csproj)\]"
+
     foreach ($line in $LogStream) {
-        if ($line -match "^(?<file>.*\.cs)\((?<line>\d+),\d+\): (?<type>warning|error) (?<code>CS\d{4}): (?<message>.+?) \[(?<project>.+\.csproj)\]") {
+        if ($line -match $pattern1 -or $line -match $pattern2) {
             $entry = @{
                 File    = $matches.file
                 Line    = $matches.line
@@ -18,11 +21,10 @@ function GroupLogsByProjectAndFile ( $LogStream ) {
                 $logsGroupedByProjectAndFile[$project] = @{}
             }
 
-            if (-not ($logsGroupedByProjectAndFile[$project].ContainsKey($entry.File))) {
+            if (-not $logsGroupedByProjectAndFile[$project].ContainsKey($entry.File)) {
                 $logsGroupedByProjectAndFile[$project][$entry.File] = @()
             }
 
-            # Avoid duplicate entries
             $entryKey = "$($entry.File):$($entry.Line):$($entry.Type):$($entry.Code):$($entry.Message)"
             $existingKeys = $logsGroupedByProjectAndFile[$project][$entry.File] | ForEach-Object {
                 "$($_.File):$($_.Line):$($_.Type):$($_.Code):$($_.Message)"

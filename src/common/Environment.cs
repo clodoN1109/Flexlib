@@ -9,6 +9,12 @@ public static class Env{
     {
         return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
     }    
+
+    public static string Version => BuildInfo.SemanticVersion ?? "";
+
+    public static string BuildId => BuildInfo.BuildId ?? "";
+
+    public static string OS => Environment.OSVersion.ToString();
     
 }
 

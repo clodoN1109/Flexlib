@@ -6,9 +6,9 @@ class Program
 {
     static void Main(string[] args)
     {
-
+#if DEBUG
         PrettyException.HookGlobalHandler();
-
+#endif
         string[] normalizedInput  = Normalizer.Normalize(args);
         
         ParsedInput parsedInput  = Parsing.Parse(normalizedInput);   

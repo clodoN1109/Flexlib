@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Flexlib.Common;
 
 namespace Flexlib.Interface.Output;
 
@@ -52,10 +53,31 @@ public static class Render
     }
 
     public static string Logo()
-    {  
-        string logo = ">::>    flexlib";
+    {
+        
+        string logo = $">::>    flexlib";
 
         return logo;
+        
+    }
+
+    public static string LogoLine(int totalWidth)
+    {
+        string idInfo;
+
+#if DEBUG
+        idInfo = $"{Env.BuildId}";
+#else
+        idInfo = $"v{Env.Version}";
+#endif
+
+        string logo = Render.Logo();
+
+        string spaceBetween = new string(' ', totalWidth - logo.Length - idInfo.Length);
+        
+        string logoLine = logo + spaceBetween + idInfo;
+
+        return logoLine;
         
     }
 

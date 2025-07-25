@@ -38,7 +38,7 @@ public class Renderer
     public List<ColoredLine> FormatCommentTable(List<Comment> comments, int consoleWidth)
     {
         var output = new List<ColoredLine>();
-        string logoBar = $"  {Render.Logo()}";
+        string logoBar = Render.LogoLine(consoleWidth);
         string titleBar = "░░░░ COMMENTS " + new string('░', Math.Max(0, consoleWidth - 14));
         string bottomBar = new string('░', consoleWidth);
 
@@ -48,7 +48,7 @@ public class Renderer
         string Truncate(string text, int max) =>
             string.IsNullOrEmpty(text) ? "" : text.Length <= max ? text : text[..Math.Max(0, max - 1)] + ellipsis;
 
-        if (comments == null || comments.Count == 0)
+        if (comments == null)
         {
             output.Add(new ColoredLine("\nNo comments found."));
             return output;
@@ -110,7 +110,7 @@ public class Renderer
     {
         var output = new List<ColoredLine>();
 
-        string logoBar = $"  {Render.Logo()}";
+        string logoBar = Render.LogoLine(consoleWidth);
         string titleBar = "░░░░ LIBRARY ITEMS " + new string('░', Math.Max(0, consoleWidth - 20));
         string layoutSequence = string.Join("/", lib.LayoutSequence.Select(p => p.Name));
         string header = Render.LineFilled(consoleWidth, "left", ' ', $"{lib.Name}/{filterSequence}", $"{sortSequence}");
@@ -227,7 +227,7 @@ public class Renderer
     {
         var output = new List<ColoredLine>();
 
-        string logoBar = $"  {Render.Logo()}";
+        string logoBar = Render.LogoLine(consoleWidth);
         string titleBar = "░░░░ LIBRARIES " + new string('░', Math.Max(0, consoleWidth - 15));
         string bottomBar = new string('░', consoleWidth);
 
