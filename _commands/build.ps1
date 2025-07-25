@@ -36,6 +36,15 @@ if ( $errorCount -eq 0) {
 
 }
 
+if ($PlotHistoryGraph) 
+{
+    $history = GetBuildHistory 
+
+    Write-Fill "BUILD HISTORY" -ForegroundColor Cyan
+    PlotHistoryGraph $history
+    Write-Fill "END" -ForegroundColor Cyan
+}
+
 if (($configuration -eq "Debug") -and ($WithRuntimeTests) -and ($errorCount -eq 0) -and ($warningCount -eq 0)) {
      
     Start-Sleep 1
@@ -44,18 +53,9 @@ if (($configuration -eq "Debug") -and ($WithRuntimeTests) -and ($errorCount -eq 
 
 }
 
-if ($PlotHistoryGraph) 
-{
-    $history = GetBuildHistory 
-
-    Write-Fill "BUILD HISTORY" -ForegroundColor Cyan
-    PlotHistoryGraph $history
-}
-
 $ResultRequestedByAnotherScript = ( $MyInvocation.ScriptName -ne "" )
 
 if ($ResultRequestedByAnotherScript) {
     return $newEntry;
 }
 
-Write-Fill "END" -ForegroundColor Cyan
