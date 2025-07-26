@@ -226,16 +226,15 @@ public class Renderer
         return output;
     }
 
-    public List<ColoredLine> FormatLibraryTable(List<Library> items, int consoleWidth)
+    public List<ColoredLine> FormatLibraryTable(List<Library> libraries, int consoleWidth)
     {
         var output = new List<ColoredLine>();
 
         string logoBar = Render.LogoLine(consoleWidth);
         string titleBar = "░░░░ LIBRARIES " + new string('░', Math.Max(0, consoleWidth - 15));
+        string statsBar = Render.LineFilled(consoleWidth, "right", ' ', $"{libraries.Count} libraries");
         string bottomBar = new string('░', consoleWidth);
 
-        var headers = new[] { "Name", "Properties", "Layout", "Path" };
-        int columnCount = headers.Length;
         const int padding = 3;
         const string ellipsis = "…";
 
@@ -245,16 +244,31 @@ public class Renderer
         string TruncateStart(string text, int max) =>
             string.IsNullOrEmpty(text) || text.Length <= max ? text : ellipsis + text[^Math.Max(0, max - 1)..];
 
-        var rows = items.Select(lib => new[]
+        var columns = new List<(string Header, Func<Library, string> ValueSelector, bool TruncateStart)>
         {
-            lib.Name ?? "",
-            lib.PropertyDefinitions != null ? string.Join(", ", lib.PropertyDefinitions.Select(p => p.Name)) : "",
-            lib.LayoutSequence != null ? string.Join("/", lib.LayoutSequence.Select(l => l.Name)) : "",
-            lib.Path ?? ""
-        }).ToList();
+            ("Name", lib => lib.Name ?? "", false),
+            ("Items", lib => lib.Items?.Count.ToString() ?? "0", false),
+            ("Properties", lib => lib.PropertyDefinitions != null ? string.Join(", ", lib.PropertyDefinitions.Select(p => p.Name)) : "", false),
+            ("Layout", lib => lib.LayoutSequence != null ? string.Join("/", lib.LayoutSequence.Select(l => l.Name)) : "", true),
+            ("Location", lib => lib.Path ?? "", false)
+        };
 
-        int[] idealWidths = headers.Select((h, i) =>
-            Math.Max(h.Length, rows.Max(r => r[i]?.Length ?? 0))).ToArray();
+        int columnCount = columns.Count;
+
+        // Get all row values as strings
+        var rows = libraries.Select(lib => columns.Select(col => col.ValueSelector(lib)).ToArray()).ToList();
+
+        int[] idealWidths;
+        if (rows.Count > 0)
+        {
+            idealWidths = columns.Select((col, i) =>
+                Math.Max(col.Header.Length, rows.Max(r => r[i]?.Length ?? 0))
+            ).ToArray();
+        }
+        else
+        {
+            idealWidths = columns.Select(c => c.Header.Length).ToArray();
+        }
 
         int totalPadding = (columnCount - 1) * padding;
         int totalIdeal = idealWidths.Sum() + totalPadding;
@@ -265,7 +279,9 @@ public class Renderer
         if (totalIdeal > consoleWidth)
         {
             int available = consoleWidth - totalPadding;
-            int fixedCols = idealWidths[0] + idealWidths[1] + idealWidths[2];
+
+            // Try keeping the first three fixed
+            int fixedCols = idealWidths.Take(3).Sum();
 
             if (fixedCols + 10 > available)
             {
@@ -282,20 +298,26 @@ public class Renderer
             }
             else
             {
-                colWidths[0] = idealWidths[0];
-                colWidths[1] = idealWidths[1];
-                colWidths[2] = idealWidths[2];
-                colWidths[3] = available - (colWidths[0] + colWidths[1] + colWidths[2]);
+                for (int i = 0; i < 3; i++)
+                    colWidths[i] = idealWidths[i];
+
+                int rest = available - colWidths.Take(3).Sum();
+                for (int i = 3; i < columnCount; i++)
+                    colWidths[i] = Math.Min(rest, idealWidths[i]);
             }
         }
 
+        // Draw table
         output.Add(new ColoredLine(""));
         output.Add(new ColoredLine(logoBar));
         output.Add(new ColoredLine(""));
         output.Add(new ColoredLine(titleBar, ConsoleColor.Gray));
         output.Add(new ColoredLine(""));
 
-        output.Add(new ColoredLine(string.Join(" | ", headers.Select((h, i) => TruncateEnd(h, colWidths[i]).PadRight(colWidths[i]))), ConsoleColor.DarkGray));
+        output.Add(new ColoredLine(string.Join(" | ",
+            columns.Select((col, i) => TruncateEnd(col.Header, colWidths[i]).PadRight(colWidths[i]))),
+            ConsoleColor.DarkGray));
+
         output.Add(new ColoredLine(string.Join("-|-", colWidths.Select(w => new string('-', w))), ConsoleColor.DarkGray));
 
         foreach (var row in rows)
@@ -303,7 +325,7 @@ public class Renderer
             var formattedRow = row.Select((cell, i) =>
             {
                 var width = colWidths[i];
-                return (i == 3 ? TruncateStart(cell, width) : TruncateEnd(cell, width)).PadRight(width);
+                return (columns[i].TruncateStart ? TruncateStart(cell, width) : TruncateEnd(cell, width)).PadRight(width);
             });
 
             output.Add(new ColoredLine(string.Join(" | ", formattedRow)));
@@ -311,6 +333,7 @@ public class Renderer
 
         output.Add(new ColoredLine(""));
         output.Add(new ColoredLine(bottomBar, ConsoleColor.Gray));
+        output.Add(new ColoredLine(statsBar, ConsoleColor.Gray));
         output.Add(new ColoredLine(""));
 
         return output;

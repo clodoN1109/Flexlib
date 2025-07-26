@@ -26,15 +26,8 @@ public static class ListLibs
     {
         var selectedLibs = parsedArgs.Repo.GetAll();
 
-        if (selectedLibs.Any())
-        {
             parsedArgs.Presenter.ListLibs(selectedLibs.ToList());
-            return Result.Success($"{selectedLibs.Count()} libraries listed.");
-        }
-        else
-        {
-            return Result.Fail("No libraries found.");
-        }
+            return Result.Success("");
     }
 
     private static Result IsOperationAllowed(ParsedArgs parsedArgs)
