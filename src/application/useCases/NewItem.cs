@@ -5,7 +5,7 @@ using Flexlib.Application.Ports;
 
 namespace Flexlib.Application.UseCases;
 
-public static class AddItem
+public static class NewItem
 {
     public static Result Execute(string libName, string itemOrigin, string itemName, ILibraryRepository repo)
     {
@@ -14,7 +14,7 @@ public static class AddItem
 
         if (validation.IsSuccess)
         {
-            return AddItemToLib(libName, itemOrigin, itemName, repo);
+            return NewItemToLib(libName, itemOrigin, itemName, repo);
         }
         else 
         {
@@ -23,12 +23,12 @@ public static class AddItem
 
     }
 
-    private static Result AddItemToLib(string libName, string itemOrigin, string itemName, ILibraryRepository repo)
+    private static Result NewItemToLib(string libName, string itemOrigin, string itemName, ILibraryRepository repo)
     {
         Library? lib = repo.GetByName(libName);
         if (lib != null)
         {
-            repo.Save(lib.AddItem(itemName, itemOrigin)); 
+            repo.Save(lib.NewItem(itemName, itemOrigin)); 
             return Result.Success($"Item '{itemName}' added to the library '{libName}'.");
         }
         else {

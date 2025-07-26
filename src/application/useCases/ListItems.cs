@@ -22,7 +22,6 @@ public static class ListItems
 
     private static Result _ListItems(ParsedArgs parsedArgs)
     {
-
         var selectedLibrary = parsedArgs.Repo.GetByName(parsedArgs.LibName)!;
         if (selectedLibrary == null)
             return Result.Fail($"Library '{parsedArgs.LibName}' not found.");
@@ -34,8 +33,10 @@ public static class ListItems
 
         if (selectedItems is not List<LibraryItem>)
             return Result.Fail($"List of items could not be obtained.");
+
+        double localSizeInBytes = parsedArgs.Repo.GetLocalItemFileSizes(selectedItems, selectedLibrary);
         
-        parsedArgs.Presenter.ListItems(selectedItems, selectedLibrary, parsedArgs.FilterSequenceString, parsedArgs.SortSequenceString);
+        parsedArgs.Presenter.ListItems(selectedItems, selectedLibrary, parsedArgs.FilterSequenceString, parsedArgs.SortSequenceString, localSizeInBytes);
         
         return Result.Success($"");
 

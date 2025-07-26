@@ -106,7 +106,7 @@ public class Renderer
         return output;
     }
 
-    public List<ColoredLine> FormatItemTable(List<LibraryItem> items, Library lib, string filterSequence, string sortSequence, int consoleWidth)
+    public List<ColoredLine> FormatItemTable(List<LibraryItem> items, Library lib, string filterSequence, string sortSequence, double localSizeInBytes, int consoleWidth)
     {
         var output = new List<ColoredLine>();
 
@@ -114,7 +114,10 @@ public class Renderer
         string titleBar = "░░░░ LIBRARY ITEMS " + new string('░', Math.Max(0, consoleWidth - 20));
         string layoutSequence = string.Join("/", lib.LayoutSequence.Select(p => p.Name));
         string header = Render.LineFilled(consoleWidth, "left", ' ', $"{lib.Name}/{filterSequence}", $"{sortSequence}");
-        string footer = Render.LineFilled(consoleWidth, "left", ' ', layoutSequence);
+
+        string stats = $"{items.Count} items" + " " + $"{localSizeInBytes:N2} bytes";
+        string footer = Render.LineSpacedBetween(consoleWidth, layoutSequence, stats);
+        
         string bottomBar = new string('░', consoleWidth);
 
         const int padding = 3;
