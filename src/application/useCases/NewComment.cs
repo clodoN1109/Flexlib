@@ -1,40 +1,35 @@
 using Flexlib.Application.Ports;
-using Flexlib.Application.UseCases.Common;
+using Flexlib.Application.Common;
 using Flexlib.Common;
 using Flexlib.Domain;
 using System.Text;
 
 namespace Flexlib.Application.UseCases;
 
-public static class MakeComment
+public static class NewComment
 {
-    public static Result Execute(object itemId, string libName, string text, ILibraryRepository repo)
+    public static Result Execute(object itemId, string libName, string text, IUser user, ILibraryRepository repo)
     {
-        var parsedArgs = new ParsedArgs(itemId, libName, text, repo); 
+        var parsedArgs = new ParsedArgs(itemId, libName, text, user, repo); 
 
         var validation = IsOperationAllowed(parsedArgs);
 
         return validation.IsSuccess
-            ? _MakeComment(parsedArgs)
+            ? _NewComment(parsedArgs)
             : validation;
     }
 
-    private static Result _MakeComment(ParsedArgs parsedArgs)
+    private static Result _NewComment(ParsedArgs parsedArgs)
     {
         var selectedLibrary = parsedArgs.Repo.GetByName(parsedArgs.LibName)!;
-        if (selectedLibrary == null)
-            return Result.Fail($"Library '{parsedArgs.LibName}' not found.");
         
-        var selectedItem = selectedLibrary.GetItemById(parsedArgs.ItemId);
+        var selectedItem = selectedLibrary!.GetItemById(parsedArgs.ItemId);
+       
+        string id = $"{selectedItem!.GetCommentCount() + 1}";
 
-        if (selectedItem == null)
-            return Result.Fail($"Item '{parsedArgs.ItemId}' not found in library '{selectedLibrary.Name}'.");
-        
-        string id = $"{selectedItem.GetCommentCount() + 1}";
+        var comment = new Comment(id, parsedArgs.Text, parsedArgs.Author);
 
-        var comment = new Comment(id, parsedArgs.Text);
-
-        selectedItem.AddComment(comment);
+        selectedItem.NewComment(comment);
 
         parsedArgs.Repo.Save(selectedLibrary);
          
@@ -65,13 +60,15 @@ public static class MakeComment
         public object ItemId { get; }
         public string LibName { get; }
         public string Text { get; }
+        public IUser Author { get; }
         public ILibraryRepository Repo { get; }
 
-        public ParsedArgs(object itemId, string libName, string text, ILibraryRepository repo)
+        public ParsedArgs(object itemId, string libName, string text, IUser author, ILibraryRepository repo)
         {
             LibName = libName;
             ItemId = itemId;
             Text = text ?? "";
+            Author = author;
             Repo = repo;
         }
     }

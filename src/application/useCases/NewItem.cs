@@ -1,6 +1,6 @@
 using Flexlib.Domain;
 using Flexlib.Common;
-using Flexlib.Application.UseCases.Common;
+using Flexlib.Application.Common;
 using Flexlib.Application.Ports;
 
 namespace Flexlib.Application.UseCases;

@@ -79,8 +79,8 @@ $diff_2 = Compare-Object `
     (Get-Content "$referencesPath/libraries.json")
 
 # Skips the second line (build number), which changes every test preceded by a build and would break meaningful comparison
-$actual   = Get-Content "$resultsPath/output.txt"     | Where-Object { $true } | ForEach-Object -Begin { $i = 0 } -Process { if ($i++ -ne 1) { $_ } }
-$expected = Get-Content "$referencesPath/output.txt"  | Where-Object { $true } | ForEach-Object -Begin { $i = 0 } -Process { if ($i++ -ne 1) { $_ } }
+$actual   = Get-Content "$resultsPath/output.txt"     | Where-Object { $true } | ForEach-Object -Begin { $i = 0 } -Process { if ($i++ -ne 4) { $_ } }
+$expected = Get-Content "$referencesPath/output.txt"  | Where-Object { $true } | ForEach-Object -Begin { $i = 0 } -Process { if ($i++ -ne 4) { $_ } }
 $diff_3 = Compare-Object $actual $expected
 
 

@@ -2,7 +2,7 @@ using Flexlib.Common;
 using Flexlib.Application.UseCases;
 using Flexlib.Application.Ports;
 
-namespace Flexlib.Application.UseCases.Common;
+namespace Flexlib.Application.Common;
 
 public static class AssureDefaultLibrary
 {

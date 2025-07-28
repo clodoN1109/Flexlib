@@ -2,120 +2,106 @@ using Flexlib.Common;
 using Flexlib.Application.Ports;
 using Flexlib.Application.UseCases;
 using Flexlib.Infrastructure.Persistence;
+using Flexlib.Infrastructure.Authorization;
 using Flexlib.Interface.Input;
 using Flexlib.Interface.CLI;
 using Flexlib.Interface.Output;
 
 namespace Flexlib.Interface.Controllers;
 
+
 public static class ConsoleController
 {
 
-    static Result? result;
-    
-    private static readonly ILibraryRepository _repo = new JsonLibraryRepository();
+    private static readonly ILibraryRepository _libRepo = new JsonLibraryRepository();
     private static readonly IPresenter _presenter = new ConsolePresenter();
-    private static readonly IReader _read = new Reader();
+    private static readonly IReader _reader = new Reader();
 
-    public static void Handle(Command command)
+    public static void Handle(Command command, IUser authUser)
     {
 
-        switch (command)
+        if (Authorization.IsNotAuthorized(command, authUser))
         {
-            case NewLibraryCommand newLib:
-                result = NewLibrary.Execute(newLib.Name, newLib.Path, _repo); 
-                break;
-
-            case NewItemCommand addItem:
-                result = NewItem.Execute(addItem.LibraryName, addItem.ItemOrigin, addItem.ItemName, _repo);
-                break;
-            
-            case RemoveItemCommand removeItem:
-                result = RemoveItem.Execute(removeItem.ItemId, removeItem.LibraryName, _repo);
-                break;
-            
-            case ListLibrariesCommand listLibs:
-                result = ListLibs.Execute(_repo, _presenter);
-                break;
-            
-            case ListItemsCommand listItems:
-                result = ListItems.Execute(listItems.LibraryName, listItems.FilterSequence, listItems.SortSequence, _repo, _presenter);
-                break;
-
-            case GetLibraryLayoutCommand getLayout:
-                result = GetLibraryLayout.Execute(getLayout.LibraryName, _repo, _presenter);
-                break;
-            
-            case SetLibraryLayoutCommand setLayout:
-                result = SetLibraryLayout.Execute(setLayout.LibraryName, setLayout.LayoutString, _repo, _presenter);
-                break;
-            
-            case FetchFilesCommand fetchFiles:
-                result = FetchFiles.Execute(fetchFiles.LibraryName, _repo);
-                break;
-            
-            case NewPropertyCommand addProp:
-                result = AddProperty.Execute(addProp.LibName, addProp.PropName, addProp.PropType, _repo);
-                break;
-            
-            case ListPropertiesCommand listProps:
-                result = ListProperties.Execute(listProps.LibName, listProps.ItemName, _repo);
-                break;
-            
-            case SetPropertyCommand setProp:
-                result = SetProperty.Execute(setProp.PropName, setProp.NewValue, setProp.LibName, setProp.ItemId, _repo);
-                break;
-            
-            case RemovePropertyCommand removeProp:
-                result = RemoveProperty.Execute(removeProp.PropName, removeProp.LibName, _repo);
-                break;
-            
-            case NewCommentCommand makeCom:
-
-                if (string.IsNullOrWhiteSpace(makeCom.Comment))
-                {
-                    makeCom.Comment = (new Reader()).ReadText();
-                }
-
-                if (string.IsNullOrWhiteSpace(makeCom.Comment))
-                {
-                    result = Result.Fail("Failed to get text input.");
-                    break;
-                }
-
-                result = MakeComment.Execute(makeCom.ItemId, makeCom.LibName, makeCom.Comment, _repo);
-                break;
-
-            case ListCommentsCommand listCom:
-                result = ListComments.Execute(listCom.ItemId, listCom.LibName, _repo, _presenter);
-                break;
-            
-            case EditCommentCommand editCom:
-                result = EditComment.Execute(editCom.ItemId, editCom.CommentId, editCom.LibName, _read, _repo);
-                break;
-            
-            case RemoveCommentCommand removeCom:
-                result = RemoveComment.Execute(removeCom.ItemId, removeCom.CommentId, removeCom.LibName, _repo);
-                break;
-            
-            case RemoveLibraryCommand removeLib:
-                result = RemoveLibrary.Execute(removeLib.Name, _repo); 
-                break;
-            
-            case UnknownCommand UnknownCmd:
-                result = Result.Fail(UnknownCmd.Message);
-                break;
-
-            default:
-                result = Result.Fail($"Unknown use case {command}.");
-                break;
+            _presenter.Failure($"User {authUser.Name} is not authorized to action {command.Type}.");
+            return;
         }
+
+        var result = Execute(command, authUser);
 
         if (result.IsSuccess)
             _presenter.Success(result.SuccessMessage ?? "");
         else
             _presenter.Failure(result.ErrorMessage ?? "");
+    }
 
+    private static Result Execute(Command command, IUser authUser)
+    {
+        switch (command)
+        {
+            case NewLibraryCommand c:
+                return NewLibrary.Execute(c.Name, c.Path, _libRepo);
+
+            case NewItemCommand c:
+                return NewItem.Execute(c.LibraryName, c.ItemOrigin, c.ItemName, _libRepo);
+
+            case RemoveItemCommand c:
+                return RemoveItem.Execute(c.ItemId, c.LibraryName, _libRepo);
+
+            case ListLibrariesCommand c:
+                return ListLibs.Execute(_libRepo, _presenter);
+
+            case ListItemsCommand c:
+                return ListItems.Execute(c.LibraryName, c.FilterSequence, c.SortSequence, _libRepo, _presenter);
+
+            case GetLibraryLayoutCommand c:
+                return GetLibraryLayout.Execute(c.LibraryName, _libRepo, _presenter);
+
+            case SetLibraryLayoutCommand c:
+                return SetLibraryLayout.Execute(c.LibraryName, c.LayoutString, _libRepo, _presenter);
+
+            case FetchFilesCommand c:
+                return FetchFiles.Execute(c.LibraryName, _libRepo);
+
+            case NewPropertyCommand c:
+                return AddProperty.Execute(c.LibName, c.PropName, c.PropType, _libRepo);
+
+            case ListPropertiesCommand c:
+                return ListProperties.Execute(c.LibName, c.ItemName, _libRepo);
+
+            case SetPropertyCommand c:
+                return SetProperty.Execute(c.PropName, c.NewValue, c.LibName, c.ItemId, _libRepo);
+
+            case RemovePropertyCommand c:
+                return RemoveProperty.Execute(c.PropName, c.LibName, _libRepo);
+
+            case NewCommentCommand c:
+                var comment = string.IsNullOrWhiteSpace(c.Comment)
+                    ? _reader.ReadText()
+                    : c.Comment;
+
+                if (string.IsNullOrWhiteSpace(comment))
+                    return Result.Fail("Failed to get text input.");
+
+                return NewComment.Execute(c.ItemId, c.LibName, comment, authUser, _libRepo);
+
+            case ListCommentsCommand c:
+                return ListComments.Execute(c.ItemId, c.LibName, _libRepo, _presenter);
+
+            case EditCommentCommand c:
+                return EditComment.Execute(c.ItemId, c.CommentId, c.LibName, _reader, _libRepo);
+
+            case RemoveCommentCommand c:
+                return RemoveComment.Execute(c.ItemId, c.CommentId, c.LibName, _libRepo);
+
+            case RemoveLibraryCommand c:
+                return RemoveLibrary.Execute(c.Name, _libRepo);
+
+            case UnknownCommand c:
+                return Result.Fail(c.Message);
+
+            default:
+                return Result.Fail($"Unknown use case: {command?.GetType().Name ?? "null"}");
+        }
     }
 }
 

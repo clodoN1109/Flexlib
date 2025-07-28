@@ -1,5 +1,5 @@
 using Flexlib.Application.Ports;
-using Flexlib.Application.UseCases.Common;
+using Flexlib.Application.Common;
 using Flexlib.Common;
 using Flexlib.Domain;
 using System.Text;
@@ -23,15 +23,10 @@ public static class ListComments
     private static Result _ListComments(ParsedArgs parsedArgs)
     {
         var selectedLibrary = parsedArgs.Repo.GetByName(parsedArgs.LibName)!;
-        if (selectedLibrary == null)
-            return Result.Fail($"Library '{parsedArgs.LibName}' not found.");
         
         var selectedItem = selectedLibrary.GetItemById(parsedArgs.ItemId);
 
-        if (selectedItem == null)
-            return Result.Fail($"Item '{parsedArgs.ItemId}' not found in library '{selectedLibrary.Name}'.");
-       
-        parsedArgs.Presenter.ListComments(selectedItem.Comments);
+        parsedArgs.Presenter.ListComments(selectedItem!.Comments, selectedItem!.Name ?? "", selectedLibrary!.Name ?? "");
 
         return Result.Success($"");
 
