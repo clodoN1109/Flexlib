@@ -2,13 +2,16 @@ param (
     [switch]$WithRuntimeTests,
     [string]$Configuration = "Debug",
     [switch]$NoClearHost,
-    [switch]$PlotHistoryGraph
+    [switch]$PlotHistoryGraph,
+    [string]$Version = ""
 )
 
 . "$PSScriptRoot\build\LogHandler.ps1"
 . "$PSScriptRoot\build\BuildProcess.ps1"
 . "$PSScriptRoot\build\BuildHistory.ps1"
 . "$PSScriptRoot\build\Utils.ps1"
+
+$BuildHistoryPath = "$PSScriptRoot\..\builds\builds.json"
 
 if (-not $NoClearHost) {
     Clear-Host
@@ -18,11 +21,13 @@ Write-Fill "BUILD" -ForegroundColor Cyan
 
 $env:DOTNET_CLI_UI_LANGUAGE = "en"
 
-$LogStream = ExecuteBuildProcess $Configuration
+$buildID = DetermineBuildID $BuildHistoryPath
+
+$LogStream = ExecuteBuildProcess $Configuration $buildID $Version
 
 $errorCount, $warningCount = HandleLog $LogStream
     
-$newEntry = SaveBuildHistory $Configuration $ErrorCount $WarningCount
+$newEntry = SaveBuildHistory $Configuration $buildID $ErrorCount $WarningCount
 
 $buildID = $newEntry.id
 

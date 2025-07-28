@@ -25,7 +25,7 @@ public class Library
         LayoutSequence = new();
     }
 
-    public Library AddItem(string name, string origin)
+    public Library NewItem(string name, string origin)
     {
         var newItem = new LibraryItem(name, origin, this);
 

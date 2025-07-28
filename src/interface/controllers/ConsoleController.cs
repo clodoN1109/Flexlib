@@ -27,7 +27,7 @@ public static class ConsoleController
                 break;
 
             case NewItemCommand addItem:
-                result = AddItem.Execute(addItem.LibraryName, addItem.ItemOrigin, addItem.ItemName, _repo);
+                result = NewItem.Execute(addItem.LibraryName, addItem.ItemOrigin, addItem.ItemName, _repo);
                 break;
             
             case RemoveItemCommand removeItem:

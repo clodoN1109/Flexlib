@@ -12,4 +12,5 @@ public interface ILibraryRepository
     Result RemoveItem(LibraryItem item, Library lib);
     IEnumerable<Library> GetAll();
     string GetDataDirectory();
+    double GetLocalItemFileSizes(List<LibraryItem> items, Library lib);
 }

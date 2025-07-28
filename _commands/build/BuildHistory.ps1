@@ -76,7 +76,7 @@ function DetermineBuildID {
     
     $history = GetBuildHistory $BuildHistoryPath
 
-    $nextID  = $history.count
+    $nextID  = $history.builds.Length
 
     return $nextID
 
@@ -87,20 +87,19 @@ function SaveBuildHistory {
     param (
         
         [string]$BuildConfiguration,
+        [int]$BuildID,   
         [int]$ErrorCount = 0,
         [int]$WarningCount = 0,
         [string]$BuildHistoryPath = "$PSScriptRoot\..\..\builds\builds.json"
 
     )
 
-    $buildID = DetermineBuildID $BuildHistoryPath
-
     $history = GetBuildHistory $BuildHistoryPath
 
     $timestamp  = (Get-Date).ToString("s")  # ISO 8601 format
 
     $newEntry = [PSCustomObject]@{
-        id = $buildID
+        id = $BuildID
         configuration = $BuildConfiguration
         timestamp = $timestamp
         errors = $ErrorCount
@@ -108,7 +107,7 @@ function SaveBuildHistory {
     }
     
     $history.builds += $newEntry
-    $history.count = $buildID + 1
+    $history.count = $BuildID + 1
 
     $json = $history | ConvertTo-Json -Depth 3
     Set-Content -Path $BuildHistoryPath -Value $json

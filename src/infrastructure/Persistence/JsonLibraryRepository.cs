@@ -229,9 +229,10 @@ public class JsonLibraryRepository : ILibraryRepository
         {
             string sourcePath = item.Origin!;
             
+            string itemId = item.Id!.ToString();
             string itemName = item.Name!;
             string fileExtension = Path.GetExtension( Path.GetFileName(sourcePath) );
-            string fileName = $"{itemName}{fileExtension}";
+            string fileName = $"{itemId}-{itemName}{fileExtension}";
 
             string targetPath = Path.Combine(localDir, fileName);
 
@@ -266,8 +267,14 @@ public class JsonLibraryRepository : ILibraryRepository
     }
 
     private void UpdateItemMetaFile(LibraryItem item, Library lib)
-    {
-        string itemMetaFile = Path.Combine(lib.Path, lib.Name!, "items", $"{item.Name}.json");
+    {            
+            string sourcePath = item.Origin!;
+            
+            string itemId = item.Id!.ToString();
+            string itemName = item.Name!;
+            string fileName = $"{itemId}-{itemName}";
+
+        string itemMetaFile = Path.Combine(lib.Path, lib.Name!, "items", $"{fileName}.json");
         JsonHelpers.WriteJson(itemMetaFile, item);
     }
 
@@ -282,8 +289,13 @@ public class JsonLibraryRepository : ILibraryRepository
 
     private void DeleteItemMetaFile(LibraryItem item, Library lib)
     {
-        string itemMetaFile = Path.Combine(lib.Path, lib.Name!, "items", $"{item.Name}.json");
+        string sourcePath = item.Origin!;
+        
+        string itemId = item.Id!.ToString();
+        string itemName = item.Name!;
+        string fileName = $"{itemId}-{itemName}";
 
+        string itemMetaFile = Path.Combine(lib.Path, lib.Name!, "items", $"{fileName}.json");
         if (File.Exists(itemMetaFile))
             File.Delete(itemMetaFile);
     }
@@ -304,6 +316,43 @@ public class JsonLibraryRepository : ILibraryRepository
                 DeleteItemMetaFile(item, lib);
             }
         }
+    }
+
+    public double GetLocalItemFileSizes(List<LibraryItem> items, Library library)
+    {
+        if (items == null || library == null || string.IsNullOrEmpty(library.Path) || string.IsNullOrEmpty(library.Name))
+            return 0;
+
+        string localFolderPath = Path.Combine(library.Path, library.Name, "items", "local");
+
+        if (!Directory.Exists(localFolderPath))
+            return 0;
+
+        double totalBytes = 0;
+
+        foreach (var item in items)
+        {
+            if (item?.Id == null)
+                continue;
+
+            // Match any file starting with "{id}-"
+            string searchPattern = $"{item.Id}-*";
+            var matchingFiles = Directory.GetFiles(localFolderPath, searchPattern);
+
+            foreach (var file in matchingFiles)
+            {
+                try
+                {
+                    var fileInfo = new FileInfo(file);
+                    totalBytes += fileInfo.Length;
+                }
+                catch
+                {
+                }
+            }
+        }
+
+        return totalBytes;
     }
 
     public bool Exists(string name) => _cache.Any( l => l.Name == name);
