@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Flexlib.Application.Ports;
 
 namespace Flexlib.Domain;
 
@@ -6,8 +7,7 @@ public class Comment
 {
     private string _text;
 
-    public string Id { get; }
-
+    public string Id { get; init; } = "";
     public string Text
     {
         get => _text;
@@ -15,22 +15,38 @@ public class Comment
         {
             _text = value;
             References = ExtractReferencesFromText(_text);
+            EditedTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
         }
     }
 
-    public List<LibraryItemReference> References { get; private set; }
+    public User Author { get; init; } = new User("Anonymous");
+    public string CreatedTime { get; init; } = "";
+    public string EditedTime { get; set; } = "";
 
-    public Comment(string id, string text)
+    public List<LibraryItemReference> References { get; private set; } = new();
+
+    public Comment() 
+    {
+        _text = "";
+    }
+
+    public Comment(string id, string text, IUser author)
     {
         Id = id;
         _text = text;
+        Author = new User(author.Id)
+        {
+            Name = author.Name,
+            Credentials = author.Credentials
+        };
+        CreatedTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
+        EditedTime = "";
         References = ExtractReferencesFromText(_text);
     }
 
     private List<LibraryItemReference> ExtractReferencesFromText(string text)
     {
         var references = new List<LibraryItemReference>();
-
         var pattern = @"\{(?:(?<lib>[^/{}]+?)/)?(?<item>[^{}]+?)\}";
         var matches = Regex.Matches(text, pattern);
 
@@ -54,4 +70,5 @@ public class Comment
         return references;
     }
 }
+
 

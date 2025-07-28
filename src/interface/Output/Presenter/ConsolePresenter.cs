@@ -17,6 +17,11 @@ public class ConsolePresenter : IPresenter
     {
         _emitter.Print(_renderer.ExplainUsage(usageInstructions));
     }
+    
+    public void ExhibitUserInfo(IUser user)
+    {
+        _emitter.Print(_renderer.UserInfo(user));
+    }
 
     public void Success(string message)
     {
@@ -33,9 +38,9 @@ public class ConsolePresenter : IPresenter
         _emitter.Print(_renderer.Error(message));
     }
 
-    public void ListComments(List<Comment> comments)
+    public void ListComments(List<Comment> comments, string? itemName, string? libName)
     {
-        var lines = _renderer.FormatCommentTable(comments, Console.WindowWidth);
+        var lines = _renderer.FormatCommentTable(comments, itemName ?? " ", libName ?? " ", Console.WindowWidth);
         _emitter.PrintLines(lines);
     }
     

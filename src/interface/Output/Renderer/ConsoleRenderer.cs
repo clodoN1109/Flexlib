@@ -1,6 +1,7 @@
 using Flexlib.Domain;
 using System.Text.Json;
 using System.Drawing;
+using Flexlib.Application.Ports;
 
 namespace Flexlib.Interface.Output;
 
@@ -24,84 +25,152 @@ public class ColoredLine
 
 public class Renderer
 {
-    public string Message(string? message) => $"\n{message}\n";
+    
+    public string Message(string? message)
+    {
+        string[] lines = {
+            $"   {message}"
+        };
+
+        int contentWidth = lines.Max(line => line.Length);
+        int boxWidth = contentWidth + 2;
+
+        string top = "---" + new string('―', boxWidth - 3) + "┐";
+        string bottom = "---" + new string('―', boxWidth - 3) + "┘";
+
+        var box = new List<string> { top };
+
+        foreach (var line in lines)
+        {
+            string padded = line.PadRight(contentWidth);
+            box.Add($" {padded} │");
+        }
+
+        box.Add(bottom);
+        return string.Join("\n", box);
+    }
+
+    public string UserInfo(IUser user) => Message($"user: {user.Id}");
+    public string Success(string message) => Message($"✓ {message}");
+    public string Failure(string message) => Message($"❌ {message}");
+    public string Error(string message) => Message($"Error: {message}");
 
     public string ExplainUsage(string? usageInstructions) =>
         usageInstructions != null
             ? $"\n{usageInstructions}\n"
             : "\n Usage: flexlib {command} [options] \n";
 
-    public string Success(string message) => $"\n✔  {message}\n";
-    public string Failure(string message) => $"\n✖  {message}\n";
-    public string Error(string message) => $"\nError: {message}\n";
-
-    public List<ColoredLine> FormatCommentTable(List<Comment> comments, int consoleWidth)
+    public List<ColoredLine> FormatCommentTable(List<Comment> comments, string itemName, string libName, int consoleWidth)
     {
         var output = new List<ColoredLine>();
-        string logoBar = Render.LogoLine(consoleWidth);
-        string titleBar = "░░░░ COMMENTS " + new string('░', Math.Max(0, consoleWidth - 14));
+
+        // Setup headers and metadata
+        string logoBar   = Render.LogoLine(consoleWidth);
+        string titleBar  = "░░░░ COMMENTS " + new string('░', Math.Max(0, consoleWidth - 14));
+        string header    = Render.LineFilled(consoleWidth, "left", ' ', $"{libName}/{itemName}");
+        string statsBar  = Render.LineFilled(consoleWidth, "right", ' ', $"{comments.Count} comments");
         string bottomBar = new string('░', consoleWidth);
 
+        var headers = new[] { "ID", "Author", "Text", "Created at", "Edited at" };
         const int padding = 3;
         const string ellipsis = "…";
 
+        // Build table rows
+        var rows = comments
+            .Where(c => c != null)
+            .Select(c => new[]
+            {
+                c.Id ?? "",
+                c.Author?.Name ?? "",
+                (c.Text ?? "").Replace("\r", ""), // normalize to Unix-style newlines
+                c.CreatedTime ?? "",
+                c.EditedTime ?? ""
+            })
+            .ToList();
+
+        // Truncation helper
         string Truncate(string text, int max) =>
             string.IsNullOrEmpty(text) ? "" : text.Length <= max ? text : text[..Math.Max(0, max - 1)] + ellipsis;
 
-        if (comments == null)
+        // Compute ideal column widths
+        int[] colWidths = new int[headers.Length];
+        for (int i = 0; i < headers.Length; i++)
         {
-            output.Add(new ColoredLine("\nNo comments found."));
-            return output;
+            colWidths[i] = Math.Max(
+                headers[i].Length,
+                rows.Max(r => r[i].Split('\n').Max(line => line.Length))
+            );
         }
 
-        var headers = new[] { "ID", "Text" };
-        var rows = comments
-            .Where(c => c != null)
-            .Select(c => new[] { c.Id ?? "", c.Text.TrimEnd('\r', '\n') ?? "" })
-            .ToList();
+        // Adjust widths to fit console
+        int totalPadding = (headers.Length - 1) * padding;
+        int totalWidth = colWidths.Sum() + totalPadding;
 
-        int idWidth = rows.Select(r => r[0].Length).Append(headers[0].Length).Max();
-        int availableTextWidth = consoleWidth - idWidth - padding;
-        int maxTextContentWidth = rows.Select(r => r[1].Length).Append(headers[1].Length).Max();
-        int textWidth = Math.Min(availableTextWidth, maxTextContentWidth);
-        textWidth = Math.Max(headers[1].Length, textWidth);
-
-        if (idWidth + textWidth + padding > consoleWidth)
+        if (totalWidth > consoleWidth)
         {
-            textWidth = consoleWidth - idWidth - padding;
-            if (textWidth < 6)
+            int available = consoleWidth - totalPadding;
+            double scale = (double)available / colWidths.Sum();
+
+            for (int i = 0; i < colWidths.Length; i++)
+                colWidths[i] = Math.Max(6, (int)Math.Floor(colWidths[i] * scale));
+
+            int adjust = available - colWidths.Sum();
+            for (int i = 0; adjust != 0 && i < colWidths.Length; i++)
             {
-                textWidth = 6;
-                idWidth = consoleWidth - textWidth - padding;
+                colWidths[i] += Math.Sign(adjust);
+                adjust -= Math.Sign(adjust);
             }
         }
 
-        var colWidths = new[] { idWidth, textWidth };
-
+        // Header rendering
         output.Add(new ColoredLine(""));
         output.Add(new ColoredLine(logoBar));
         output.Add(new ColoredLine(""));
         output.Add(new ColoredLine(titleBar, ConsoleColor.Gray));
         output.Add(new ColoredLine(""));
+        output.Add(new ColoredLine(header));
+        output.Add(new ColoredLine(""));
 
+        // Table header
         var headerLine = string.Join(" | ",
             headers.Select((h, i) => Truncate(h, colWidths[i]).PadRight(colWidths[i])));
         output.Add(new ColoredLine(headerLine, ConsoleColor.DarkGray));
+        output.Add(new ColoredLine(new string('-', consoleWidth), ConsoleColor.DarkGray));
 
-        string dividerRow = new string('-', consoleWidth);
-        output.Add(new ColoredLine(dividerRow, ConsoleColor.DarkGray));
-
+        // Table body
         foreach (var row in rows)
         {
-            var formattedRow = string.Join(" | ",
-                row.Select((cell, i) => Truncate(cell, colWidths[i]).PadRight(colWidths[i])));
-            output.Add(new ColoredLine(formattedRow));
-            output.Add(new ColoredLine(dividerRow, ConsoleColor.DarkGray));
+            // Split and align each cell into lines
+            var splitCells = row.Select((cell, i) =>
+                cell.Split('\n')
+                    .Select(line => Truncate(line, colWidths[i]).PadRight(colWidths[i]))
+                    .ToList()
+            ).ToList();
+
+            int maxLines = splitCells.Max(lines => lines.Count);
+
+            // Ensure all columns have same number of lines
+            for (int i = 0; i < splitCells.Count; i++)
+            {
+                while (splitCells[i].Count < maxLines)
+                    splitCells[i].Add(new string(' ', colWidths[i]));
+            }
+
+            // Render each visual line
+            for (int line = 0; line < maxLines; line++)
+            {
+                var formattedLine = string.Join(" | ",
+                    splitCells.Select(col => col[line]));
+                output.Add(new ColoredLine(formattedLine));
+            }
+
+            output.Add(new ColoredLine(new string('-', consoleWidth), ConsoleColor.DarkGray));
         }
 
+        // Footer
         output.Add(new ColoredLine(""));
         output.Add(new ColoredLine(bottomBar, ConsoleColor.Gray));
-        output.Add(new ColoredLine(""));
+        output.Add(new ColoredLine(statsBar));
 
         return output;
     }
@@ -221,7 +290,6 @@ public class Renderer
         output.Add(new ColoredLine(""));
         output.Add(new ColoredLine(bottomBar, ConsoleColor.Gray));
         output.Add(new ColoredLine(footer, ConsoleColor.DarkGray));
-        output.Add(new ColoredLine(""));
 
         return output;
     }
@@ -312,7 +380,6 @@ public class Renderer
         output.Add(new ColoredLine(logoBar));
         output.Add(new ColoredLine(""));
         output.Add(new ColoredLine(titleBar, ConsoleColor.Gray));
-        output.Add(new ColoredLine(""));
 
         output.Add(new ColoredLine(string.Join(" | ",
             columns.Select((col, i) => TruncateEnd(col.Header, colWidths[i]).PadRight(colWidths[i]))),

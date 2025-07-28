@@ -1,4 +1,4 @@
-using Flexlib.Application.UseCases.Common;
+using Flexlib.Application.Common;
 using Flexlib.Application.Ports;
 using Flexlib.Common;
 using Flexlib.Domain;

@@ -17,6 +17,7 @@ public static class Parsing
 
         return command.ToLower() switch
         {
+            "new-user"           => new NewUserCommand(options),
             "new-lib"           => new NewLibraryCommand(options),
             "new-item"      => new NewItemCommand(options),
             "remove-item"      => new RemoveItemCommand(options),
@@ -34,7 +35,7 @@ public static class Parsing
             "remove-comment"  => new RemoveCommentCommand(options),
             "fetch-files"       => new FetchFilesCommand(options), 
             "remove-lib"    => new RemoveLibraryCommand(options),
-            "help"          => new UnknownCommand($"Unknown command: {command}"),
+            "help"          => new HelpCommand(options),
             _               => new UnknownCommand($"Unknown command: {command}")
         };
     }
