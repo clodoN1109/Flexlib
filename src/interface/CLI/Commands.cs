@@ -4,10 +4,36 @@ using Flexlib.Interface.Input;
 
 namespace Flexlib.Interface.CLI;
 
-
-public abstract class Command : ParsedInput
+public abstract class Command : Flexlib.Interface.Input.Action
 {
     public abstract string UsageInstructions(); 
+}
+
+public class NewUserCommand : Command
+{
+    string[] Options;
+
+    public NewUserCommand(string[] options)
+    {
+        Options = options;
+    }
+
+    public override string Type => "new-user";
+
+    public override bool IsValid()
+    {
+        if (Options.Length == 0)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public override string UsageInstructions()
+    {
+        return "Usage: flexlib new-user";
+    } 
 }
 
 public class NewLibraryCommand : Command
@@ -22,6 +48,8 @@ public class NewLibraryCommand : Command
         Name = options.Length > 0 ? options[0] : "";
         Path = options.Length > 1 ? options[1] : "";
     }
+
+    public override string Type => "new-lib";
 
     public override bool IsValid()
     {
@@ -42,6 +70,8 @@ public class RemoveLibraryCommand : Command
     {
         Name = options.Length > 0 ? options[0] : "";
     }
+
+    public override string Type => "remove-lib";
 
     public override bool IsValid()
     {
@@ -67,6 +97,8 @@ public class NewItemCommand : Command
         LibraryName = options.Length > 2 ? options[2] : "Default Library";
     }
 
+    public override string Type => "new-item";
+
     public override bool IsValid()
     {
         return !string.IsNullOrWhiteSpace(LibraryName) && !string.IsNullOrWhiteSpace(ItemOrigin);
@@ -89,6 +121,8 @@ public class RemoveItemCommand : Command
         LibraryName = options.Length > 1 ? options[1] : "Default Library";
     }
 
+    public override string Type => "remove-item";
+
     public override bool IsValid()
     {
         return !TypeTests.IsNull(ItemId) && ItemId is string s && ( s != "" ) && !string.IsNullOrWhiteSpace(LibraryName);
@@ -108,6 +142,8 @@ public class ListLibrariesCommand : Command
     {
         Options = options;
     }
+
+    public override string Type => "list-libs";
 
     public override bool IsValid()
     {
@@ -141,6 +177,8 @@ public class ListItemsCommand : Command
         FilterSequence = options.Length > 1 ? options[1] : "";
         SortSequence = options.Length > 2 ? options[2] : "";
     }
+    
+    public override string Type => "list-items";
 
     public override bool IsValid()
     {
@@ -174,6 +212,8 @@ public class GetLibraryLayoutCommand : Command
         LibraryName = options.Length > 0 ? options[0] : "Default Library";
     }
 
+    public override string Type => "get-layout";
+
     public override bool IsValid()
     {
 
@@ -206,6 +246,8 @@ public class SetLibraryLayoutCommand : Command
         LayoutString = options.Length > 1 ? options[1] : "";
     }
 
+    public override string Type => "set-layout";
+
     public override bool IsValid()
     {
 
@@ -237,6 +279,8 @@ public class FetchFilesCommand : Command
         Options = options;
         LibraryName = options.Length > 0 ? options[0] : "Default Library";
     }
+    
+    public override string Type => "fetch-files";
 
     public override bool IsValid()
     {
@@ -263,6 +307,8 @@ public class NewPropertyCommand : Command
         LibName = options.Length > 1 ? options[1] : "Default Library";
         PropType = options.Length > 2 ? options[2] : "string";
     }
+    
+    public override string Type => "new-prop";
 
     public override bool IsValid()
     {
@@ -294,6 +340,8 @@ public class ListPropertiesCommand : Command
         ItemName = options.Length > 1 ? options[1] : "";
     }
 
+    public override string Type => "list-props";
+    
     public override bool IsValid()
     {
         return (Options.Length > 0 && Options.Length < 3);
@@ -323,6 +371,8 @@ public class SetPropertyCommand : Command
         ItemId = options.Length > 2 ? options[2] : "";
         LibName = options.Length > 3 ? options[3] : "Default Library";
     }
+    
+    public override string Type => "set-prop";
 
     public override bool IsValid()
     {
@@ -349,6 +399,8 @@ public class RemovePropertyCommand : Command
         PropName = options.Length > 0 ? options[0] : "";
         LibName = options.Length > 1 ? options[1] : "Default Library";
     }
+    
+    public override string Type => "remove-prop";
 
     public override bool IsValid()
     {
@@ -387,6 +439,8 @@ public class NewCommentCommand : CommentCommand
         Comment = options.Length > 2 ? options[2] : "";
     }
     
+    public override string Type => "new-comment";
+    
     public override bool IsValid()
     {
         return Options.Length > 0 && Options.Length <= 3;
@@ -406,6 +460,8 @@ public class ListCommentsCommand : CommentCommand
     {
         LibName = options.Length > 1 ? options[1] : "Default Library";
     }
+
+    public override string Type => "list-comments";
 
     public override bool IsValid()
     {
@@ -429,6 +485,8 @@ public class EditCommentCommand : CommentCommand
         LibName = options.Length > 2 ? options[2] : "Default Library"; 
    
     }
+    
+    public override string Type => "edit-comment";
 
     public override bool IsValid()
     {
@@ -452,6 +510,8 @@ public class RemoveCommentCommand : CommentCommand
         LibName = options.Length > 2 ? options[2] : "Default Library"; 
    
     }
+    
+    public override string Type => "remove-comment";
 
     public override bool IsValid()
     {
@@ -465,16 +525,18 @@ public class RemoveCommentCommand : CommentCommand
 }
 
 
-public class UnknownCommand : Command
+public class HelpCommand : Command
 {
-    public string Message { get; }
 
-    public UnknownCommand(string message)
+    public HelpCommand(string[] options)
     {
-        Message = message;
     }
+    
+    public HelpCommand(){}
 
-    public override bool IsValid() => false;
+    public override bool IsValid() => true;
+    
+    public override string Type => "help";
 
     public override string UsageInstructions()
     {
@@ -511,6 +573,23 @@ public class UnknownCommand : Command
     }
 }
 
+public class UnknownCommand : Command
+{
+    public string Message { get; }
+
+    public UnknownCommand(string message)
+    {
+        Message = message;
+    }
+
+    public override bool IsValid() => false;
+    
+    public override string Type => "unknown";
+
+    public override string UsageInstructions() => new HelpCommand().UsageInstructions();
+}
+
+
 public static class CommandsList{
     
     public static List<string> GetAvailableCommandsList()
@@ -518,6 +597,7 @@ public static class CommandsList{
         return new List<string>{
 
             "❔     help",
+            "\n\n\t⚪     new-user",
             "\n\n\t🏛      new-lib",
             "list-libs",
             "remove-lib",

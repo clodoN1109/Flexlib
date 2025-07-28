@@ -7,7 +7,7 @@ namespace Flexlib.Interface.Input;
 
 public class Reader : IReader
 {
-    public string? ReadText( string? initialText = null)
+    public string? ReadText( string initialText )
     {
         string tempPath = Path.GetTempFileName();
 
@@ -48,4 +48,31 @@ public class Reader : IReader
             File.Delete(tempPath);
         }
     }
+
+    public string? ReadText() => ReadText("");
+
+    public string? ReadPassword(string promptMessage)
+    {
+        Console.Write(promptMessage);
+        var password = new Stack<char>();
+        ConsoleKeyInfo key;
+
+        while ((key = Console.ReadKey(true)).Key != ConsoleKey.Enter)
+        {
+            if (key.Key == ConsoleKey.Backspace && password.Count > 0)
+            {
+                Console.Write("\b \b");
+                password.Pop();
+            }
+            else if (!char.IsControl(key.KeyChar))
+            {
+                Console.Write('*');
+                password.Push(key.KeyChar);
+            }
+        }
+
+        Console.WriteLine();
+        return new string(password.Reverse().ToArray());
+    }
+
 }

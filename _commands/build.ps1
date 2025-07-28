@@ -2,7 +2,7 @@ param (
     [switch]$WithRuntimeTests,
     [string]$Configuration = "Debug",
     [switch]$NoClearHost,
-    [switch]$PlotHistoryGraph,
+    [switch]$NoHistoryGraph,
     [string]$Version = ""
 )
 
@@ -41,13 +41,12 @@ if ( $errorCount -eq 0) {
 
 }
 
-if ($PlotHistoryGraph) 
+if (-not $NoHistoryGraph) 
 {
     $history = GetBuildHistory 
 
-    Write-Fill "BUILD HISTORY" -ForegroundColor Cyan
+    Write-Fill "BUILD STATS" -ForegroundColor Cyan
     PlotHistoryGraph $history
-    Write-Fill "END" -ForegroundColor Cyan
 }
 
 if (($configuration -eq "Debug") -and ($WithRuntimeTests) -and ($errorCount -eq 0) -and ($warningCount -eq 0)) {
@@ -64,3 +63,4 @@ if ($ResultRequestedByAnotherScript) {
     return $newEntry;
 }
 
+Write-Fill "END - BUILD" -ForegroundColor Cyan

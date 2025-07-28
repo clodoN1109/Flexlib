@@ -64,7 +64,7 @@ public class LibraryItem
         return _library;
     }
 
-    public void AddComment(Comment newComment)
+    public void NewComment(Comment newComment)
     {
         Comments.Add(newComment);
     }
