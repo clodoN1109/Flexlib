@@ -2,7 +2,7 @@ param (
     [switch]$WithRuntimeTests,
     [string]$Configuration = "Debug",
     [switch]$NoClearHost,
-    [switch]$NoHistoryGraph,
+    [switch]$HistoryGraph,
     [string]$Version = ""
 )
 
@@ -15,6 +15,17 @@ $BuildHistoryPath = "$PSScriptRoot\..\builds\builds.json"
 
 if (-not $NoClearHost) {
     Clear-Host
+}
+
+if ($HistoryGraph) 
+{
+    $history = GetBuildHistory 
+
+    Write-Fill "BUILD STATS" -ForegroundColor Cyan
+    PlotHistoryGraph $history
+    Write-Fill "END - BUILD STATS" -ForegroundColor Cyan
+
+    return
 }
 
 Write-Fill "BUILD" -ForegroundColor Cyan
@@ -41,13 +52,9 @@ if ( $errorCount -eq 0) {
 
 }
 
-if (-not $NoHistoryGraph) 
-{
-    $history = GetBuildHistory 
-
-    Write-Fill "BUILD STATS" -ForegroundColor Cyan
-    PlotHistoryGraph $history
-}
+$history = GetBuildHistory 
+Write-Fill "BUILD STATS" -ForegroundColor Cyan
+PlotHistoryGraph $history
 
 if (($configuration -eq "Debug") -and ($WithRuntimeTests) -and ($errorCount -eq 0) -and ($warningCount -eq 0)) {
      

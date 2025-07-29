@@ -1,21 +1,22 @@
 using Flexlib.Application.Ports; 
 using Flexlib.Domain;
+using Flexlib.Interface.CLI;
 
 namespace Flexlib.Interface.Output;
 
 public class ConsolePresenter : IPresenter
 {
-    private readonly Renderer _renderer = new();
-    private readonly ConsoleEmitter _emitter = new();
+    private readonly ConsoleRenderer _renderer = new();
+    private readonly ConsoleEmitter _emitter = new();        
 
     public void Message(string? message = null)
     {
         _emitter.Print(_renderer.Message(message));
     }
 
-    public void ExplainUsage(string? usageInstructions = null)
+    public void ExplainUsage(UsageInfo info)
     {
-        _emitter.Print(_renderer.ExplainUsage(usageInstructions));
+        _emitter.PrintLines(_renderer.UsageInfo(info, Console.WindowWidth));
     }
     
     public void ExhibitUserInfo(IUser user)

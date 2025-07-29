@@ -10,7 +10,7 @@ using Flexlib.Infrastructure.Authentication;
 
 namespace Flexlib.Interface.Router;
 
-public static class Router
+public static class ConsoleRouter
 {
     private static readonly ConsolePresenter _presenter = new ConsolePresenter();
     private static readonly IUserRepository _userRepo = new JsonUserRepository();
@@ -23,9 +23,9 @@ public static class Router
     private static readonly bool _bypassAuth = false;
 #endif
 
-    public static void Route(ParsedInput parsedInput)
+    public static void Route(Command cmd)
     {
-        switch (parsedInput)
+        switch (cmd)
         {
             case NewUserCommand newUserCmd:
                 if (newUserCmd.IsValid())
@@ -38,17 +38,14 @@ public static class Router
                 }
                 else
                 {
-                    _presenter.ExplainUsage(newUserCmd.UsageInstructions());
+                    _presenter.ExplainUsage(newUserCmd.GetUsageInfo());
                 }
                 return;
 
             case HelpCommand helpCmd:
-                _presenter.ExplainUsage(helpCmd.UsageInstructions());
+                _presenter.ExplainUsage(helpCmd.GetUsageInfo());
                 return;
 
-            case UnknownCommand unknownCmd:
-                _presenter.ExplainUsage(unknownCmd.UsageInstructions());
-                return;
         }
 
         IUser? user;
@@ -60,7 +57,6 @@ public static class Router
                 State = UserState.LoggedIn
             };
 
-            _presenter.Message("⚠️  Authentication bypassed (DEBUG mode).");
         }
         else
         {
@@ -82,26 +78,23 @@ public static class Router
             }
         }
 
-        switch (parsedInput)
+        switch (cmd)
         {
             case Command c:
                 if (c.IsValid())
                     ConsoleController.Handle(c, user);
                 else
-                    _presenter.ExplainUsage(c.UsageInstructions());
-                break;
-
-            case GUIStartUp gui:
-                if (gui.IsValid())
-                {
-                    _presenter.Message("Launching Flexlib GUI.");
-                    // GUIController.Handle(gui, user);
-                }
+                    _presenter.ExplainUsage(c.GetUsageInfo());
                 break;
 
             default:
-                _presenter.ExplainUsage();
+                _presenter.ExplainUsage(cmd.GetUsageInfo());
                 break;
+        }        
+
+        if (_bypassAuth)
+        {
+            _presenter.Message("⚠  Authentication bypassed (DEBUG mode).");
         }
 
         _presenter.ExhibitUserInfo(user);

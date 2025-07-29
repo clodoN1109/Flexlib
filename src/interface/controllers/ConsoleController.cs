@@ -96,9 +96,6 @@ public static class ConsoleController
             case RemoveLibraryCommand c:
                 return RemoveLibrary.Execute(c.Name, _libRepo);
 
-            case UnknownCommand c:
-                return Result.Fail(c.Message);
-
             default:
                 return Result.Fail($"Unknown use case: {command?.GetType().Name ?? "null"}");
         }

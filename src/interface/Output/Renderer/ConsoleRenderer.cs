@@ -2,6 +2,7 @@ using Flexlib.Domain;
 using System.Text.Json;
 using System.Drawing;
 using Flexlib.Application.Ports;
+using Flexlib.Interface.CLI;
 
 namespace Flexlib.Interface.Output;
 
@@ -10,9 +11,9 @@ public class ColoredLine
     public string Text { get; set; }
     public ConsoleColor Color { get; set; } = ConsoleColor.White;
 
-    public ColoredLine(string text, ConsoleColor color = ConsoleColor.White)
+    public ColoredLine(string text, ConsoleColor color = ConsoleColor.White, bool truncate = true)
     {
-        Text = Truncate(text);
+        Text = truncate ? Truncate(text) : text;
         Color = color;
     }
 
@@ -23,7 +24,7 @@ public class ColoredLine
     }
 }
 
-public class Renderer
+public class ConsoleRenderer
 {
     
     public string Message(string? message)
@@ -52,13 +53,82 @@ public class Renderer
 
     public string UserInfo(IUser user) => Message($"user: {user.Id}");
     public string Success(string message) => Message($"✓ {message}");
-    public string Failure(string message) => Message($"❌ {message}");
+    public string Failure(string message) => Message($"✗ {message}");
     public string Error(string message) => Message($"Error: {message}");
 
-    public string ExplainUsage(string? usageInstructions) =>
-        usageInstructions != null
-            ? $"\n{usageInstructions}\n"
-            : "\n Usage: flexlib {command} [options] \n";
+    public List<ColoredLine> UsageInfo(UsageInfo info, int consoleWidth)
+    {
+        var lines = new List<ColoredLine>();
+
+        string separator = new string('░', consoleWidth);
+        string logo = Render.LogoLine(consoleWidth);
+        string title = $"░░░░ {info.Group.Icon} {info.Title.ToUpperInvariant()}" + " ";
+        string paddedTitle = title + new string('░', Math.Max(0, consoleWidth - title.Length));
+
+        lines.Add(new ColoredLine(""));
+        lines.Add(new ColoredLine(logo));
+        lines.Add(new ColoredLine(""));
+        lines.Add(new ColoredLine(paddedTitle, ConsoleColor.Gray));
+
+        // Metadata
+        if (info.Meta?.Any() == true)
+        {
+            lines.Add(new ColoredLine(""));
+            lines.Add(new ColoredLine(string.Join("  •  ", info.Meta), ConsoleColor.DarkGray));
+        }
+
+        // Description
+        if (!string.IsNullOrWhiteSpace(info.Description))
+        {
+            lines.Add(new ColoredLine(""));
+            var wrapped = Render.WrapText(info.Description, consoleWidth);
+            foreach (var line in wrapped)
+                lines.Add(new ColoredLine(line, ConsoleColor.White));
+        }
+
+        // Usage Syntax
+        if (!string.IsNullOrWhiteSpace(info.Syntax))
+        {
+            lines.Add(new ColoredLine(""));
+            lines.Add(new ColoredLine("usage:", ConsoleColor.Cyan));
+            lines.Add(new ColoredLine(""));
+            lines.Add(new ColoredLine("   " + info.Syntax, ConsoleColor.White));
+        }
+
+        // Options
+        if (info.Options?.Any() == true)
+        {
+            lines.Add(new ColoredLine(""));
+            lines.Add(new ColoredLine("options:", ConsoleColor.Cyan));
+            lines.Add(new ColoredLine(""));
+
+            foreach (var opt in info.Options)
+            {
+                var name = opt.Mandatory ? $"<{opt.Name}>" : $"[{opt.Name}]";
+                var domain = opt.OptionDomain?.IncludedValues?.Any() == true
+                    ? $" ({string.Join("|", opt.OptionDomain.IncludedValues)})"
+                    : "";
+                var defaultVal = !string.IsNullOrWhiteSpace(opt.DefaultValue)
+                    ? $" (default: {opt.DefaultValue})"
+                    : "";
+
+                var label = $"  • {name}{domain}{defaultVal}";
+                lines.Add(new ColoredLine(label, opt.Mandatory ? ConsoleColor.Yellow : ConsoleColor.DarkGray, false));
+
+                var wrappedDesc = Render.WrapText(opt.Description, consoleWidth - 6);
+                foreach (var descLine in wrappedDesc)
+                    lines.Add(new ColoredLine("      " + descLine, ConsoleColor.Gray));
+                
+                lines.Add(new ColoredLine("      " + opt.Syntax, ConsoleColor.Gray));
+            }
+        }
+
+        lines.Add(new ColoredLine(""));
+        lines.Add(new ColoredLine(separator, ConsoleColor.Gray));
+        lines.Add(new ColoredLine(""));
+
+        return lines;
+    }
 
     public List<ColoredLine> FormatCommentTable(List<Comment> comments, string itemName, string libName, int consoleWidth)
     {
@@ -380,6 +450,7 @@ public class Renderer
         output.Add(new ColoredLine(logoBar));
         output.Add(new ColoredLine(""));
         output.Add(new ColoredLine(titleBar, ConsoleColor.Gray));
+        output.Add(new ColoredLine(""));
 
         output.Add(new ColoredLine(string.Join(" | ",
             columns.Select((col, i) => TruncateEnd(col.Header, colWidths[i]).PadRight(colWidths[i]))),
@@ -401,7 +472,6 @@ public class Renderer
         output.Add(new ColoredLine(""));
         output.Add(new ColoredLine(bottomBar, ConsoleColor.Gray));
         output.Add(new ColoredLine(statsBar, ConsoleColor.Gray));
-        output.Add(new ColoredLine(""));
 
         return output;
     }

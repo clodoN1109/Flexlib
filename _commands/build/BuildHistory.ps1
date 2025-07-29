@@ -10,41 +10,66 @@ function PlotHistoryGraph {
         return
     }
 
-    $maxErrors = ($builds | Measure-Object -Property errors -Maximum).Maximum
+    $maxErrors   = ($builds | Measure-Object -Property errors -Maximum).Maximum
     $maxWarnings = ($builds | Measure-Object -Property warnings -Maximum).Maximum
 
+    $consoleWidth = $Host.UI.RawUI.WindowSize.Width
+    $leftMargin = 4  # 2 digits + " |"
+    $cellWidth = 3
+    $maxPlotWidth = [math]::Floor(($consoleWidth - $leftMargin) / $cellWidth)
+    $errorScale = [math]::Ceiling(($maxErrors + 1) / $maxPlotWidth)
+
+    # Grid indexed by scaled coordinates
     $grid = @{}
 
-    # Use errors as X and warnings as Y
     foreach ($b in $builds) {
-        $key = "$($b.errors),$($b.warnings)"
+        $x = [math]::Floor($b.errors / $errorScale)
+        $y = $b.warnings
+        $key = "$x,$y"
         if (-not $grid.ContainsKey($key)) {
             $grid[$key] = "•"
         }
     }
 
-    # Mark the latest build with "X"
+    # Mark the latest build
     $latest = $builds[-1]
-    $grid["$($latest.errors),$($latest.warnings)"] = "X"
 
-    # Plot: top to bottom = high to low warnings
+    if ($latest.errors -eq 0 -and $latest.warnings -eq 0) {
+        # Green check for successful build
+        $lastBuildMark = "`e[32m✓`e[0m"   # ✓ in green
+    }
+    elseif ($latest.warnings -ne 0) {
+        # Yellow W for warnings
+        $lastBuildMark = "`e[33mX`e[0m"   # W in yellow
+    }
+    else {
+        # Red X for errors
+        $lastBuildMark = "`e[31mX`e[0m"   # X in red
+    }
+
+    $lx = [math]::Floor($latest.errors / $errorScale)
+    $ly = $latest.warnings
+    $grid["$lx,$ly"] = $lastBuildMark
+    
+    # Headings
     Write-Host ""
     Write-Host "Build Quality Scatter - " -NoNewLine
     Write-Host "Errors" -NoNewLine -ForegroundColor Red
     Write-Host " X " -NoNewLine
     Write-Host "Warnings" -ForegroundColor Yellow
     Write-Host "Legend: • = build, X = latest build (ID $($latest.id) at $($latest.timestamp))" -ForegroundColor Green
+    Write-Host "X uncertainty = +$($errorScale - 1)" -ForegroundColor DarkGray
     Write-Host ""
 
+    # Plot
     for ($y = $maxWarnings; $y -ge 0; $y--) {
-        # Print Y label
         Write-Host ("{0,2}" -f $y) -ForegroundColor Yellow -NoNewline
         Write-Host " |" -NoNewline
 
-        for ($x = 0; $x -le $maxErrors; $x++) {
+        for ($x = 0; $x -lt $maxPlotWidth; $x++) {
             $key = "$x,$y"
             if ($grid.ContainsKey($key)) {
-                Write-Host ("  " + $grid[$key]) -NoNewline  # 3-char cell: 2 spaces + symbol
+                Write-Host ("  " + $grid[$key]) -NoNewline
             } else {
                 Write-Host "   " -NoNewline
             }
@@ -53,14 +78,23 @@ function PlotHistoryGraph {
         Write-Host ""
     }
 
-    # X-axis line
-    $xAxis = "    " + ('-' * (($maxErrors + 1) * 3))
+    # X-axis
+    $xAxis = "    " + ('-' * ($maxPlotWidth * $cellWidth))
     Write-Host $xAxis
 
     # X-axis labels
-    $xLabels = "    "  # Align with Y axis + separator
-    for ($x = 0; $x -le $maxErrors; $x++) {
-        $xLabels += "{0,3}" -f $x
+    $switch = 1; # Used to alternate printed values and avoid overlaping over 99.
+    $xLabels = "    "
+    for ($x = 0; $x -lt $maxPlotWidth; $x++) {
+        $label = $x * $errorScale
+        if ($label -le 99 -or $switch -eq 1){
+            $xLabels += ("{0,3}" -f $label)
+            $switch = 0;
+        } else {
+            $xLabels += ("{0,3}" -f "")
+            $switch = 1;
+        }
+
     }
     Write-Host $xLabels -ForegroundColor Red
     Write-Host ""

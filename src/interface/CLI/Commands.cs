@@ -1,12 +1,13 @@
 using Flexlib.Common;
 using System.IO;
 using Flexlib.Interface.Input;
+using System.Collections.Generic;
 
 namespace Flexlib.Interface.CLI;
 
 public abstract class Command : Flexlib.Interface.Input.Action
 {
-    public abstract string UsageInstructions(); 
+    public abstract UsageInfo GetUsageInfo(); 
 }
 
 public class NewUserCommand : Command
@@ -30,10 +31,18 @@ public class NewUserCommand : Command
         return false;
     }
 
-    public override string UsageInstructions()
+    public override UsageInfo GetUsageInfo()
     {
-        return "Usage: flexlib new-user";
-    } 
+        return new UsageInfo
+        {
+            Meta = new List<string> {},
+            Title = "new-user",
+            Description = "Creates a new user.",
+            Group = CommandGroups.Libraries,
+            Syntax = "flexlib new-user",
+            Options = new List<CommandOption>()
+        };
+    }
 }
 
 public class NewLibraryCommand : Command
@@ -56,10 +65,31 @@ public class NewLibraryCommand : Command
         return !string.IsNullOrWhiteSpace(Name);
     }
 
-    public override string UsageInstructions()
+    public override UsageInfo GetUsageInfo()
     {
-        return "Usage: flexlib new-lib <name> [path]";
-    } 
+        return new UsageInfo
+        {
+            Meta = new List<string> {},
+            Title = "new-lib",
+            Description = "Creates a new library with the selected name and located at the selected path.",
+            Group = CommandGroups.Libraries,
+            Syntax = "flexlib new-lib <library name> [library path]",
+            Options = new List<CommandOption>
+            {
+                new CommandOption{
+                    Name = "library name",
+                    OptionDomain = new Common.Domain(),
+                    Mandatory = true
+                },
+                
+                new CommandOption{
+                    Name = "path",
+                    OptionDomain = new Common.Domain(),
+                    Mandatory = false
+                }
+            }
+        };
+    }
 }
 
 public class RemoveLibraryCommand : Command
@@ -78,10 +108,25 @@ public class RemoveLibraryCommand : Command
         return !string.IsNullOrWhiteSpace(Name);
     }
 
-    public override string UsageInstructions()
+    public override UsageInfo GetUsageInfo()
     {
-        return "Usage: flexlib remove-lib <name>";
-    } 
+        return new UsageInfo
+        {
+            Meta = new List<string> {},
+            Title = "remove-lib",
+            Description = "Removes the selected library and all its items.",
+            Group = CommandGroups.Libraries,
+            Syntax = "flexlib remove-lib <library name>",
+            Options = new List<CommandOption>
+            {
+                new CommandOption{
+                    Name = "library name",
+                    OptionDomain = new Common.Domain(),
+                    Mandatory = true
+                }
+            }
+        };
+    }
 }
 
 public class NewItemCommand : Command
@@ -104,9 +149,39 @@ public class NewItemCommand : Command
         return !string.IsNullOrWhiteSpace(LibraryName) && !string.IsNullOrWhiteSpace(ItemOrigin);
     }
     
-    public override string UsageInstructions()
+    public override UsageInfo GetUsageInfo()
     {
-        return "Usage: flexlib new-item <item origin> [item name] [library name]";
+        return new UsageInfo
+        {
+            Meta = new List<string> {},
+            Title = "new-item",
+            Description = "Creates a new item in the selected library.",
+            Group = CommandGroups.Items,
+            Syntax = "flexlib new-item <item origin> [item name] [library name]",
+            Options = new List<CommandOption>
+            {
+                new CommandOption{
+                    Name = "item origin",
+                    Description = "The information necessary and sufficient to locate the item.",
+                    OptionDomain = new Common.Domain(),
+                    Mandatory = true
+                },
+                
+                new CommandOption{
+                    Name = "item name",
+                    OptionDomain = new Common.Domain(),
+                    Mandatory = false
+                },
+                
+                new CommandOption{
+                    Name = "library name",
+                    OptionDomain = new Common.Domain(),
+                    Mandatory = false,
+                    DefaultValue = "Default Library" 
+
+                },
+            }
+        };
     }
 }
 
@@ -128,9 +203,32 @@ public class RemoveItemCommand : Command
         return !TypeTests.IsNull(ItemId) && ItemId is string s && ( s != "" ) && !string.IsNullOrWhiteSpace(LibraryName);
     }
     
-    public override string UsageInstructions()
+    public override UsageInfo GetUsageInfo()
     {
-        return "Usage: flexlib remove-item <item id> <library name>";
+        return new UsageInfo
+        {
+            Meta = new List<string> {},
+            Title = "remove-item",
+            Description = "Removes the selected item from the selected library.",
+            Group = CommandGroups.Items,
+            Syntax = "flexlib remove-item <item id> [library name]",
+            Options = new List<CommandOption>
+            {
+                new CommandOption{
+                    Name = "item id",
+                    OptionDomain = new Common.Domain(),
+                    Mandatory = true
+                },
+                
+                new CommandOption{
+                    Name = "library name",
+                    OptionDomain = new Common.Domain(),
+                    Mandatory = false,
+                    DefaultValue = "Default Library"
+                },
+
+            }
+        };
     }
 }
 
@@ -157,9 +255,17 @@ public class ListLibrariesCommand : Command
         
     }
     
-    public override string UsageInstructions()
+    public override UsageInfo GetUsageInfo()
     {
-        return "Usage: flexlib list-libs\n\n";
+        return new UsageInfo
+        {
+            Meta = new List<string> {},
+            Title = "list-libs",
+            Description = "Lists all accessible existing libraries.",
+            Group = CommandGroups.Libraries,
+            Syntax = "flexlib list-libs",
+            Options = new List<CommandOption>()
+        };
     }
 }
 
@@ -192,12 +298,41 @@ public class ListItemsCommand : Command
         
     }
     
-    public override string UsageInstructions()
+    public override UsageInfo GetUsageInfo()
     {
-        return "Usage: flexlib list-items <library name> [filter sequence] [sort sequence]\n\n" +
-            "[filter sequence]: <property-value>[/property-value ...] \n\n" +
-            "[sort sequence]: <property>[/<property ...] "
-            ;
+        return new UsageInfo
+        {
+            Meta = new List<string> {},
+            Title = "list items",
+            Description = "Presents a filtered and sorted list of items of the selected library.",
+            Group = CommandGroups.Items,
+            Syntax = "flexlib list-items <library name> [filter sequence] [sort sequence]",
+            Options = new List<CommandOption>
+            {
+                new CommandOption{
+                    Name = "library name",
+                    OptionDomain = new Common.Domain(),
+                    Mandatory = true
+                },
+
+                new CommandOption{
+                    Name = "filter sequence",
+                    Description = "A sequence of properties that sequencially filters a library based on its current layout.",
+                    Syntax = "<property-value>[/property-value ...]",
+                    OptionDomain = new Common.Domain(),
+                    Mandatory = false
+                },
+                
+                new CommandOption{
+                    Name = "sort sequence",
+                    Description = "A sequence of properties that sequencially sorts a library based on its current layout.",
+                    Syntax = "<property>[/<property ...]",
+                    OptionDomain = new Common.Domain(),
+                    Mandatory = false
+                }
+
+            }
+        };
     }
 }
 
@@ -226,11 +361,26 @@ public class GetLibraryLayoutCommand : Command
         
     }
     
-    public override string UsageInstructions()
+    public override UsageInfo GetUsageInfo()
     {
-        return "Usage: flexlib get-layout <library name>\n\n"
-            ;
+        return new UsageInfo
+        {
+            Meta = new List<string> {},
+            Title = "get-layout",
+            Description = "Gets the current library layout.",
+            Group = CommandGroups.Libraries,
+            Syntax = "flexlib get-layout <library name>",
+            Options = new List<CommandOption>
+            {
+                new CommandOption{
+                    Name = "library name",
+                    OptionDomain = new Common.Domain(),
+                    Mandatory = true
+                }
+            }
+        };
     }
+
 }
 
 public class SetLibraryLayoutCommand : Command
@@ -260,14 +410,34 @@ public class SetLibraryLayoutCommand : Command
         
     }
     
-    public override string UsageInstructions()
+    public override UsageInfo GetUsageInfo()
     {
-        return "Usage: flexlib set-layout <library name> <layout>\n\n" +
-            "<layout>: <property>[/property ...] \n\n"
-            ;
+        return new UsageInfo
+        {
+            Meta = new List<string> {},
+            Title = "set-layout",
+            Description = "Redefines the selected library layout.",
+            Group = CommandGroups.Libraries,
+            Syntax = "flexlib set-layout <library name> <layout>",
+            Options = new List<CommandOption>
+            {
+                new CommandOption{
+                    Name = "library name",
+                    OptionDomain = new Common.Domain(),
+                    Mandatory = true
+                },
+                
+                new CommandOption{
+                    Name = "layout",
+                    OptionDomain = new Common.Domain(),
+                    Mandatory = true,
+                    Syntax = "<property>[/property ...]"
+                }
+
+            }
+        };
     }
 }
-
 
 public class FetchFilesCommand : Command
 {
@@ -287,10 +457,27 @@ public class FetchFilesCommand : Command
         return (Options.Length <= 1);
     }
     
-    public override string UsageInstructions()
+    public override UsageInfo GetUsageInfo()
     {
-        return "Usage: flexlib refetch [library name]";
+        return new UsageInfo
+        {
+            Meta = new List<string> {},
+            Title = "fetch-files",
+            Description = "Fetches the selected library's files from the defined origins of items and saves them to the local system.",
+            Group = CommandGroups.Storage,
+            Syntax = "flexlib fetch-files [library name]",
+            Options = new List<CommandOption>
+            {
+                new CommandOption{
+                    Name = "library name",
+                    OptionDomain = new Common.Domain(),
+                    Mandatory = false,
+                    DefaultValue = "Default Library"
+                }
+            }
+        };
     }
+
 }
 
 public class NewPropertyCommand : Command
@@ -315,14 +502,38 @@ public class NewPropertyCommand : Command
         return (Options.Length >= 1 && Options.Length <= 3);
     }
     
-    public override string UsageInstructions()
+    public override UsageInfo GetUsageInfo()
     {
-        return
-            "Usage:  flexlib new-prop <property name> [library name] [property type] \n\n" +
-            "   <property name>   The name of the new property.\n\n" +
-            "   [property type]   (Optional) The type of the property.\n\n" +
-            "       Supported types: string (default), integer, decimal, float, bool, list\n\n" +
-            "   [library name]    (Optional) The name of the target library.\n\n";
+        return new UsageInfo
+        {
+            Meta = new List<string> {},
+            Title = "new-prop",
+            Description = "Defines a new property for the selected library and all its items.",
+            Group = CommandGroups.Properties,
+            Syntax = "flexlib new-prop <property name> [library name] [property type]",
+            Options = new List<CommandOption>
+            {
+                new CommandOption{
+                    Name = "property name",
+                    OptionDomain = new Common.Domain(),
+                    Mandatory = true
+                },
+                
+                new CommandOption{
+                    Name = "library name",
+                    OptionDomain = new Common.Domain(),
+                    DefaultValue = "Default Library" 
+                },
+                
+                new CommandOption{
+                    Name = "property type",
+                    Description = "The property type/domain.",
+                    OptionDomain = new Common.Domain("string", "integer", "decimal", "float", "bool", "list"),
+                    DefaultValue = "string"
+                },
+
+            }
+        };
     }
 
 }
@@ -347,12 +558,31 @@ public class ListPropertiesCommand : Command
         return (Options.Length > 0 && Options.Length < 3);
     }
     
-    public override string UsageInstructions()
+    public override UsageInfo GetUsageInfo()
     {
-        return
-            "Usage:  flexlib list-props [library name] [item name]";
-    }
+        return new UsageInfo
+        {
+            Meta = new List<string> {},
+            Title = "list properties",
+            Description = "List all defined properties for the selected library.",
+            Group = CommandGroups.Properties,
+            Syntax = "flexlib list-props [library name] [item name]",
+            Options = new List<CommandOption>
+            {
+                new CommandOption{
+                    Name = "library name",
+                    OptionDomain = new Common.Domain(),
+                    DefaultValue = "Default Library" 
+                },
+                
+                new CommandOption{
+                    Name = "item name",
+                    OptionDomain = new Common.Domain()
+                },
 
+            }
+        };
+    }
 }
 
 public class SetPropertyCommand : Command
@@ -379,10 +609,44 @@ public class SetPropertyCommand : Command
         return (Options.Length > 1 && Options.Length < 5);
     }
     
-    public override string UsageInstructions()
+    public override UsageInfo GetUsageInfo()
     {
-        return
-            "Usage:  flexlib set-prop <property name> <new value> <item id> [library name]";
+        return new UsageInfo
+        {
+            Meta = new List<string> {},
+            Title = "set-prop",
+            Description = "Defines a new property for the selected library and all its items.",
+            Group = CommandGroups.Properties,
+            Syntax = "flexlib set-prop <property name> <new value> <item id> [library name]",
+            Options = new List<CommandOption>
+            {
+                new CommandOption{
+                    Name = "property name",
+                    OptionDomain = new Common.Domain(),
+                    Mandatory = true
+                },
+                
+                new CommandOption{
+                    Name = "new value",
+                    OptionDomain = new Common.Domain(),
+                    Mandatory = true
+                },
+
+                new CommandOption{
+                    Name = "item id",
+                    OptionDomain = new Common.Domain(),
+                    Mandatory = true
+                },
+                
+                new CommandOption{
+                    Name = "library name",
+                    OptionDomain = new Common.Domain(),
+                    DefaultValue = "Default Library" 
+                }
+
+
+            }
+        };
     }
 
 }
@@ -407,11 +671,34 @@ public class RemovePropertyCommand : Command
         return (Options.Length > 1 && Options.Length < 3);
     }
     
-    public override string UsageInstructions()
+    public override UsageInfo GetUsageInfo()
     {
-        return
-            "Usage:  flexlib remove-prop <property name> [library name]";
+        return new UsageInfo
+        {
+            Meta = new List<string> {},
+            Title = "remove-prop",
+            Description = "Removes a property definition from a selected library and the corresponding values for all the library's items.",
+            Group = CommandGroups.Properties,
+            Syntax = "flexlib remove-prop <property name> [library name]",
+            Options = new List<CommandOption>
+            {
+                new CommandOption{
+                    Name = "property name",
+                    OptionDomain = new Common.Domain(),
+                    Mandatory = true
+                },
+                
+                new CommandOption{
+                    Name = "library name",
+                    OptionDomain = new Common.Domain(),
+                    DefaultValue = "Default Library" 
+                }
+
+            }
+        };
     }
+
+
 
 }
 
@@ -446,10 +733,36 @@ public class NewCommentCommand : CommentCommand
         return Options.Length > 0 && Options.Length <= 3;
     }
 
-    public override string UsageInstructions()
+    public override UsageInfo GetUsageInfo()
     {
-        return "Usage: flexlib new-comment <item id> [library name] [comment] \n";
+        return new UsageInfo
+        {
+            Meta = new List<string> {},
+            Title = "new-comment",
+            Description = "Creates a new comment for the selected library item.",
+            Group = CommandGroups.Comments,
+            Syntax = "flexlib new-comment <item id> [library name] [comment]" ,
+            Options = new List<CommandOption>
+            {
+                new CommandOption{
+                    Name = "item id",
+                    OptionDomain = new Common.Domain(),
+                    Mandatory = true
+                },
+                new CommandOption{
+                    Name = "library name",
+                    OptionDomain = new Common.Domain(),
+                    DefaultValue = "Default Library" 
+                },
+                new CommandOption{
+                    Name = "comment",
+                    OptionDomain = new Common.Domain()
+                }
+            }
+        };
     }
+
+
 }
 
 public class ListCommentsCommand : CommentCommand
@@ -468,10 +781,34 @@ public class ListCommentsCommand : CommentCommand
         return Options.Length > 0 && Options.Length < 3;
     }
     
-    public override string UsageInstructions()
+    public override UsageInfo GetUsageInfo()
     {
-        return "Usage: flexlib list-comments <item id> [library name]\n";
+        return new UsageInfo
+        {
+            Meta = new List<string> {},
+            Title = "list-comments",
+            Description = "List all comments from a selected library item.",
+            Group = CommandGroups.Comments,
+            Syntax = "flexlib list-comments <item id> [library name]",
+            Options = new List<CommandOption>
+            {
+                new CommandOption{
+                    Name = "item id",
+                    OptionDomain = new Common.Domain(),
+                    Mandatory = true
+                },
+
+                new CommandOption{
+                    Name = "library name",
+                    OptionDomain = new Common.Domain(),
+                    DefaultValue = "Default Library" 
+                }
+
+            }
+        };
     }
+
+
 }
 
 public class EditCommentCommand : CommentCommand
@@ -493,10 +830,37 @@ public class EditCommentCommand : CommentCommand
         return Options.Length > 1 && Options.Length < 4;
     }
 
-    public override string UsageInstructions()
+    public override UsageInfo GetUsageInfo()
     {
-        return "Usage: flexlib edit-comment <item id> <comment id> [library name]\n";
+        return new UsageInfo
+        {
+            Meta = new List<string> {},
+            Title = "edit-comment",
+            Description = "Edit a selected commment.",
+            Group = CommandGroups.Comments,
+            Syntax = "flexlib edit-comment <item id> <comment id> [library name]",
+            Options = new List<CommandOption>
+            {
+                new CommandOption{
+                    Name = "item id",
+                    OptionDomain = new Common.Domain(),
+                    Mandatory = true
+                },
+                new CommandOption{
+                    Name = "comment id",
+                    OptionDomain = new Common.Domain(),
+                    Mandatory = true
+                },
+                new CommandOption{
+                    Name = "library name",
+                    OptionDomain = new Common.Domain(),
+                    DefaultValue = "Default Library" 
+                }
+
+            }
+        };
     }
+
 }
 
 public class RemoveCommentCommand : CommentCommand
@@ -518,109 +882,88 @@ public class RemoveCommentCommand : CommentCommand
         return Options.Length > 1 && Options.Length < 4;
     }
 
-    public override string UsageInstructions()
+    public override UsageInfo GetUsageInfo()
     {
-        return "Usage: flexlib remove-comment <item id> <comment id> [library name]\n";
-    }
-}
+        return new UsageInfo
+        {
+            Meta = new List<string> {},
+            Title = "remove-comment",
+            Description = "Remove a comment from a selected item.",
+            Group = CommandGroups.Comments,
+            Syntax = "flexlib remove-comment <item id> <comment id> [library name]",
+            Options = new List<CommandOption>
+            {
+                new CommandOption{
+                    Name = "item id",
+                    OptionDomain = new Common.Domain(),
+                    Mandatory = true
+                },
+                new CommandOption{
+                    Name = "comment id",
+                    OptionDomain = new Common.Domain(),
+                    Mandatory = true
+                },
+                new CommandOption{
+                    Name = "library name",
+                    OptionDomain = new Common.Domain(),
+                    DefaultValue = "Default Library" 
+                }
 
+            }
+        };
+    }
+
+}
 
 public class HelpCommand : Command
 {
-
-    public HelpCommand(string[] options)
-    {
-    }
-    
-    public HelpCommand(){}
+    public HelpCommand(string[] options) { }
+    public HelpCommand() { }
 
     public override bool IsValid() => true;
-    
     public override string Type => "help";
 
-    public override string UsageInstructions()
+    public override UsageInfo GetUsageInfo()
     {
-        var availableCommands = CommandsList.GetAvailableCommandsList();
-        var commandsLine = string.Join(" ", availableCommands);
-
-        int consoleWidth;
-        try
+        return new UsageInfo
         {
-            consoleWidth = Console.WindowWidth;
-        }
-        catch
-        {
-            consoleWidth = 80; // fallback if not in console
-        }
-
-        string title = "░░░░ Flexlib CLI ";
-        string titleBar = title + new string('░', Math.Max(0, consoleWidth - title.Length));
-        string bottomBar = new string('░', consoleWidth);
-
-        return string.Join("\n", new[]
-        {
-            titleBar,
-            "",
-            "   usage:      flexlib {command}",
-            "",
-            "commands:",
-            "",
-            "\t" + commandsLine,
-            "",
-            bottomBar,
-            ""
-        });
-    }
-}
-
-public class UnknownCommand : Command
-{
-    public string Message { get; }
-
-    public UnknownCommand(string message)
-    {
-        Message = message;
-    }
-
-    public override bool IsValid() => false;
-    
-    public override string Type => "unknown";
-
-    public override string UsageInstructions() => new HelpCommand().UsageInstructions();
-}
-
-
-public static class CommandsList{
-    
-    public static List<string> GetAvailableCommandsList()
-    {
-        return new List<string>{
-
-            "❔     help",
-            "\n\n\t⚪     new-user",
-            "\n\n\t🏛      new-lib",
-            "list-libs",
-            "remove-lib",
-            "set-layout",
-            "get-layout",
-            "\n\n\t🕮      new-item", 
-            "list-items",
-            "remove-item",
-            "view-item",
-            "\n\n\t𝒜      new-comment",
-            "list-comments",
-            "edit-comment",
-            "remove-comment",
-            "\n\n\t📐     new-prop",
-            "list-props",
-            "set-prop",
-            "remove-prop",
-            "\n\n\t🢃      fetch-files",
-            "\n\n\t🗔      gui",
-
-
+            Meta = new List<string> { Env.Version, Env.BuildId, Env.OS },
+            Title = "CLI HELP",
+            Description = "Describes command sintax and lists the available commands.",
+            Group = CommandGroups.Help,
+            Syntax = "flexlib {command}",
+            Options = new List<CommandOption>
+            {
+                    new CommandOption{
+                        Name = "command",
+                        Description = "Specifies the action to be invoked in the Flexlib application.",
+                        OptionDomain = new Common.Domain(
+                            "help",
+                            "new-user",
+                            "new-lib",
+                            "list-libs",
+                            "remove-lib",
+                            "set-layout",
+                            "get-layout",
+                            "new-item",
+                            "list-items",
+                            "remove-item",
+                            "view-item",
+                            "new-comment",
+                            "list-comments",
+                            "edit-comment",
+                            "remove-comment",
+                            "new-prop",
+                            "list-props",
+                            "set-prop",
+                            "remove-prop",
+                            "fetch-files",
+                            "gui"
+                        ),
+                        Mandatory = true
+                    }
+            }
         };
-
     }
-
 }
+

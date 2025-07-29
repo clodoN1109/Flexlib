@@ -1,10 +1,11 @@
 using Flexlib.Domain;
+using Flexlib.Interface.CLI;
 
 namespace Flexlib.Application.Ports;
 
 public interface IPresenter
 {
-    void ExplainUsage(string? usageInstructions);
+    void ExplainUsage(UsageInfo usageInfo);
     void Success(string message);
     void Failure(string message);
     void ShowError(string message);

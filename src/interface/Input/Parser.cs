@@ -10,12 +10,12 @@ public static class Parsing
     public static ParsedInput Parse(string[] args)
     {
         if (args.Length == 0)
-            return new GUIStartUp(new GUIConfig());
+            return new HelpCommand();
 
-        string command = args[0];
+        string firstArg = args[0];
         string[] options = args.Skip(1).ToArray();
 
-        return command.ToLower() switch
+        return firstArg.ToLower() switch
         {
             "new-user"           => new NewUserCommand(options),
             "new-lib"           => new NewLibraryCommand(options),
@@ -35,8 +35,9 @@ public static class Parsing
             "remove-comment"  => new RemoveCommentCommand(options),
             "fetch-files"       => new FetchFilesCommand(options), 
             "remove-lib"    => new RemoveLibraryCommand(options),
+            "gui"          => new GUIStartUp(new GUIConfig()),
             "help"          => new HelpCommand(options),
-            _               => new UnknownCommand($"Unknown command: {command}")
+            _               => new UnknownInput($"Unknown input: {firstArg}")
         };
     }
 }
@@ -44,5 +45,17 @@ public static class Parsing
 public abstract class ParsedInput
 {
     public abstract bool IsValid();
+}
+
+public class UnknownInput : ParsedInput
+{
+    public string Message { get; }
+
+    public UnknownInput(string message)
+    {
+        Message = message;
+    }
+
+    public override bool IsValid() => false;
 }
 
