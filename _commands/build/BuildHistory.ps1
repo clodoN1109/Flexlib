@@ -52,7 +52,6 @@ function PlotHistoryGraph {
     $grid["$lx,$ly"] = $lastBuildMark
     
     # Headings
-    Write-Host ""
     Write-Host "Build Quality Scatter - " -NoNewLine
     Write-Host "Errors" -NoNewLine -ForegroundColor Red
     Write-Host " X " -NoNewLine
@@ -97,7 +96,6 @@ function PlotHistoryGraph {
 
     }
     Write-Host $xLabels -ForegroundColor Red
-    Write-Host ""
 }
 
 
