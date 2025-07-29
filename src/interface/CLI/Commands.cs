@@ -89,13 +89,13 @@ public class NewLibraryCommand : Command
             {
                 new CommandOption{
                     Name = "library name",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
                 
                 new CommandOption{
                     Name = "path",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     Mandatory = false
                 }
             }
@@ -132,7 +132,7 @@ public class RemoveLibraryCommand : Command
             {
                 new CommandOption{
                     Name = "library name",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     Mandatory = true
                 }
             }
@@ -174,19 +174,19 @@ public class NewItemCommand : Command
                 new CommandOption{
                     Name = "item origin",
                     Description = "The information necessary and sufficient to locate the item.",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
                 
                 new CommandOption{
                     Name = "item name",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     Mandatory = false
                 },
                 
                 new CommandOption{
                     Name = "library name",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     Mandatory = false,
                     DefaultValue = "Default Library" 
 
@@ -227,13 +227,13 @@ public class RemoveItemCommand : Command
             {
                 new CommandOption{
                     Name = "item id",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
                 
                 new CommandOption{
                     Name = "library name",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     Mandatory = false,
                     DefaultValue = "Default Library"
                 },
@@ -320,7 +320,7 @@ public class ListItemsCommand : Command
             {
                 new CommandOption{
                     Name = "library name",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
 
@@ -328,7 +328,7 @@ public class ListItemsCommand : Command
                     Name = "filter sequence",
                     Description = "A sequence of properties that sequencially filters a library based on its current layout.",
                     Syntax = "<property-value>[/property-value ...]",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     Mandatory = false
                 },
                 
@@ -336,7 +336,7 @@ public class ListItemsCommand : Command
                     Name = "sort sequence",
                     Description = "A sequence of properties that sequencially sorts a library based on its current layout.",
                     Syntax = "<property>[/<property ...]",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     Mandatory = false
                 }
 
@@ -382,7 +382,7 @@ public class GetLibraryLayoutCommand : Command
             {
                 new CommandOption{
                     Name = "library name",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     Mandatory = true
                 }
             }
@@ -430,13 +430,13 @@ public class SetLibraryLayoutCommand : Command
             {
                 new CommandOption{
                     Name = "library name",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
                 
                 new CommandOption{
                     Name = "layout",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     Mandatory = true,
                     Syntax = "<property>[/property ...]"
                 }
@@ -476,7 +476,7 @@ public class FetchFilesCommand : Command
             {
                 new CommandOption{
                     Name = "library name",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     Mandatory = false,
                     DefaultValue = "Default Library"
                 }
@@ -520,20 +520,20 @@ public class NewPropertyCommand : Command
             {
                 new CommandOption{
                     Name = "property name",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
                 
                 new CommandOption{
                     Name = "library name",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     DefaultValue = "Default Library" 
                 },
                 
                 new CommandOption{
                     Name = "property type",
                     Description = "The property type/domain.",
-                    OptionDomain = new Common.Domain("string", "integer", "decimal", "float", "bool", "list"),
+                    OptionDomain = new VariableDomain("string", "integer", "decimal", "float", "bool", "list"),
                     DefaultValue = "string"
                 },
 
@@ -575,13 +575,13 @@ public class ListPropertiesCommand : Command
             {
                 new CommandOption{
                     Name = "library name",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     DefaultValue = "Default Library" 
                 },
                 
                 new CommandOption{
                     Name = "item name",
-                    OptionDomain = new Common.Domain()
+                    OptionDomain = new VariableDomain()
                 },
 
             }
@@ -625,25 +625,25 @@ public class SetPropertyCommand : Command
             {
                 new CommandOption{
                     Name = "property name",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
                 
                 new CommandOption{
                     Name = "new value",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
 
                 new CommandOption{
                     Name = "item id",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
                 
                 new CommandOption{
                     Name = "library name",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     DefaultValue = "Default Library" 
                 }
 
@@ -686,13 +686,13 @@ public class RemovePropertyCommand : Command
             {
                 new CommandOption{
                     Name = "property name",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
                 
                 new CommandOption{
                     Name = "library name",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     DefaultValue = "Default Library" 
                 }
 
@@ -747,17 +747,17 @@ public class NewCommentCommand : CommentCommand
             {
                 new CommandOption{
                     Name = "item id",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
                 new CommandOption{
                     Name = "library name",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     DefaultValue = "Default Library" 
                 },
                 new CommandOption{
                     Name = "comment",
-                    OptionDomain = new Common.Domain()
+                    OptionDomain = new VariableDomain()
                 }
             }
         };
@@ -795,13 +795,13 @@ public class ListCommentsCommand : CommentCommand
             {
                 new CommandOption{
                     Name = "item id",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
 
                 new CommandOption{
                     Name = "library name",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     DefaultValue = "Default Library" 
                 }
 
@@ -844,17 +844,17 @@ public class EditCommentCommand : CommentCommand
             {
                 new CommandOption{
                     Name = "item id",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
                 new CommandOption{
                     Name = "comment id",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
                 new CommandOption{
                     Name = "library name",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     DefaultValue = "Default Library" 
                 }
 
@@ -896,17 +896,17 @@ public class RemoveCommentCommand : CommentCommand
             {
                 new CommandOption{
                     Name = "item id",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
                 new CommandOption{
                     Name = "comment id",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
                 new CommandOption{
                     Name = "library name",
-                    OptionDomain = new Common.Domain(),
+                    OptionDomain = new VariableDomain(),
                     DefaultValue = "Default Library" 
                 }
 
@@ -935,36 +935,14 @@ public class HelpCommand : Command
             Syntax = "flexlib <command>",
             Options = new List<CommandOption>
             {
-                    new CommandOption{
-                        Name = "command",
-                        Description = "Specifies the action to be invoked in the Flexlib application.",
-                        OptionDomain = new Common.Domain(
-                            "help",
-                            "new-user",
-                            "new-lib",
-                            "list-libs",
-                            "remove-lib",
-                            "set-layout",
-                            "get-layout",
-                            "new-item",
-                            "list-items",
-                            "remove-item",
-                            "view-item",
-                            "new-comment",
-                            "list-comments",
-                            "edit-comment",
-                            "remove-comment",
-                            "new-prop",
-                            "list-props",
-                            "set-prop",
-                            "remove-prop",
-                            "fetch-files",
-                            "gui"
-                        ),
-                        Mandatory = true
-                    }
+                new CommandOption{
+                    Name = "command",
+                    Description = "Specifies the action to be invoked in the Flexlib application.",
+                    OptionDomain = new VariableDomain( CommandsList.Items ),
+                    Mandatory = true
+                }
             }
         };
     }
-}
+}   
 

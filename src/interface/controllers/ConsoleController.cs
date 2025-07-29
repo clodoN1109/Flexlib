@@ -27,11 +27,14 @@ public static class ConsoleController
         }
 
         var result = Execute(command, authUser);
-
+        
         if (result.IsSuccess)
             _presenter.Success(result.SuccessMessage ?? "");
         else
             _presenter.Failure(result.ErrorMessage ?? "");
+        
+        _presenter.AvailableActions( Authorization.GetAllAuthorizedActions(authUser) );
+
     }
 
     private static Result Execute(Command command, IUser authUser)

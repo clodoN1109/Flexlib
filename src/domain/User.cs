@@ -4,6 +4,7 @@ using Flexlib.Domain;
 using Flexlib.Interface.Input;
 using System.Text.Json.Serialization;
 using Flexlib.Infrastructure.Authentication;
+using Flexlib.Infrastructure.Authorization;
 
 
 namespace Flexlib.Domain;
@@ -12,6 +13,7 @@ public class User : IUser
 {
     public string Id { get; set; } = "";
     public string Name { get; set; } = "Unknown";
+    public AccessLevel UserAccessLevel { get; set; } = AccessLevel.User;
     public AccessCredentials Credentials { get; set; } = new();
 
     [JsonIgnore]

@@ -99,7 +99,7 @@ public static class ConsoleRouter
             _presenter.Message("⚠  Authentication bypassed (DEBUG mode).");
         }
 
-        _presenter.ExhibitUserInfo(user);
+        _presenter.UserInfo(user);
     
     }
 }

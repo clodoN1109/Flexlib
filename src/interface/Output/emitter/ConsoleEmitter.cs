@@ -16,11 +16,15 @@ public class ConsoleEmitter
             Console.ResetColor();
     }
 
-    public void PrintLines(List<ColoredLine> lines)
+    public void PrintLines(List<ColoredLine> lines, bool clearHost = true)
     {
 
-        bool isInteractiveTerminal = !Console.IsOutputRedirected && !Console.IsErrorRedirected;
-        if (isInteractiveTerminal) Console.Clear();
+        if (clearHost) {
+            bool isInteractiveTerminal = !Console.IsOutputRedirected && !Console.IsErrorRedirected;
+            if (isInteractiveTerminal) {
+                Console.Clear();
+            }
+        }
 
         foreach (var line in lines)
             Print(line.Text, line.Color);

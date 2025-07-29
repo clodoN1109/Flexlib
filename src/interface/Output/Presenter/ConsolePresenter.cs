@@ -19,9 +19,14 @@ public class ConsolePresenter : IPresenter
         _emitter.PrintLines(_renderer.UsageInfo(info, Console.WindowWidth));
     }
     
-    public void ExhibitUserInfo(IUser user)
+    public void UserInfo(IUser user)
     {
         _emitter.Print(_renderer.UserInfo(user));
+    }
+
+    public void AvailableActions(List<string> actions)
+    {
+        _emitter.PrintLines(_renderer.AvailableActions(actions, Console.WindowWidth), false);
     }
 
     public void Success(string message)

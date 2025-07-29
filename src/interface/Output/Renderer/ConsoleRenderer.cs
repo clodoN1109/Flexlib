@@ -56,6 +56,61 @@ public class ConsoleRenderer
     public string Failure(string message) => Message($"✗ {message}");
     public string Error(string message) => Message($"Error: {message}");
 
+    public List<ColoredLine> AvailableActions(List<string> actions, int consoleWidth)
+    {
+        var lines = new List<ColoredLine>();
+
+        if (actions == null || actions.Count == 0)
+        {
+            lines.Add(new ColoredLine("No available actions.", ConsoleColor.DarkGray));
+            return lines;
+        }
+
+        const int padding = 2;
+        string label = "commands: ";
+        var commandLines = new List<string>();
+
+        string currentLine = label;
+        int currentWidth = label.Length;
+
+        foreach (var cmd in actions)
+        {
+            string segment = cmd + new string(' ', padding);
+
+            if (currentWidth + segment.Length > consoleWidth - 4) // account for border + margin
+            {
+                commandLines.Add(currentLine.TrimEnd());
+                currentLine = new string(' ', label.Length) + segment;
+                currentWidth = label.Length + segment.Length;
+            }
+            else
+            {
+                currentLine += segment;
+                currentWidth += segment.Length;
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(currentLine))
+        {
+            commandLines.Add(currentLine.TrimEnd());
+        }
+
+        // Render boxed output
+        string borderLine = "---" + new string('―', consoleWidth - 6) + "┐";
+        lines.Add(new ColoredLine(borderLine, ConsoleColor.DarkGray));
+
+        foreach (var line in commandLines)
+        {
+            string padded = "  " + line.PadRight(consoleWidth - 6);
+            lines.Add(new ColoredLine(padded + " │", ConsoleColor.Gray));
+        }
+
+        string bottomLine = "---" + new string('―', consoleWidth - 6) + "┘";
+        lines.Add(new ColoredLine(bottomLine, ConsoleColor.DarkGray));
+
+        return lines;
+    }
+
     public List<ColoredLine> UsageInfo(UsageInfo info, int consoleWidth)
     {
         var lines = new List<ColoredLine>();
