@@ -26,11 +26,14 @@ public static class SetLibraryLayout
         if (selectedLibrary == null)
             return Result.Fail($"Library '{parsedArgs.LibName}' not found.");
 
-        selectedLibrary.SetLayout(parsedArgs.LayoutString);
+        var result = selectedLibrary.SetLayout(parsedArgs.LayoutString);
 
-        parsedArgs.Repo.Save(selectedLibrary);
+        if (result.IsSuccess) 
+        {
+            parsedArgs.Repo.Save(selectedLibrary);
+        }
 
-        return Result.Success($"'{parsedArgs.LibName}' library layout updated.");
+        return result;
     }
 
     private static Result IsOperationAllowed(ParsedArgs parsedArgs)

@@ -203,7 +203,7 @@ public class Library
             }
             else
             {
-                return Result.Fail($"Invalid property name {propertyName} passed as layout sequence element.");
+                return Result.Fail($"Invalid property name '{propertyName}' passed as layout sequence element.");
             }
         }
 

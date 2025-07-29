@@ -7,12 +7,23 @@ namespace Flexlib.Interface.CLI;
 
 public abstract class Command : Flexlib.Interface.Input.Action
 {
-    public abstract UsageInfo GetUsageInfo(); 
+    public abstract UsageInfo GetUsageInfo();
+
+    public string[] Options { get; protected set; } = Array.Empty<string>();
+
+    public bool IsHelp()
+    {
+        if (Options.Length > 0 && Options[0] == "help")
+        {
+            return true;
+        }
+
+        return false;
+    }
 }
 
 public class NewUserCommand : Command
 {
-    string[] Options;
 
     public NewUserCommand(string[] options)
     {
@@ -234,7 +245,6 @@ public class RemoveItemCommand : Command
 
 public class ListLibrariesCommand : Command
 {
-    string[] Options;
 
     public ListLibrariesCommand(string[] options)
     {
@@ -271,7 +281,6 @@ public class ListLibrariesCommand : Command
 
 public class ListItemsCommand : Command
 {
-    string[] Options;
     public string LibraryName { get; }
     public string FilterSequence { get; }
     public string SortSequence { get; }
@@ -338,7 +347,6 @@ public class ListItemsCommand : Command
 
 public class GetLibraryLayoutCommand : Command
 {
-    string[] Options;
     public string LibraryName { get; }
 
     public GetLibraryLayoutCommand(string[] options)
@@ -385,7 +393,6 @@ public class GetLibraryLayoutCommand : Command
 
 public class SetLibraryLayoutCommand : Command
 {
-    string[] Options;
     public string LibraryName { get; }
     public string LayoutString { get; }
 
@@ -441,7 +448,6 @@ public class SetLibraryLayoutCommand : Command
 
 public class FetchFilesCommand : Command
 {
-    string[] Options;
     public string? LibraryName { get; } 
 
     public FetchFilesCommand(string[] options)
@@ -482,7 +488,6 @@ public class FetchFilesCommand : Command
 
 public class NewPropertyCommand : Command
 {
-    string[] Options;
     public string PropName { get; } 
     public string PropType { get; } 
     public string LibName { get; } 
@@ -540,7 +545,6 @@ public class NewPropertyCommand : Command
 
 public class ListPropertiesCommand : Command
 {
-    string[] Options;
     public string LibName { get; } 
     public string ItemName { get; } 
 
@@ -587,7 +591,6 @@ public class ListPropertiesCommand : Command
 
 public class SetPropertyCommand : Command
 {
-    string[] Options;
     public string PropName { get; } 
     public string NewValue { get; } 
     public object ItemId { get; } 
@@ -653,7 +656,6 @@ public class SetPropertyCommand : Command
 
 public class RemovePropertyCommand : Command
 {
-    string[] Options;
     public string PropName { get; } 
     public string LibName { get; } 
 
@@ -704,7 +706,6 @@ public class RemovePropertyCommand : Command
 
 public abstract class CommentCommand : Command
 {
-    public string[] Options { get; }
     public object ItemId { get; } 
 
     protected CommentCommand(string[] options)
@@ -927,11 +928,11 @@ public class HelpCommand : Command
     {
         return new UsageInfo
         {
-            Meta = new List<string> { Env.Version, Env.BuildId, Env.OS },
+            Meta = new List<string> { Env.Version, Env.BuildId },
             Title = "CLI HELP",
-            Description = "Describes command sintax and lists the available commands.",
+            Description = "Flexlib is a lightweight system for designing flexible and interconnected libraries with just a few keystrokes.",
             Group = CommandGroups.Help,
-            Syntax = "flexlib {command}",
+            Syntax = "flexlib <command>",
             Options = new List<CommandOption>
             {
                     new CommandOption{

@@ -102,17 +102,17 @@ public class ConsoleRenderer
             lines.Add(new ColoredLine("options:", ConsoleColor.Cyan));
             lines.Add(new ColoredLine(""));
 
-            foreach (var opt in info.Options)
+            foreach (var opt in info.Options.OrderBy(opt => opt.Name))
             {
                 var name = opt.Mandatory ? $"<{opt.Name}>" : $"[{opt.Name}]";
                 var domain = opt.OptionDomain?.IncludedValues?.Any() == true
-                    ? $" ({string.Join("|", opt.OptionDomain.IncludedValues)})"
+                    ? $" ({string.Join("|", opt.OptionDomain.IncludedValues.OrderBy(v => v))})"
                     : "";
                 var defaultVal = !string.IsNullOrWhiteSpace(opt.DefaultValue)
                     ? $" (default: {opt.DefaultValue})"
                     : "";
 
-                var label = $"  • {name}{domain}{defaultVal}";
+                var label = $"    {name}{domain}{defaultVal}";
                 lines.Add(new ColoredLine(label, opt.Mandatory ? ConsoleColor.Yellow : ConsoleColor.DarkGray, false));
 
                 var wrappedDesc = Render.WrapText(opt.Description, consoleWidth - 6);

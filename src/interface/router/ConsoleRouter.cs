@@ -63,7 +63,7 @@ public static class ConsoleRouter
             user = _authenticator.TryRestoreSession();
             if (user != null)
             {
-                _presenter.Message($"Welcome back, {user.Name} (via session)");
+                //_presenter.Message($"Welcome back, {user.Name}!");
             }
             else
             {
@@ -81,7 +81,9 @@ public static class ConsoleRouter
         switch (cmd)
         {
             case Command c:
-                if (c.IsValid())
+                if (c.IsHelp())
+                    _presenter.ExplainUsage(c.GetUsageInfo());
+                else if (c.IsValid())
                     ConsoleController.Handle(c, user);
                 else
                     _presenter.ExplainUsage(c.GetUsageInfo());
@@ -98,5 +100,6 @@ public static class ConsoleRouter
         }
 
         _presenter.ExhibitUserInfo(user);
+    
     }
 }

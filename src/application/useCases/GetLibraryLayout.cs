@@ -30,9 +30,14 @@ public static class GetLibraryLayout
             .Select(def => def.Name)
             .ToList();
 
-        parsedArgs.Presenter.ListLayoutSequence(layoutSequence);
-
-        return Result.Success("");
+        if (layoutSequence.Count > 0)
+        { 
+            parsedArgs.Presenter.ListLayoutSequence(layoutSequence);
+            return Result.Success("");
+        }
+        else {
+            return Result.Fail("Layout sequence is empty.");
+        }
     }
 
     private static Result IsOperationAllowed(ParsedArgs parsedArgs)
