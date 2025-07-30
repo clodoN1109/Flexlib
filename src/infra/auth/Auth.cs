@@ -1,7 +1,8 @@
 using Flexlib.Application.Ports;
-using Flexlib.Common;
+using Flexlib.Infrastructure.Interop;
 using Flexlib.Domain;
 using Flexlib.Interface.Input;
+using System;
 
 namespace Flexlib.Infrastructure.Authentication;
 
@@ -16,7 +17,7 @@ public class Authenticator
         _userRepo = userRepo;
         _reader = reader;
 
-        string sessionDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Flexlib");
+        string sessionDir = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "Flexlib");
         Directory.CreateDirectory(sessionDir);
         _sessionFilePath = Path.Combine(sessionDir, ".session");
     }

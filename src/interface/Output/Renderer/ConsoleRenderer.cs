@@ -29,11 +29,28 @@ public class ConsoleRenderer
     
     public string Message(string? message)
     {
-        string[] lines = {
-            $"   {message}"
-        };
+        if (string.IsNullOrWhiteSpace(message))
+            return "";
 
-        int contentWidth = lines.Max(line => line.Length);
+        int maxBoxWidth = Console.WindowWidth - 4; // Leave margin
+        int innerWidth = Math.Max(10, maxBoxWidth - 6); // space for borders
+
+        // Split message into initial lines (on \n) and then wrap each one
+        var wrappedLines = new List<string>();
+
+        foreach (var rawLine in message.Split('\n'))
+        {
+            var remaining = rawLine.Trim();
+            while (remaining.Length > innerWidth)
+            {
+                wrappedLines.Add("   " + remaining[..innerWidth]);
+                remaining = remaining[innerWidth..];
+            }
+
+            wrappedLines.Add("   " + remaining); // Final (or short) part
+        }
+
+        int contentWidth = wrappedLines.Max(l => l.Length);
         int boxWidth = contentWidth + 2;
 
         string top = "---" + new string('―', boxWidth - 3) + "┐";
@@ -41,7 +58,7 @@ public class ConsoleRenderer
 
         var box = new List<string> { top };
 
-        foreach (var line in lines)
+        foreach (var line in wrappedLines)
         {
             string padded = line.PadRight(contentWidth);
             box.Add($" {padded} │");

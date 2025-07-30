@@ -1,7 +1,7 @@
 using Flexlib.Application.Ports;
 using Flexlib.Application.Common;
 using Flexlib.Domain;
-using Flexlib.Common;
+using Flexlib.Infrastructure.Interop;
 
 namespace Flexlib.Application.UseCases;
 
@@ -9,7 +9,6 @@ public static class FetchFiles
 {
     public static Result Execute(string? libName, ILibraryRepository repo)
     {
-
         Result validation = IsOperationAllowed(libName, repo);
 
         if (validation.IsSuccess)
@@ -20,15 +19,17 @@ public static class FetchFiles
             }
             else
             {
-                FetchAllLibrariesFiles(repo);
-                return Result.Success("All Libraries refreshed.");
+                List<Result> results = FetchAllLibrariesFiles(repo);
+                if (results.Any(r => r.IsFailure))
+                    return Result.Fail(string.Join(" | ", results.Select(r => r.ErrorMessage)));
+                else
+                    return Result.Success("All items from all libraries fetched successfully.");
             }
         }
-        else 
+        else
         {
             return validation;
         }
-
     }
 
     private static Result FetchLibraryFiles(string libName, ILibraryRepository repo)
@@ -37,24 +38,26 @@ public static class FetchFiles
 
         if (lib != null)
         {
-            repo.Save(lib);
-            return Result.Success("Library refreshed.");
+            return repo.Save(lib);
         }
         else
         {
-            return Result.Fail($"Library {libName} not found.");
+            return Result.Fail($"Library '{libName}' not found.");
         }
     }
-    
-    private static void FetchAllLibrariesFiles(ILibraryRepository repo)
+
+    private static List<Result> FetchAllLibrariesFiles(ILibraryRepository repo)
     {
-        foreach (Library lib in repo.GetAll().ToList())
+        List<Result> results = new();
+
+        foreach (Library lib in repo.GetAll())
         {
-            repo.Save(lib);
+            results.Add(FetchLibraryFiles(lib.Name!, repo));
         }
-        
+
+        return results;
     }
-    
+
     private static Result IsOperationAllowed(string? libName, ILibraryRepository repo)
     {
         if (libName == "Default Library" && AssureDefaultLibrary.Execute(repo).IsFailure)

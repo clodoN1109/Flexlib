@@ -1,5 +1,5 @@
 using Flexlib.Domain;
-using Flexlib.Common;
+using Flexlib.Infrastructure.Interop;
 using Flexlib.Application.Common;
 using Flexlib.Application.Ports;
 
@@ -28,8 +28,9 @@ public static class NewItem
         Library? lib = repo.GetByName(libName);
         if (lib != null)
         {
-            repo.Save(lib.NewItem(itemName, itemOrigin)); 
-            return Result.Success($"Item '{itemName}' added to the library '{libName}'.");
+            var newItem = lib.NewItem(itemName, itemOrigin);
+            var result = repo.Save(newItem, lib); 
+            return result;
         }
         else {
             return Result.Fail($"Library '{libName}' not found.");

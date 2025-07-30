@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Flexlib.Domain;
 
-namespace Flexlib.Common;
+namespace Flexlib.Infrastructure.Persistence;
 
 public static class JsonHelpers
 {

@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using Flexlib.Common;
+using Flexlib.Infrastructure.Interop;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -25,7 +25,7 @@ public class Library
         LayoutSequence = new();
     }
 
-    public Library NewItem(string name, string origin)
+    public LibraryItem NewItem(string name, string origin)
     {
         var newItem = new LibraryItem(name, origin, this);
 
@@ -36,7 +36,7 @@ public class Library
 
         Items.Add(newItem);
 
-        return this;
+        return newItem;
     }
 
     public int GetHighestItemId() => Items.Any() ? Items.Max(i => i.Id) : 0;

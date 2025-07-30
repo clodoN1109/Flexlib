@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Net;
 
-namespace Flexlib.Common;
+namespace Flexlib.Interface.Input.Heuristics;
 
 public static class AddressAnalysis
 {

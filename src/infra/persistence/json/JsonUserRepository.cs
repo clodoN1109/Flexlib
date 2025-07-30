@@ -1,7 +1,9 @@
 using System.Text.Json;
 using Flexlib.Application.Ports;
 using Flexlib.Domain;
-using Flexlib.Common;
+using Flexlib.Infrastructure.Interop;
+using Flexlib.Infrastructure.Environment;
+using System;
 
 
 namespace Flexlib.Infrastructure.Persistence;
@@ -20,11 +22,11 @@ public class JsonUserRepository : IUserRepository
 
     public JsonUserRepository()
     {
-        string? exeFolder = Env.GetExecutingAssemblyLocation();
+        string? exeFolder = Flexlib.Infrastructure.Environment.Env.GetExecutingAssemblyLocation();
         if (string.IsNullOrWhiteSpace(exeFolder) || !Directory.Exists(exeFolder))
             throw new DirectoryNotFoundException($"Executable directory not found: {exeFolder}");
 
-        string? appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        string? appDataFolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData);
         if (string.IsNullOrWhiteSpace(appDataFolder) || !Directory.Exists(appDataFolder))
             throw new DirectoryNotFoundException($"AppData directory not found: {appDataFolder}");
 

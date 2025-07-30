@@ -1,4 +1,4 @@
-using Flexlib.Common;
+using Flexlib.Infrastructure.Modelling;
 
 namespace Flexlib.Interface.CLI;
 
