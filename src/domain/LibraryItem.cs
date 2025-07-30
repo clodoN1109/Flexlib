@@ -30,18 +30,18 @@ public class LibraryItem
 
         _library = library;
         Comments = new List<Comment>();
-        PropertyValues = new Dictionary<string, object?>();
+        PropertyValues = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
     }
 
     public LibraryItem()
     {
         Comments = new List<Comment>();
-        PropertyValues = new Dictionary<string, object?>();
+        PropertyValues = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
     }
 
     public void RemoveComment(string commentID)
     {
-        Comments.RemoveAll(c => c.Id == commentID);
+        Comments.RemoveAll(c => c.Id.ToLowerInvariant() == commentID.ToLowerInvariant());
     }
         
     public T? GetValue<T>(string propertyName)
@@ -71,7 +71,7 @@ public class LibraryItem
 
     public Comment? GetCommentById(string id)
     {
-        return Comments.FirstOrDefault(c => c.Id == id);
+        return Comments.FirstOrDefault(c => c.Id.ToLowerInvariant() == id.ToLowerInvariant());
     }
 
     public int GetCommentCount()
@@ -90,7 +90,7 @@ public class LibraryItem
    
     public Dictionary<string, List<string>> GetPropertyValuesAsListOfStrings()
     {
-        var result = new Dictionary<string, List<string>>();
+        var result = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
 
         if (PropertyValues == null)
             return result;

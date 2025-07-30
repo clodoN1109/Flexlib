@@ -29,11 +29,28 @@ public class ConsoleRenderer
     
     public string Message(string? message)
     {
-        string[] lines = {
-            $"   {message}"
-        };
+        if (string.IsNullOrWhiteSpace(message))
+            return "";
 
-        int contentWidth = lines.Max(line => line.Length);
+        int maxBoxWidth = Console.WindowWidth - 4; // Leave margin
+        int innerWidth = Math.Max(10, maxBoxWidth - 6); // space for borders
+
+        // Split message into initial lines (on \n) and then wrap each one
+        var wrappedLines = new List<string>();
+
+        foreach (var rawLine in message.Split('\n'))
+        {
+            var remaining = rawLine.Trim();
+            while (remaining.Length > innerWidth)
+            {
+                wrappedLines.Add("   " + remaining[..innerWidth]);
+                remaining = remaining[innerWidth..];
+            }
+
+            wrappedLines.Add("   " + remaining); // Final (or short) part
+        }
+
+        int contentWidth = wrappedLines.Max(l => l.Length);
         int boxWidth = contentWidth + 2;
 
         string top = "---" + new string('―', boxWidth - 3) + "┐";
@@ -41,7 +58,7 @@ public class ConsoleRenderer
 
         var box = new List<string> { top };
 
-        foreach (var line in lines)
+        foreach (var line in wrappedLines)
         {
             string padded = line.PadRight(contentWidth);
             box.Add($" {padded} │");
@@ -55,6 +72,61 @@ public class ConsoleRenderer
     public string Success(string message) => Message($"✓ {message}");
     public string Failure(string message) => Message($"✗ {message}");
     public string Error(string message) => Message($"Error: {message}");
+
+    public List<ColoredLine> AvailableActions(List<string> actions, int consoleWidth)
+    {
+        var lines = new List<ColoredLine>();
+
+        if (actions == null || actions.Count == 0)
+        {
+            lines.Add(new ColoredLine("No available actions.", ConsoleColor.DarkGray));
+            return lines;
+        }
+
+        const int padding = 2;
+        string label = "commands: ";
+        var commandLines = new List<string>();
+
+        string currentLine = label;
+        int currentWidth = label.Length;
+
+        foreach (var cmd in actions)
+        {
+            string segment = cmd + new string(' ', padding);
+
+            if (currentWidth + segment.Length > consoleWidth - 4) // account for border + margin
+            {
+                commandLines.Add(currentLine.TrimEnd());
+                currentLine = new string(' ', label.Length) + segment;
+                currentWidth = label.Length + segment.Length;
+            }
+            else
+            {
+                currentLine += segment;
+                currentWidth += segment.Length;
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(currentLine))
+        {
+            commandLines.Add(currentLine.TrimEnd());
+        }
+
+        // Render boxed output
+        string borderLine = "---" + new string('―', consoleWidth - 6) + "┐";
+        lines.Add(new ColoredLine(borderLine, ConsoleColor.DarkGray));
+
+        foreach (var line in commandLines)
+        {
+            string padded = "  " + line.PadRight(consoleWidth - 6);
+            lines.Add(new ColoredLine(padded + " │", ConsoleColor.Gray));
+        }
+
+        string bottomLine = "---" + new string('―', consoleWidth - 6) + "┘";
+        lines.Add(new ColoredLine(bottomLine, ConsoleColor.DarkGray));
+
+        return lines;
+    }
 
     public List<ColoredLine> UsageInfo(UsageInfo info, int consoleWidth)
     {
@@ -102,17 +174,17 @@ public class ConsoleRenderer
             lines.Add(new ColoredLine("options:", ConsoleColor.Cyan));
             lines.Add(new ColoredLine(""));
 
-            foreach (var opt in info.Options)
+            foreach (var opt in info.Options.OrderBy(opt => opt.Name))
             {
                 var name = opt.Mandatory ? $"<{opt.Name}>" : $"[{opt.Name}]";
                 var domain = opt.OptionDomain?.IncludedValues?.Any() == true
-                    ? $" ({string.Join("|", opt.OptionDomain.IncludedValues)})"
+                    ? $" ({string.Join("|", opt.OptionDomain.IncludedValues.OrderBy(v => v))})"
                     : "";
                 var defaultVal = !string.IsNullOrWhiteSpace(opt.DefaultValue)
                     ? $" (default: {opt.DefaultValue})"
                     : "";
 
-                var label = $"  • {name}{domain}{defaultVal}";
+                var label = $"    {name}{domain}{defaultVal}";
                 lines.Add(new ColoredLine(label, opt.Mandatory ? ConsoleColor.Yellow : ConsoleColor.DarkGray, false));
 
                 var wrappedDesc = Render.WrapText(opt.Description, consoleWidth - 6);
@@ -120,6 +192,20 @@ public class ConsoleRenderer
                     lines.Add(new ColoredLine("      " + descLine, ConsoleColor.Gray));
                 
                 lines.Add(new ColoredLine("      " + opt.Syntax, ConsoleColor.Gray));
+            }
+        }
+
+        // Examples
+        if (info.Examples.Count > 0 ) 
+        {
+            lines.Add(new ColoredLine(""));
+            lines.Add(new ColoredLine("examples:", ConsoleColor.Cyan));
+        }
+        foreach (var example in info.Examples){
+            if (!string.IsNullOrWhiteSpace(example))
+            {
+                lines.Add(new ColoredLine(""));
+                lines.Add(new ColoredLine("   " + example, ConsoleColor.White));
             }
         }
 

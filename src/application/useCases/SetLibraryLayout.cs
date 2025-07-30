@@ -1,6 +1,6 @@
 using Flexlib.Application.Ports;
 using Flexlib.Application.Common;
-using Flexlib.Common;
+using Flexlib.Infrastructure.Interop;
 using Flexlib.Domain;
 using System.Text;
 
@@ -26,16 +26,19 @@ public static class SetLibraryLayout
         if (selectedLibrary == null)
             return Result.Fail($"Library '{parsedArgs.LibName}' not found.");
 
-        selectedLibrary.SetLayout(parsedArgs.LayoutString);
+        var result = selectedLibrary.SetLayout(parsedArgs.LayoutString);
 
-        parsedArgs.Repo.Save(selectedLibrary);
+        if (result.IsSuccess) 
+        {
+            parsedArgs.Repo.Save(selectedLibrary);
+        }
 
-        return Result.Success($"'{parsedArgs.LibName}' library layout updated.");
+        return result;
     }
 
     private static Result IsOperationAllowed(ParsedArgs parsedArgs)
     {
-        if (parsedArgs.LibName == "Default Library" && AssureDefaultLibrary.Execute(parsedArgs.Repo).IsFailure)
+        if (parsedArgs.LibName.ToLowerInvariant() == "Default Library".ToLowerInvariant() && AssureDefaultLibrary.Execute(parsedArgs.Repo).IsFailure)
             return Result.Fail($"Default Library not found.");
         
         if (string.IsNullOrWhiteSpace(parsedArgs.LibName))

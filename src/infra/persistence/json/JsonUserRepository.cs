@@ -1,7 +1,9 @@
 using System.Text.Json;
 using Flexlib.Application.Ports;
 using Flexlib.Domain;
-using Flexlib.Common;
+using Flexlib.Infrastructure.Interop;
+using Flexlib.Infrastructure.Environment;
+using System;
 
 
 namespace Flexlib.Infrastructure.Persistence;
@@ -20,11 +22,11 @@ public class JsonUserRepository : IUserRepository
 
     public JsonUserRepository()
     {
-        string? exeFolder = Env.GetExecutingAssemblyLocation();
+        string? exeFolder = Flexlib.Infrastructure.Environment.Env.GetExecutingAssemblyLocation();
         if (string.IsNullOrWhiteSpace(exeFolder) || !Directory.Exists(exeFolder))
             throw new DirectoryNotFoundException($"Executable directory not found: {exeFolder}");
 
-        string? appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        string? appDataFolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData);
         if (string.IsNullOrWhiteSpace(appDataFolder) || !Directory.Exists(appDataFolder))
             throw new DirectoryNotFoundException($"AppData directory not found: {appDataFolder}");
 
@@ -59,17 +61,17 @@ public class JsonUserRepository : IUserRepository
 
     public IUser? Get(string id)
     {
-        return _cache.FirstOrDefault(u => u.Credentials.UserId == id);
+        return _cache.FirstOrDefault(u => u.Credentials.UserId.ToLowerInvariant() == id.ToLowerInvariant());
     }
 
     public bool Exists(string id)
     {
-        return _cache.Any(u => u.Credentials.UserId == id);
+        return _cache.Any(u => u.Credentials.UserId.ToLowerInvariant() == id.ToLowerInvariant());
     }
 
     public void Save(IUser user)
     {
-        var existing = _cache.FirstOrDefault(u => u.Credentials.UserId == user.Credentials.UserId);
+        var existing = _cache.FirstOrDefault(u => u.Credentials.UserId.ToLowerInvariant() == user.Credentials.UserId.ToLowerInvariant());
         if (existing != null)
             _cache.Remove(existing);
 
@@ -79,7 +81,7 @@ public class JsonUserRepository : IUserRepository
 
     public void Delete(string id)
     {
-        var existing = _cache.FirstOrDefault(u => u.Credentials.UserId == id);
+        var existing = _cache.FirstOrDefault(u => u.Credentials.UserId.ToLowerInvariant() == id.ToLowerInvariant());
         if (existing != null)
         {
             _cache.Remove(existing);

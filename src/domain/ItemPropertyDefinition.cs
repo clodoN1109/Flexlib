@@ -28,6 +28,6 @@ public class ItemPropertyDefinition
     }
     
     [JsonIgnore]
-    public bool IsList => TypeName == "list";
+    public bool IsList => TypeName.ToLowerInvariant() == "list";
 }
 

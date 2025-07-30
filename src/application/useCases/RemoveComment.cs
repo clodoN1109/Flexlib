@@ -1,6 +1,6 @@
 using Flexlib.Application.Ports;
 using Flexlib.Application.Common;
-using Flexlib.Common;
+using Flexlib.Infrastructure.Interop;
 using Flexlib.Domain;
 using System.Text;
 using Flexlib.Interface;
@@ -36,7 +36,7 @@ public static class RemoveComment
     private static Result IsOperationAllowed(ParsedArgs parsedArgs)
     {
 
-        if (parsedArgs.LibName == "Default Library" && AssureDefaultLibrary.Execute(parsedArgs.Repo).IsFailure)
+        if (parsedArgs.LibName.ToLowerInvariant() == "Default Library".ToLowerInvariant() && AssureDefaultLibrary.Execute(parsedArgs.Repo).IsFailure)
             return Result.Fail($"Default Library not found.");
         
         if (string.IsNullOrWhiteSpace(parsedArgs.LibName))
@@ -51,7 +51,7 @@ public static class RemoveComment
         if (selectedItem == null)
             return Result.Fail($"Library '{parsedArgs.LibName}' has no item with ID '{parsedArgs.ItemId}'.");
         
-        if (!selectedItem.Comments.Any(c => c.Id == parsedArgs.CommentId))
+        if (!selectedItem.Comments.Any(c => c.Id.ToLowerInvariant() == parsedArgs.CommentId.ToLowerInvariant()))
             return Result.Fail($"Comment with id {parsedArgs.CommentId} not found.");
 
         return Result.Success("Operation allowed.");

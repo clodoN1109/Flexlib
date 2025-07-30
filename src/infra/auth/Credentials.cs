@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Flexlib.Domain;
+namespace Flexlib.Infrastructure.Authentication;
 
 
 public class AccessCredentials

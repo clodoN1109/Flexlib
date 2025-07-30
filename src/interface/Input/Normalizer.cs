@@ -1,4 +1,5 @@
-using Flexlib.Common;
+using Flexlib.Infrastructure.Interop;
+using Flexlib.Interface.Input.Heuristics;
 
 namespace Flexlib.Interface.Input;
 

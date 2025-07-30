@@ -1,11 +1,12 @@
 namespace Flexlib.Application.Ports;
 
 using Flexlib.Domain;
-using Flexlib.Common;
+using Flexlib.Infrastructure.Interop;
 
 public interface ILibraryRepository
 {
-    void Save(Library lib);
+    Result Save(Library lib);
+    Result Save(LibraryItem item, Library lib);
     bool Exists(string name);
     Library? GetByName(string name);
     Result RemoveLibraryByName(string name);

@@ -1,8 +1,9 @@
+using Flexlib.Infrastructure.Meta;
 using System.Reflection;
 using System.IO;
-using Flexlib.Infrastructure.Meta;
+using System;
 
-namespace Flexlib.Common;
+namespace Flexlib.Infrastructure.Environment;
 
 public static class Env{
     
@@ -15,7 +16,7 @@ public static class Env{
 
     public static string BuildId => BuildInfo.BuildId ?? "";
 
-    public static string OS => Environment.OSVersion.ToString();
+    public static string OS => System.Environment.OSVersion.ToString();
     
 }
 

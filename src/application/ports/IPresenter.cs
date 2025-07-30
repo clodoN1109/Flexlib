@@ -13,4 +13,5 @@ public interface IPresenter
     void ListLibs(List<Library> items);
     void ListItems(List<LibraryItem> items, Library lib, string filterSequence, string sortSequence, double localSizeInBytes);
     void ListLayoutSequence(List<string> layoutSequence);
+    void AvailableActions(List<string> actions);
 } 

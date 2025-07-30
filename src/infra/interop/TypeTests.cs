@@ -1,4 +1,4 @@
-namespace Flexlib.Common;
+namespace Flexlib.Infrastructure.Interop;
 
 public static class TypeTests
 {

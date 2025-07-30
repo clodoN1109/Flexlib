@@ -1,6 +1,6 @@
 using Flexlib.Application.Common;
 using Flexlib.Application.Ports;
-using Flexlib.Common;
+using Flexlib.Infrastructure.Interop;
 using Flexlib.Domain;
 
 namespace Flexlib.Application.UseCases;
@@ -61,7 +61,7 @@ public static class AddProperty
     private static Result IsOperationAllowed(ParsedArgs parsedArgs)
     {
         
-        if (parsedArgs.LibName == "Default Library" && AssureDefaultLibrary.Execute(parsedArgs.Repo).IsFailure)
+        if (parsedArgs.LibName.ToLowerInvariant() == "Default Library".ToLowerInvariant() && AssureDefaultLibrary.Execute(parsedArgs.Repo).IsFailure)
             return Result.Fail($"Default Library not found.");
 
         if (string.IsNullOrWhiteSpace(parsedArgs.PropName))

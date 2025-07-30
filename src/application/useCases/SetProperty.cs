@@ -1,6 +1,7 @@
 using Flexlib.Application.Ports;
 using Flexlib.Application.Common;
-using Flexlib.Common;
+using Flexlib.Infrastructure.Interop;
+using Flexlib.Infrastructure.Persistence;
 using Flexlib.Domain;
 using System;
 using System.Linq;
@@ -27,7 +28,7 @@ public static class SetProperty
         if (args.LibName == "Default Library" && AssureDefaultLibrary.Execute(args.Repo).IsFailure)
             return Result.Fail($"Default Library not found.");
 
-        if (string.IsNullOrWhiteSpace(args.PropName))
+        if (string.IsNullOrWhiteSpace(args.PropName.ToLowerInvariant()))
             return Result.Fail("Property name must be provided.");
 
         if (!string.IsNullOrWhiteSpace(args.LibName))
@@ -41,12 +42,12 @@ public static class SetProperty
 
             var item = lib.GetItemById(args.ItemId);
 
-            if (!item!.PropertyValues.ContainsKey(args.PropName))
-                return Result.Fail($"Property '{args.PropName}' not found in item '{args.ItemId}'.");
+            if (!item!.PropertyValues.ContainsKey(args.PropName.ToLowerInvariant()))
+                return Result.Fail($"Property '{args.PropName.ToLowerInvariant()}' not found in item '{args.ItemId}'.");
         
-            var propertyDef = lib.PropertyDefinitions.FirstOrDefault(d => d.Name == args.PropName);
+            var propertyDef = lib.PropertyDefinitions.FirstOrDefault(d => d.Name == args.PropName.ToLowerInvariant());
             if (propertyDef == null)
-                return Result.Fail($"Property {args.PropName} is not defined in library {args.LibName}.");
+                return Result.Fail($"Property {args.PropName.ToLowerInvariant()} is not defined in library {args.LibName}.");
         }
 
 
@@ -57,11 +58,11 @@ public static class SetProperty
     {
         var lib = args.Repo.GetByName(args.LibName); 
 
-        var propertyDef = lib!.PropertyDefinitions.FirstOrDefault(d => d.Name == args.PropName);
+        var propertyDef = lib!.PropertyDefinitions.FirstOrDefault(d => d.Name == args.PropName.ToLowerInvariant());
 
         var selectedItem = lib.GetItemById(args.ItemId);
 
-        object? existingValue = selectedItem!.PropertyValues[args.PropName];
+        object? existingValue = selectedItem!.PropertyValues[args.PropName.ToLowerInvariant()];
 
         if (propertyDef!.IsList)
         {
@@ -73,21 +74,21 @@ public static class SetProperty
             {
                 var list = JsonHelpers.JsonElementToStringList(je);
                 list.Add(args.NewValue.Trim());
-                selectedItem.PropertyValues[args.PropName] = list;
+                selectedItem.PropertyValues[args.PropName.ToLowerInvariant()] = list;
             }
             else
             {
-                selectedItem.PropertyValues[args.PropName] = new List<string> { args.NewValue.Trim() };
+                selectedItem.PropertyValues[args.PropName.ToLowerInvariant()] = new List<string> { args.NewValue.Trim() };
             }
         }
         else
         {
-            selectedItem.PropertyValues[args.PropName] = args.NewValue;
+            selectedItem.PropertyValues[args.PropName.ToLowerInvariant()] = args.NewValue;
         }
 
         args.Repo.Save(lib);
 
-        return Result.Success( $"Property '{args.PropName}' updated in item '{args.ItemId}' of library '{args.LibName}'.");
+        return Result.Success( $"Property '{args.PropName.ToLowerInvariant()}' updated in item '{args.ItemId}' of library '{args.LibName}'.");
     }
 
     public class ParsedArgs

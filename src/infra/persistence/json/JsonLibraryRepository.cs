@@ -1,8 +1,11 @@
 using Flexlib.Application.Ports;
+using Flexlib.Infrastructure.Interop;
+using Flexlib.Infrastructure.Persistence;
+using Flexlib.Infrastructure.Environment;
+using Flexlib.Interface.Input.Heuristics;
 using Flexlib.Domain;
-using Flexlib.Common;
-using Flexlib.Infrastructure.Persistence.Common;
 using System.IO;
+using System;
 
 namespace Flexlib.Infrastructure.Persistence;
 
@@ -20,7 +23,7 @@ public class JsonLibraryRepository : ILibraryRepository
         if (ExeFolder == null || !Directory.Exists(ExeFolder))
             throw new DirectoryNotFoundException($"Executable file directory not found: {ExeFolder}");
 
-        AppDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        AppDataFolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData);
         if (AppDataFolder == null || !Directory.Exists(AppDataFolder))
             throw new DirectoryNotFoundException($"AppData file directory not found: {AppDataFolder}");
         
@@ -81,28 +84,46 @@ public class JsonLibraryRepository : ILibraryRepository
         return metaFile;
     }
 
-    public void Save(Library lib)
+    public Result Save(Library lib)
     {
         if ( string.IsNullOrWhiteSpace(lib.Path) )
         {
             lib.Path = _dataDirectory;
         }
 
-        _cache.RemoveAll(l => l.Name == lib.Name && l.Path == lib.Path);
-        
+        _cache.RemoveAll(l => l.Name?.ToLowerInvariant() == lib.Name?.ToLowerInvariant() && l.Path == lib.Path);
         _cache.Add(lib);
-
         JsonHelpers.WriteJson(_metaFile, _cache);
+
         UpdateLibFileStructure(lib);
         UpdateLibMetaFile(lib);
         UpdateItems(lib);
-        UpdateLocalStorage(lib);
+
+        return UpdateLocalStorage(lib);
        
+    }
+
+    public Result Save(LibraryItem item, Library lib){
+        
+        if ( string.IsNullOrWhiteSpace(lib.Path) )
+        {
+            lib.Path = _dataDirectory;
+        }
+        
+        _cache.FirstOrDefault(l => l.Name?.ToLowerInvariant() == lib.Name?.ToLowerInvariant() && l.Path == lib.Path)?.Items.RemoveAll(i => i.Id == item.Id);
+        _cache.FirstOrDefault(l => l.Name?.ToLowerInvariant() == lib.Name?.ToLowerInvariant() && l.Path == lib.Path)?.Items.Add(item);
+        JsonHelpers.WriteJson(_metaFile, _cache);
+
+        UpdateLibMetaFile(lib);
+        UpdateItemMetaFile(item, lib);
+        
+        return UpdateLocalStorage(item, lib); 
+
     }
 
     public Result RemoveLibraryByName(string name)
     {
-        var selectedLibrary = _cache.FirstOrDefault(l => l.Name == name);
+        var selectedLibrary = _cache.FirstOrDefault(l => l.Name?.ToLowerInvariant() == name.ToLowerInvariant());
 
         if (selectedLibrary == null || string.IsNullOrWhiteSpace(selectedLibrary.Name))
         {
@@ -140,7 +161,7 @@ public class JsonLibraryRepository : ILibraryRepository
 
             Directory.Delete(libraryPath, recursive: true);
            
-            _cache.RemoveAll(l => l.Name == name);
+            _cache.RemoveAll(l => l.Name?.ToLowerInvariant() == name.ToLowerInvariant());
             JsonHelpers.WriteJson(_metaFile, _cache);
             
             return Result.Success($"Library '{name}' was successfully removed.");
@@ -212,7 +233,25 @@ public class JsonLibraryRepository : ILibraryRepository
         }
     }
     
-    private void UpdateLocalStorage(Library lib)
+    private Result UpdateLocalStorage(Library lib)
+    {
+        List<string> failed = new();
+
+        foreach (LibraryItem item in lib.Items)
+        {
+            var result = UpdateLocalStorage(item, lib);
+            if (result.IsFailure)
+                failed.Add($"{item.Name} ID {item.Id}");
+        }
+        
+        if (failed.Count > 0)
+            return Result.Fail($"Failed to update: {string.Join(" | ", failed)}");
+        else
+            return Result.Success($"All items from library {lib.Name} successfully updated.");
+
+    }
+
+    private Result UpdateLocalStorage(LibraryItem item, Library lib)
     {
         string libDir = Path.Combine(lib.Path, lib.Name!);
         string itemsDir = Path.Combine(libDir, "items");
@@ -225,23 +264,22 @@ public class JsonLibraryRepository : ILibraryRepository
             StringComparer.OrdinalIgnoreCase
         );
 
-        foreach (LibraryItem item in lib.Items)
+        string sourcePath = item.Origin!;
+        
+        string itemId = item.Id!.ToString();
+        string itemName = item.Name!;
+        string fileExtension = Path.GetExtension( Path.GetFileName(sourcePath) );
+        string fileName = $"{itemId}-{itemName}{fileExtension}";
+
+        string targetPath = Path.Combine(localDir, fileName);
+
+        if (!localFiles.Contains(fileName))
         {
-            string sourcePath = item.Origin!;
-            
-            string itemId = item.Id!.ToString();
-            string itemName = item.Name!;
-            string fileExtension = Path.GetExtension( Path.GetFileName(sourcePath) );
-            string fileName = $"{itemId}-{itemName}{fileExtension}";
-
-            string targetPath = Path.Combine(localDir, fileName);
-
-            if (!localFiles.Contains(fileName))
-            {
-                AddressType type = AddressAnalysis.GetAddressType(sourcePath);
-                CopyHelpers.TryCopyToLocal(type, sourcePath, targetPath);
-            }
+            AddressType type = AddressAnalysis.GetAddressType(sourcePath);
+            return CopyHelpers.TryCopyToLocal(type, sourcePath, targetPath);
         }
+
+        return Result.Success($"Selected library '{lib.Name}' already up to date.");
     }
 
     private void UpdateLibFileStructure(Library lib)
@@ -355,9 +393,9 @@ public class JsonLibraryRepository : ILibraryRepository
         return totalBytes;
     }
 
-    public bool Exists(string name) => _cache.Any( l => l.Name == name);
+    public bool Exists(string name) => _cache.Any( l => l.Name?.ToLowerInvariant() == name.ToLowerInvariant());
 
-    public Library? GetByName(string name) => _cache.FirstOrDefault(l => l.Name == name);
+    public Library? GetByName(string name) => _cache.FirstOrDefault(l => l.Name?.ToLowerInvariant() == name.ToLowerInvariant());
 
     public IEnumerable<Library> GetAll() => _cache;
 

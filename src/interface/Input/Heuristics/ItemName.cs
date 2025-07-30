@@ -1,6 +1,6 @@
 using Flexlib.Common;
 
-namespace Flexlib.Interface.Input;
+namespace Flexlib.Interface.Input.Heuristics;
 
 public static class Infer{
 

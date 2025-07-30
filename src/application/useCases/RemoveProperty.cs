@@ -1,6 +1,6 @@
 using Flexlib.Application.Ports;
 using Flexlib.Application.Common;
-using Flexlib.Common;
+using Flexlib.Infrastructure.Interop;
 using Flexlib.Domain;
 using System;
 using System.Linq;
@@ -24,7 +24,7 @@ public static class RemoveProperty
     private static Result IsOperationAllowed(ParsedArgs args)
     {
         
-        if (args.LibName == "Default Library" && AssureDefaultLibrary.Execute(args.Repo).IsFailure)
+        if (args.LibName.ToLowerInvariant() == "Default Library".ToLowerInvariant() && AssureDefaultLibrary.Execute(args.Repo).IsFailure)
             return Result.Fail($"Default Library not found.");
 
         if (string.IsNullOrWhiteSpace(args.PropName))
@@ -36,7 +36,7 @@ public static class RemoveProperty
             if (lib == null)
                 return Result.Fail($"Library '{args.LibName}' not found.");
         
-            var propertyDef = lib.PropertyDefinitions.FirstOrDefault(d => d.Name == args.PropName);
+            var propertyDef = lib.PropertyDefinitions.FirstOrDefault(d => d.Name.ToLowerInvariant() == args.PropName.ToLowerInvariant());
             if (propertyDef == null)
                 return Result.Fail($"Property {args.PropName} cannot be removed since it was not defined in Library '{args.LibName}' in the first place.");
         }   
