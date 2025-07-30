@@ -11,7 +11,7 @@ public interface IPresenter
     void ShowError(string message);
     void ListComments(List<Comment> comments, string itemName, string libName);
     void ListLibs(List<Library> items);
-    void ListItems(List<LibraryItem> items, Library lib, string filterSequence, string sortSequence, double localSizeInBytes);
+    void ListItems(List<LibraryItem> items, Library lib, string filterSequence, string sortSequence, double localSizeInBytes, List<string> itemNameFilter);
     void ListLayoutSequence(List<string> layoutSequence);
     void AvailableActions(List<string> actions);
 } 

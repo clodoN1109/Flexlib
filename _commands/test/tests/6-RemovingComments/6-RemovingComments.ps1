@@ -37,9 +37,11 @@ if ($UpdateReferences) {
 
 # Compare artifacts
 $diff_1 = Compare-Folders -Expected "$referencesPath/TestLibrary" -Actual "$resultsPath/TestLibrary"
-$diff_2 = Compare-Object `
-    (Get-Content "$flexlibDataPath/libraries.json") `
-    (Get-Content "$referencesPath/libraries.json")
+$referenceMetaFile = Get-Content "$flexlibDataPath/libraries.json" | ConvertFrom-Json
+$resultMetaFile    = Get-Content "$referencesPath/libraries.json"  | ConvertFrom-Json
+Remove-TimeFields $referenceMetaFile
+Remove-TimeFields $resultMetaFile
+$diff_2 = Compare-Object $referenceMetaFile $resultMetaFile 
 
 # Clean up after test
 Safe-Cleanup $resultsPath

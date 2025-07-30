@@ -1,22 +1,25 @@
----―――――――――――――――――――――――――――――――――――――――――――┐
-    ⚠️  Authentication bypassed (DEBUG mode). │
----―――――――――――――――――――――――――――――――――――――――――――┘
 
->::>    flexlib                                                                                                 699.a5fd2e534b014447ac46282becf43a47730e5c41
+>::>    flexlib                                                                                                1038.3b8daec7656868d67c84900a82235b80be3fc54a
 
 ░░░░ LIBRARY ITEMS ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
- TestLibrary/mathematics/*/newton,pascal,euler/1935-2002                                                                                                    
+ TestLibrary//mathematics/*/newton|pascal|euler/1935-2002                                                                                                   
 
-Id | Name  | author | publisher | theme                   | year
----|-------|--------|-----------|-------------------------|-----
-2  | Item2 | pascal | dover     | mathematics, philosophy | 1940
+Id | Name
+---|-----
 
 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
-theme/publisher/author/year                                                                                                       1 items 1.762.361,00 bytes
----――――┐
-    ✓  │
----――――┘
+theme/publisher/author/year                                                                                                               0 items 0,00 bytes
+---―――┐
+    ✓ │
+---―――┘
+---――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――┐
+  commands: help  new-user  new-lib  list-libs  remove-lib  set-layout  get-layout  new-item  list-items  remove-item  view-item  new-comment            │
+            list-comments  edit-comment  remove-comment  new-prop  list-props  set-prop  remove-prop  fetch-files  gui                                   │
+---――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――┘
+---――――――――――――――――――――――――――――――――――――――――――┐
+    ⚠  Authentication bypassed (DEBUG mode). │
+---――――――――――――――――――――――――――――――――――――――――――┘
 ---―――――――――――┐
     user: dev │
 ---―――――――――――┘

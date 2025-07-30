@@ -54,7 +54,7 @@ public static class ConsoleController
                 return ListLibs.Execute(_libRepo, _presenter);
 
             case ListItemsCommand c:
-                return ListItems.Execute(c.LibraryName, c.FilterSequence, c.SortSequence, _libRepo, _presenter);
+                return ListItems.Execute(c.LibraryName, c.FilterSequence, c.SortSequence, c.ItemName, _libRepo, _presenter);
 
             case GetLibraryLayoutCommand c:
                 return GetLibraryLayout.Execute(c.LibraryName, _libRepo, _presenter);

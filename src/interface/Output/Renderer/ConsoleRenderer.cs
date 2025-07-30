@@ -174,7 +174,7 @@ public class ConsoleRenderer
             lines.Add(new ColoredLine("options:", ConsoleColor.Cyan));
             lines.Add(new ColoredLine(""));
 
-            foreach (var opt in info.Options.OrderBy(opt => opt.Name))
+            foreach (var opt in info.Options.OrderByDescending(opt => opt.Mandatory))
             {
                 var name = opt.Mandatory ? $"<{opt.Name}>" : $"[{opt.Name}]";
                 var domain = opt.OptionDomain?.IncludedValues?.Any() == true
@@ -331,14 +331,14 @@ public class ConsoleRenderer
         return output;
     }
 
-    public List<ColoredLine> FormatItemTable(List<LibraryItem> items, Library lib, string filterSequence, string sortSequence, double localSizeInBytes, int consoleWidth)
+    public List<ColoredLine> FormatItemTable(List<LibraryItem> items, Library lib, string filterSequence, string sortSequence, double localSizeInBytes, List<string> itemNameFilter, int consoleWidth)
     {
         var output = new List<ColoredLine>();
 
         string logoBar = Render.LogoLine(consoleWidth);
         string titleBar = "░░░░ LIBRARY ITEMS " + new string('░', Math.Max(0, consoleWidth - 20));
         string layoutSequence = string.Join("/", lib.LayoutSequence.Select(p => p.Name));
-        string header = Render.LineFilled(consoleWidth, "left", ' ', $"{lib.Name}/{filterSequence}", $"{sortSequence}");
+        string header = Render.LineFilled(consoleWidth, "left", ' ', $"{lib.Name}/{filterSequence}/{string.Join('|', itemNameFilter)}", $"{sortSequence}");
 
         string stats = $"{items.Count} items" + " " + $"{localSizeInBytes:N2} bytes";
         string footer = Render.LineSpacedBetween(consoleWidth, layoutSequence, stats);

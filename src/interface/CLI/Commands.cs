@@ -285,6 +285,7 @@ public class ListLibrariesCommand : Command
 public class ListItemsCommand : Command
 {
     public string LibraryName { get; }
+    public string ItemName { get; }
     public string FilterSequence { get; }
     public string SortSequence { get; }
 
@@ -293,7 +294,8 @@ public class ListItemsCommand : Command
         Options = options;
         LibraryName = options.Length > 0 ? options[0] : "Default Library";
         FilterSequence = options.Length > 1 ? options[1] : "";
-        SortSequence = options.Length > 2 ? options[2] : "";
+        ItemName = options.Length > 2 ? options[2] : "";
+        SortSequence = options.Length > 3 ? options[3] : "";
     }
     
     public override string Type => "list-items";
@@ -301,7 +303,7 @@ public class ListItemsCommand : Command
     public override bool IsValid()
     {
 
-        if ((Options.Length > 0) && (Options.Length < 4))
+        if ((Options.Length > 0) && (Options.Length < 5))
         {
             return true;
         }
@@ -318,17 +320,16 @@ public class ListItemsCommand : Command
             Title = "list items",
             Description = "Presents a filtered and sorted list of items of the selected library.",
             Group = CommandGroups.Items,
-            Syntax = "flexlib list-items <library name> [\"filter sequence\"] [\"sort sequence\"]",
+            Syntax = "flexlib list-items <library name> [\"filter sequence\"] [\"item name\"] [\"sort sequence\"]",
             Examples = new List<string> {
-                "flexlib list-items Literature \"physics,math/Newton, Gottfried Leibniz/1780-1856\" year/publisher",
-                "flexlib list-items Cinema Ernst/*/1990-2021 year",
-                "flexlib list-items Music * name"
+                "flexlib list-items Literature \"physics,math/Newton, Gottfried Leibniz/1780-1856\" \"optics,principles\" year/publisher",
+                "flexlib list-items Cinema Ernst/*/1990-2021 \"\" year",
+                "flexlib list-items Music * \"Sonata, Concerto\" name"
                 },
             Options = new List<CommandOption>
             {
                 new CommandOption{
                     Name = "library name",
-                    OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
 
@@ -336,16 +337,17 @@ public class ListItemsCommand : Command
                     Name = "filter sequence",
                     Description = "A sequence of properties that sequencially filters a library based on its current layout.",
                     Syntax = "<property-value>[/property-value ...]",
-                    OptionDomain = new VariableDomain(),
-                    Mandatory = false
                 },
                 
                 new CommandOption{
                     Name = "sort sequence",
                     Description = "A sequence of properties that sequencially sorts a library based on its current layout.",
                     Syntax = "<property>[/<property ...]",
-                    OptionDomain = new VariableDomain(),
-                    Mandatory = false
+                },
+                
+                new CommandOption{
+                    Name = "item name",
+                    Description = "A substring of the target item's name.",
                 }
 
             }

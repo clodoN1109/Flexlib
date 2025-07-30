@@ -50,9 +50,9 @@ public class ConsolePresenter : IPresenter
         _emitter.PrintLines(lines);
     }
     
-    public void ListItems(List<LibraryItem> items, Library lib, string filterSequence, string sortSequence, double localSizeInBytes)
+    public void ListItems(List<LibraryItem> items, Library lib, string filterSequence, string sortSequence, double localSizeInBytes, List<string> itemNameFilter)
     {
-        var lines = _renderer.FormatItemTable(items, lib, filterSequence, sortSequence, localSizeInBytes, Console.WindowWidth);
+        var lines = _renderer.FormatItemTable(items, lib, filterSequence, sortSequence, localSizeInBytes, itemNameFilter, Console.WindowWidth);
         _emitter.PrintLines(lines);
     }
     
@@ -86,4 +86,3 @@ public class ConsolePresenter : IPresenter
 
 
 }
-
