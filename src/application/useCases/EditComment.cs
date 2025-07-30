@@ -26,7 +26,7 @@ public static class EditComment
         
         var selectedItem = selectedLibrary.GetItemById(parsedArgs.ItemId);
 
-        var selectedComment = selectedItem!.Comments.FirstOrDefault(c => c.Id == parsedArgs.CommentId);
+        var selectedComment = selectedItem!.Comments.FirstOrDefault(c => c.Id.ToLowerInvariant() == parsedArgs.CommentId.ToLowerInvariant());
 
         var currentText = selectedComment!.Text; 
 

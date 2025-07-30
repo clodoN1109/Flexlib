@@ -44,7 +44,7 @@ public class Library
     public Result RemovePropertyByName(string propertyName)
     {
         // Remove from property definitions
-        PropertyDefinitions.RemoveAll(p => p.Name == propertyName);
+        PropertyDefinitions.RemoveAll(p => p.Name.ToLowerInvariant() == propertyName.ToLowerInvariant());
 
         // Remove from items' PropertyValues
         foreach (var item in Items)
@@ -53,13 +53,13 @@ public class Library
         }
 
         // Remove from layout sequence
-        LayoutSequence?.RemoveAll(l => l.Name == propertyName);
+        LayoutSequence?.RemoveAll(l => l.Name.ToLowerInvariant() == propertyName.ToLowerInvariant());
 
         // Recompute layout
         RenderLayout();
 
         // Verify removal from PropertyDefinitions
-        bool stillInDefinitions = PropertyDefinitions.Any(p => p.Name == propertyName);
+        bool stillInDefinitions = PropertyDefinitions.Any(p => p.Name.ToLowerInvariant() == propertyName.ToLowerInvariant());
 
         // Verify removal from all PropertyValues
         bool stillInAnyItem = Items.Any(item =>
@@ -68,7 +68,7 @@ public class Library
 
         // Verify removal from LayoutSequence
         bool stillInLayout = LayoutSequence != null &&
-                             LayoutSequence.Any(p => p.Name == propertyName);
+                             LayoutSequence.Any(p => p.Name.ToLowerInvariant() == propertyName.ToLowerInvariant());
 
         if (!stillInDefinitions && !stillInAnyItem && !stillInLayout)
         {
@@ -105,12 +105,12 @@ public class Library
 
     public ItemPropertyDefinition? GetPropertyDefinition(string name)
     {
-        return PropertyDefinitions.FirstOrDefault(p => p.Name == name);
+        return PropertyDefinitions.FirstOrDefault(p => p.Name.ToLowerInvariant() == name.ToLowerInvariant());
     }
 
     public bool HasPropertyDefinition(string propName)
     {
-        return PropertyDefinitions.Any(p => p.Name == propName);
+        return PropertyDefinitions.Any(p => p.Name.ToLowerInvariant() == propName.ToLowerInvariant());
     }
 
     public bool isPropertyValueValid(string propertyName, object? value)
@@ -133,7 +133,7 @@ public class Library
 
     public bool ContainsName(string name)
     {
-        return Items.Any(i => i.Name == name);
+        return Items.Any(i => i.Name?.ToLowerInvariant() == name.ToLowerInvariant());
     }
     
     public bool ContainsId(object id)
@@ -151,7 +151,7 @@ public class Library
 
     public LibraryItem? GetItemByName(string name)
     {
-        return Items.FirstOrDefault(i => i.Name == name);
+        return Items.FirstOrDefault(i => i.Name?.ToLowerInvariant() == name.ToLowerInvariant());
     }
 
     public LibraryItem? GetItemByOrigin(string origin)

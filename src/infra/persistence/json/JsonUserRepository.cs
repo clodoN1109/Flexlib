@@ -61,17 +61,17 @@ public class JsonUserRepository : IUserRepository
 
     public IUser? Get(string id)
     {
-        return _cache.FirstOrDefault(u => u.Credentials.UserId == id);
+        return _cache.FirstOrDefault(u => u.Credentials.UserId.ToLowerInvariant() == id.ToLowerInvariant());
     }
 
     public bool Exists(string id)
     {
-        return _cache.Any(u => u.Credentials.UserId == id);
+        return _cache.Any(u => u.Credentials.UserId.ToLowerInvariant() == id.ToLowerInvariant());
     }
 
     public void Save(IUser user)
     {
-        var existing = _cache.FirstOrDefault(u => u.Credentials.UserId == user.Credentials.UserId);
+        var existing = _cache.FirstOrDefault(u => u.Credentials.UserId.ToLowerInvariant() == user.Credentials.UserId.ToLowerInvariant());
         if (existing != null)
             _cache.Remove(existing);
 
@@ -81,7 +81,7 @@ public class JsonUserRepository : IUserRepository
 
     public void Delete(string id)
     {
-        var existing = _cache.FirstOrDefault(u => u.Credentials.UserId == id);
+        var existing = _cache.FirstOrDefault(u => u.Credentials.UserId.ToLowerInvariant() == id.ToLowerInvariant());
         if (existing != null)
         {
             _cache.Remove(existing);

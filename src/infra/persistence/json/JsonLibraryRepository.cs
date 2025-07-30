@@ -91,7 +91,7 @@ public class JsonLibraryRepository : ILibraryRepository
             lib.Path = _dataDirectory;
         }
 
-        _cache.RemoveAll(l => l.Name == lib.Name && l.Path == lib.Path);
+        _cache.RemoveAll(l => l.Name?.ToLowerInvariant() == lib.Name?.ToLowerInvariant() && l.Path == lib.Path);
         _cache.Add(lib);
         JsonHelpers.WriteJson(_metaFile, _cache);
 
@@ -110,8 +110,8 @@ public class JsonLibraryRepository : ILibraryRepository
             lib.Path = _dataDirectory;
         }
         
-        _cache.FirstOrDefault(l => l.Name == lib.Name && l.Path == lib.Path)?.Items.RemoveAll(i => i.Id == item.Id);
-        _cache.FirstOrDefault(l => l.Name == lib.Name && l.Path == lib.Path)?.Items.Add(item);
+        _cache.FirstOrDefault(l => l.Name?.ToLowerInvariant() == lib.Name?.ToLowerInvariant() && l.Path == lib.Path)?.Items.RemoveAll(i => i.Id == item.Id);
+        _cache.FirstOrDefault(l => l.Name?.ToLowerInvariant() == lib.Name?.ToLowerInvariant() && l.Path == lib.Path)?.Items.Add(item);
         JsonHelpers.WriteJson(_metaFile, _cache);
 
         UpdateLibMetaFile(lib);
@@ -123,7 +123,7 @@ public class JsonLibraryRepository : ILibraryRepository
 
     public Result RemoveLibraryByName(string name)
     {
-        var selectedLibrary = _cache.FirstOrDefault(l => l.Name == name);
+        var selectedLibrary = _cache.FirstOrDefault(l => l.Name?.ToLowerInvariant() == name.ToLowerInvariant());
 
         if (selectedLibrary == null || string.IsNullOrWhiteSpace(selectedLibrary.Name))
         {
@@ -161,7 +161,7 @@ public class JsonLibraryRepository : ILibraryRepository
 
             Directory.Delete(libraryPath, recursive: true);
            
-            _cache.RemoveAll(l => l.Name == name);
+            _cache.RemoveAll(l => l.Name?.ToLowerInvariant() == name.ToLowerInvariant());
             JsonHelpers.WriteJson(_metaFile, _cache);
             
             return Result.Success($"Library '{name}' was successfully removed.");
@@ -393,9 +393,9 @@ public class JsonLibraryRepository : ILibraryRepository
         return totalBytes;
     }
 
-    public bool Exists(string name) => _cache.Any( l => l.Name == name);
+    public bool Exists(string name) => _cache.Any( l => l.Name?.ToLowerInvariant() == name.ToLowerInvariant());
 
-    public Library? GetByName(string name) => _cache.FirstOrDefault(l => l.Name == name);
+    public Library? GetByName(string name) => _cache.FirstOrDefault(l => l.Name?.ToLowerInvariant() == name.ToLowerInvariant());
 
     public IEnumerable<Library> GetAll() => _cache;
 

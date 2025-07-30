@@ -60,7 +60,7 @@ public static class FetchFiles
 
     private static Result IsOperationAllowed(string? libName, ILibraryRepository repo)
     {
-        if (libName == "Default Library" && AssureDefaultLibrary.Execute(repo).IsFailure)
+        if (libName?.ToLowerInvariant() == "Default Library".ToLowerInvariant() && AssureDefaultLibrary.Execute(repo).IsFailure)
             return Result.Fail($"Default Library not found.");
 
         if (libName == null)

@@ -40,7 +40,7 @@ public static class NewItem
 
     private static Result IsOperationAllowed(string libName, string itemOrigin, string itemName, ILibraryRepository repo)
     {
-        if (libName == "Default Library" && AssureDefaultLibrary.Execute(repo).IsFailure)
+        if (libName.ToLowerInvariant() == "Default Library".ToLowerInvariant() && AssureDefaultLibrary.Execute(repo).IsFailure)
             return Result.Fail($"Default Library not found.");
 
         Library? selectedLibrary = repo.GetByName(libName);

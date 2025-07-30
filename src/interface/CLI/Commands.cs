@@ -16,7 +16,7 @@ public abstract class Command : Flexlib.Interface.Input.Action
 
     public bool IsHelp()
     {
-        if (Options.Length > 0 && Options[0] == "help")
+        if (Options.Length > 0 && Options[0].ToLowerInvariant() == "help")
         {
             return true;
         }
