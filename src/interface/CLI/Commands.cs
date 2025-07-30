@@ -318,7 +318,12 @@ public class ListItemsCommand : Command
             Title = "list items",
             Description = "Presents a filtered and sorted list of items of the selected library.",
             Group = CommandGroups.Items,
-            Syntax = "flexlib list-items <library name> [filter sequence] [sort sequence]",
+            Syntax = "flexlib list-items <library name> [\"filter sequence\"] [\"sort sequence\"]",
+            Examples = new List<string> {
+                "flexlib list-items Literature \"physics,math/Newton, Gottfried Leibniz/1780-1856\" year/publisher",
+                "flexlib list-items Cinema Ernst/*/1990-2021 year",
+                "flexlib list-items Music * name"
+                },
             Options = new List<CommandOption>
             {
                 new CommandOption{

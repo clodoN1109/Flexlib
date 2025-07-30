@@ -195,6 +195,20 @@ public class ConsoleRenderer
             }
         }
 
+        // Examples
+        if (info.Examples.Count > 0 ) 
+        {
+            lines.Add(new ColoredLine(""));
+            lines.Add(new ColoredLine("examples:", ConsoleColor.Cyan));
+        }
+        foreach (var example in info.Examples){
+            if (!string.IsNullOrWhiteSpace(example))
+            {
+                lines.Add(new ColoredLine(""));
+                lines.Add(new ColoredLine("   " + example, ConsoleColor.White));
+            }
+        }
+
         lines.Add(new ColoredLine(""));
         lines.Add(new ColoredLine(separator, ConsoleColor.Gray));
         lines.Add(new ColoredLine(""));
