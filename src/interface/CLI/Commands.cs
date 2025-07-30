@@ -323,8 +323,8 @@ public class ListItemsCommand : Command
             Syntax = "flexlib list-items <library name> [\"filter sequence\"] [\"item name\"] [\"sort sequence\"]",
             Examples = new List<string> {
                 "flexlib list-items Literature \"physics,math/Newton, Gottfried Leibniz/1780-1856\" \"optics,principles\" year/publisher",
-                "flexlib list-items Cinema Ernst/*/1990-2021 \"\" year",
-                "flexlib list-items Music * \"Sonata, Concerto\" name"
+                "flexlib list-items Cinema Ernst/*/1990-2021 \"\" budget/year/rating",
+                "flexlib list-items Music * \"Sonata, Concerto\" year/artist"
                 },
             Options = new List<CommandOption>
             {

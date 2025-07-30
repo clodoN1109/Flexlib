@@ -78,7 +78,7 @@ public static class ListItems
         {
             LibName = libName;
             ItemNameFilter = string.IsNullOrWhiteSpace(itemNameFilter) ? new List<string>{"*"} : TextUtil.ParseCommaSeparated(itemNameFilter);
-            FilterSequenceString = filterSequenceString;
+            FilterSequenceString = string.IsNullOrWhiteSpace(filterSequenceString) ? "*": filterSequenceString;
             SortSequenceString = sortSequenceString;
             Repo = repo;    
             Presenter = presenter;

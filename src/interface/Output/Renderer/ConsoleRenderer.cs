@@ -198,7 +198,6 @@ public class ConsoleRenderer
         // Examples
         if (info.Examples.Count > 0 ) 
         {
-            lines.Add(new ColoredLine(""));
             lines.Add(new ColoredLine("examples:", ConsoleColor.Cyan));
         }
         foreach (var example in info.Examples){
@@ -358,7 +357,7 @@ public class ConsoleRenderer
             .OrderBy(k => k)
             .ToList();
 
-        var headers = new[] { "Id", "Name" }.Concat(allKeys).ToList();
+        var headers = new[] { "ID", "name" }.Concat(allKeys).ToList();
         int columnCount = headers.Count;
 
         var rows = new List<string[]>();

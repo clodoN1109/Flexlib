@@ -271,7 +271,7 @@ public class Library
     private List<LibraryItem> SortLibraryList(List<LibraryItem> items, SortSequence sortSequence)
     {
         if (sortSequence.Elements.Count == 0)
-            return items;
+            return items.OrderBy(i => i.Name).ToList();
 
         IOrderedEnumerable<LibraryItem>? ordered = null;
 
