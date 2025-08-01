@@ -9,6 +9,7 @@ public class Result
     public bool IsSuccess { get; }
     public bool IsWarning { get; }
     public bool IsFailure => !IsSuccess;
+    public bool IsFailureOrWarning => IsFailure || IsWarning;
 
     public string Message => SuccessMessage ?? WarningMessage ?? ErrorMessage ?? "";
 
