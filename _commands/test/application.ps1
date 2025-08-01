@@ -10,25 +10,39 @@ function Run-Test() {
     param (
         
         $test,
-        [switch]$UpdateReferences
+        [switch]$UpdateReferences,
+        $arrowHeadColumn = 25
         
     )
-
+ 
     $displayName = ($test.BaseName -split "-", 2)[1]
+    $reserveWidth = $displayName.Length + 5
+    $arrowLength = $arrowHeadColumn - $reserveWidth
     Write-Host -NoNewline "❔  $displayName"
     Start-Sleep -Milliseconds 300
 
     try {
-        
         if ($UpdateReferences) {
-            SetCursorX 40;
-            Write-Host "Updating References" -ForegroundColor Yellow -NoNewLine
+            ArrowMessage -Message "Updating references" `
+                         -ColumnStart $reserveWidth `
+                         -ArrowLength $arrowLength `
+                         -ArrowColor Yellow `
+                         -MessageColor Yellow `
+                         -ReturnToLastPosition
+
             $result = & $test.FullName -UpdateReferences:$true    
+
+            ArrowMessage -Message "Updated              " `
+                         -ColumnStart $reserveWidth `
+                         -ArrowLength $arrowLength `
+                         -ArrowColor Green `
+                         -MessageColor Green `
+                         -ReturnToLastPosition
 
         } else {
             $result = & $test.FullName
         }
-
+        Start-Sleep -Milliseconds 500
         if ($result -eq $true) {
             Write-Host "`r✅  $displayName" -ForegroundColor Green
         } else {
@@ -47,13 +61,20 @@ function Run-Tests() {
         [switch]$UpdateReferences
     )
 
+    [System.Console]::CursorVisible = $false
+    
     Write-Fill "USE CASE TESTING" -ForegroundColor Cyan
     Write-Host ('-' * [System.Console]::WindowWidth) -ForegroundColor DarkGray
     Start-Sleep 1
     
+    $maxBaseNameLength = $selectedTests | 
+    ForEach-Object { $_.BaseName.Length } | 
+    Measure-Object -Maximum | 
+    Select-Object -ExpandProperty Maximum
+
     foreach ($test in $selectedTests) {
         if ($UpdateReferences) {
-            Run-Test $test -UpdateReferences:$true
+            Run-Test $test -UpdateReferences:$true -ArrowHeadColumn ($maxBaseNameLength + 10)
         } else {
             Run-Test $test
         }
