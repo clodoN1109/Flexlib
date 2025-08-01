@@ -23,6 +23,7 @@ class Program
         {
             Router.Route(validInput);
         }
+
     }
 
     static Result Initialize(out Result result)

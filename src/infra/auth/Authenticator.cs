@@ -28,10 +28,12 @@ public class Authenticator
 
     }
 
-    public IUser Authenticate(out IUser user)
+    public IUser Authenticate(out IUser user, out Result result)
     {
         if (_bypassAuth)
         {
+
+            result = Result.Warn("Authentication bypassed (DEBUG mode).");
             user = new User(new UntrustedAccessInfo {
                 Name = "dev",
                 Id = "dev",
@@ -64,12 +66,8 @@ public class Authenticator
                 user.UserAccessLevel = AccessLevel.User;
             }
         }
-        
-        if (_bypassAuth)
-        {
-            _presenter.Result( Result.Warn("Authentication bypassed (DEBUG mode).") );
-        }
-        
+         
+        result = Result.Success("");
         return user;
     }
 

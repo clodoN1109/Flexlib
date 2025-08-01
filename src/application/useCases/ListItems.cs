@@ -24,7 +24,7 @@ public static class ListItems
     private static Result _ListItems(ParsedArgs parsedArgs)
     {
         try 
-        {
+        {   
             var selectedLibrary = parsedArgs.Repo.GetByName(parsedArgs.LibName)!;
 
             var filterSequence = new FilterSequence( parsedArgs.FilterSequenceString );

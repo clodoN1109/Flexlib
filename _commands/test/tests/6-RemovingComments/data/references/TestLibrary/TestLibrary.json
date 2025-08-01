@@ -14,10 +14,13 @@
           "UserAccessLevel": 0,
           "Credentials": {
             "UserId": "dev",
-            "HashedPassword": null
-          }
+            "HashedPassword": null,
+            "IsLegitimate": false
+          },
+          "IsLoggedIn": false,
+          "IsNotLoggedIn": true
         },
-        "CreatedTime": "2025-07-30T11:53:28",
+        "CreatedTime": "2025-08-01T01:48:31",
         "EditedTime": "",
         "References": []
       },
@@ -30,10 +33,13 @@
           "UserAccessLevel": 0,
           "Credentials": {
             "UserId": "dev",
-            "HashedPassword": null
-          }
+            "HashedPassword": null,
+            "IsLegitimate": false
+          },
+          "IsLoggedIn": false,
+          "IsNotLoggedIn": true
         },
-        "CreatedTime": "2025-07-30T11:53:29",
+        "CreatedTime": "2025-08-01T01:48:31",
         "EditedTime": "",
         "References": []
       }
@@ -63,10 +69,13 @@
           "UserAccessLevel": 0,
           "Credentials": {
             "UserId": "dev",
-            "HashedPassword": null
-          }
+            "HashedPassword": null,
+            "IsLegitimate": false
+          },
+          "IsLoggedIn": false,
+          "IsNotLoggedIn": true
         },
-        "CreatedTime": "2025-07-30T11:53:29",
+        "CreatedTime": "2025-08-01T01:48:31",
         "EditedTime": "",
         "References": []
       }

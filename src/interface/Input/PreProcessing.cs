@@ -28,7 +28,7 @@ public static class InputPreProcessing
         {
             Value = final,
             Original = process.OriginalInput,
-            IsValid = final?.IsValid()
+            IsValid = final is ParsedInput
         };
     }
 }

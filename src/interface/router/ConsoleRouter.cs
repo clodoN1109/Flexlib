@@ -40,7 +40,7 @@ public static class ConsoleRouter
                 return;
         }
 
-        if (_auth.Authenticate(out IUser user).IsNotLoggedIn)
+        if (_auth.Authenticate(out IUser user, out Result authResult).IsNotLoggedIn)
         {
             _presenter.Auth( "Authentication failed.");
             return;
@@ -48,6 +48,9 @@ public static class ConsoleRouter
 
         ConsoleController.Handle(cmd, user);
 
+        _presenter.UserInfo(user?.Id ?? "");
+        
+        _presenter.Result(authResult);
     }
 }
 

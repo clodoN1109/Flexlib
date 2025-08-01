@@ -21,7 +21,6 @@ public static class ConsoleController
 
     public static void Handle(Command cmd, IUser authUser)
     {
-
         if (Authorization.IsNotAuthorized(cmd, authUser))
         {
             _presenter.Result(Result.Fail($"User {authUser.Name} is not authorized to perform action {cmd.Type}.") );
@@ -30,12 +29,9 @@ public static class ConsoleController
 
         var result = Execute(cmd, authUser);
         
-        _presenter.AvailableActions( Authorization.GetAllAuthorizedActions(authUser) );
-         
-        _presenter.UserInfo(authUser?.Id ?? "");
-        
         _presenter.Result(result);
-
+        _presenter.AvailableActions( Authorization.GetAllAuthorizedActions(authUser) );
+                 
     }
 
     private static Result Execute(Command cmd, IUser authUser)
