@@ -18,6 +18,8 @@ Safe-Cleanup $flexlibDataPath
 
 Write-Host ""
 
+& $flexlibPath new-user
+
 # ========== LIBRARIES =========
 
 & $flexlibPath new-lib GeneralLibrary  $resultsPath
