@@ -13,6 +13,8 @@ public interface IUser
     AccessLevel UserAccessLevel { get; set; }
     UserState State { get; set; }
     AccessCredentials Credentials { get; }
+    bool IsLoggedIn { get; } 
+    bool IsNotLoggedIn { get; } 
 }
 
 

@@ -13,6 +13,8 @@ public class JsonUserRepository : IUserRepository
     private readonly string _filePath;
     private readonly string _dataDirectory;
     private readonly List<IUser> _cache = new();
+    private readonly string _sessionFilePath;
+
 
     private readonly JsonSerializerOptions _jsonOptions = new()
     {
@@ -32,6 +34,10 @@ public class JsonUserRepository : IUserRepository
 
         _dataDirectory = EnsureDataDirectory(exeFolder, appDataFolder);
         _filePath = Path.Combine(_dataDirectory, "users.json");
+   
+        string sessionDir = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "Flexlib");
+        Directory.CreateDirectory(sessionDir);
+        _sessionFilePath = Path.Combine(sessionDir, ".session");
 
         EnsureFileExists();
         LoadCache();
@@ -57,6 +63,42 @@ public class JsonUserRepository : IUserRepository
     {
         _cache.Clear();
         _cache.AddRange(LoadAllUsers());
+    }
+
+    public Result SaveSessionFile(string id)
+    {
+        try 
+        {
+            File.WriteAllText(_sessionFilePath, id);
+            return Result.Success("Session file updated.");
+        }
+        catch 
+        {
+            return Result.Fail("Could not update session file.");
+        }
+    }
+
+    public string? GetCurrentSessionID()
+    {
+        if (!File.Exists(_sessionFilePath))
+            return null;
+
+        var id = File.ReadAllText(_sessionFilePath).Trim();
+        
+        return id;
+    }
+        
+    public Result RemoveSessionFile()
+    {
+        try 
+        {
+            File.WriteAllText(_sessionFilePath, string.Empty);
+            return Result.Success("Session file erased.");
+        }
+        catch 
+        {
+            return Result.Fail("Could not erase session file.");
+        }
     }
 
     public IUser? Get(string id)

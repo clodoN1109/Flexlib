@@ -16,7 +16,7 @@ public static class CommandGroups
 {
 
     public static readonly CommandGroup Help            = new("help"            , "?");
-    public static readonly CommandGroup Authentication  = new("authentication"  , "!");
+    public static readonly CommandGroup Authentication  = new("authentication"  , "🪪");
     public static readonly CommandGroup Libraries       = new("libraries"       , "🏛 ");
     public static readonly CommandGroup Items           = new("items"           , "🕮 ");
     public static readonly CommandGroup Comments        = new("comments"        , "𝒜");

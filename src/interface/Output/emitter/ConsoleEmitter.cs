@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using Flexlib.Interface.Output;
 
 namespace Flexlib.Interface.Output;
 
@@ -16,7 +17,7 @@ public class ConsoleEmitter
             Console.ResetColor();
     }
 
-    public void PrintLines(List<ColoredLine> lines, bool clearHost = true)
+    public void PrintLines(List<Components.ColoredLine> lines, bool clearHost = true)
     {
 
         if (clearHost) {

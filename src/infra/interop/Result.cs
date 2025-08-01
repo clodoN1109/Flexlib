@@ -2,20 +2,26 @@ namespace Flexlib.Infrastructure.Interop;
 
 public class Result
 {
-    public bool IsSuccess { get; }
     public string? SuccessMessage { get; }
+    public string? WarningMessage { get; }
     public string? ErrorMessage { get; }
 
-    public bool IsFailure => IsSuccess == false;
+    public bool IsSuccess { get; }
+    public bool IsWarning { get; }
+    public bool IsFailure => !IsSuccess;
 
-    private Result(bool isSuccess, string? successMessage, string? errorMessage)
+    public string Message => SuccessMessage ?? WarningMessage ?? ErrorMessage ?? "";
+
+    private Result(bool isSuccess, bool isWarning, string? successMessage, string? errorMessage, string? warningMessage)
     {
         IsSuccess = isSuccess;
+        IsWarning = isWarning;
         SuccessMessage = successMessage;
         ErrorMessage = errorMessage;
+        WarningMessage = warningMessage;
     }
 
-    public static Result Success(string message) => new(true, message, null);
-    public static Result Fail(string message) => new(false, null, message);
+    public static Result Success(string message) => new(true, false, message, null, null);
+    public static Result Warn(string warning) => new(true, true, null, null, warning);
+    public static Result Fail(string message) => new(false, false, null, message, null);
 }
-

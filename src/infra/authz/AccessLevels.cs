@@ -1,7 +1,8 @@
 public enum AccessLevel
 {
+    Public,
     User,
     Admin,
-    Root
+    Dev
 }
 
