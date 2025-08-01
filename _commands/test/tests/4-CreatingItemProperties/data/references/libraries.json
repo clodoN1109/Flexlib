@@ -20,7 +20,7 @@
         "FileExtension": ".pdf",
         "Comments": [],
         "PropertyValues": {
-          "Property1": "NewValue",
+          "Property1": null,
           "Property2": null
         }
       },
@@ -32,7 +32,7 @@
         "Comments": [],
         "PropertyValues": {
           "Property1": null,
-          "Property2": "NewValue"
+          "Property2": null
         }
       },
       {

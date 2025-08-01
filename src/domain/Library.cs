@@ -153,6 +153,19 @@ public class Library
     {
         return Items.FirstOrDefault(i => i.Name?.ToLowerInvariant() == name.ToLowerInvariant());
     }
+    
+    public List<LibraryItem> FilterItemsByName(List<LibraryItem> items, List<string> names)
+    {
+        if (names.Contains("*"))
+            return items;
+
+        return items
+            .Where(i => 
+                i.Name != null &&
+                names.Any(name => 
+                    i.Name.Contains(name, StringComparison.OrdinalIgnoreCase)))
+            .ToList();
+    }
 
     public LibraryItem? GetItemByOrigin(string origin)
     {
@@ -167,7 +180,7 @@ public class Library
             return null;
     }
 
-    public List<LibraryItem> GetItems(FilterSequence filterSequence, SortSequence sortSequence)
+    public List<LibraryItem> GetItems(FilterSequence filterSequence, SortSequence sortSequence, List<string> itemNameFilter)
     {        
 
         if ( !RenderLayout().IsSuccess )
@@ -177,7 +190,10 @@ public class Library
 
         List<LibraryItem> selectedItems = FlattenToItemList(branch);
 
-        List<LibraryItem> sortedItems = SortLibraryList(selectedItems, sortSequence);
+        List<LibraryItem> filteredByName = FilterItemsByName(selectedItems, itemNameFilter);
+
+        List<LibraryItem> sortedItems = SortLibraryList(filteredByName, sortSequence);
+
 
         return sortedItems;
     }
@@ -255,7 +271,7 @@ public class Library
     private List<LibraryItem> SortLibraryList(List<LibraryItem> items, SortSequence sortSequence)
     {
         if (sortSequence.Elements.Count == 0)
-            return items;
+            return items.OrderBy(i => i.Name).ToList();
 
         IOrderedEnumerable<LibraryItem>? ordered = null;
 

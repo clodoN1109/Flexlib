@@ -1,27 +1,34 @@
 using Flexlib.Application.Ports; 
 using Flexlib.Domain;
 using Flexlib.Interface.CLI;
+using Flexlib.Infrastructure.Interop;
 
 namespace Flexlib.Interface.Output;
 
 public class ConsolePresenter : IPresenter
 {
-    private readonly ConsoleRenderer _renderer = new();
-    private readonly ConsoleEmitter _emitter = new();        
 
-    public void Message(string? message = null)
+    private readonly ConsoleRenderer _renderer = new();
+    private readonly ConsoleEmitter _emitter = new();
+
+    public void Message(string message = "")
     {
-        _emitter.Print(_renderer.Message(message));
+        _emitter.PrintLines(_renderer.Message(message).Lines);
+    }
+
+    public void Result(Result result)
+    {
+        _emitter.PrintLines(_renderer.RenderResult(result).Lines, false);
     }
 
     public void ExplainUsage(UsageInfo info)
     {
         _emitter.PrintLines(_renderer.UsageInfo(info, Console.WindowWidth));
     }
-    
-    public void UserInfo(IUser user)
+
+    public void UserInfo(string info)
     {
-        _emitter.Print(_renderer.UserInfo(user));
+        _emitter.PrintLines(_renderer.UserInfo(info).Lines, false);
     }
 
     public void AvailableActions(List<string> actions)
@@ -29,19 +36,14 @@ public class ConsolePresenter : IPresenter
         _emitter.PrintLines(_renderer.AvailableActions(actions, Console.WindowWidth), false);
     }
 
-    public void Success(string message)
+    public void Auth(string message)
     {
-        _emitter.Print(_renderer.Success(message), ConsoleColor.Green);
-    }
-
-    public void Failure(string message)
-    {
-        _emitter.Print(_renderer.Failure(message), ConsoleColor.Red);
+        _emitter.PrintLines(_renderer.Auth(message).Lines);
     }
 
     public void ShowError(string message)
     {
-        _emitter.Print(_renderer.Error(message));
+        _emitter.PrintLines(_renderer.Error(message).Lines);
     }
 
     public void ListComments(List<Comment> comments, string? itemName, string? libName)
@@ -50,9 +52,9 @@ public class ConsolePresenter : IPresenter
         _emitter.PrintLines(lines);
     }
     
-    public void ListItems(List<LibraryItem> items, Library lib, string filterSequence, string sortSequence, double localSizeInBytes)
+    public void ListItems(List<LibraryItem> items, Library lib, string filterSequence, string sortSequence, double localSizeInBytes, List<string> itemNameFilter)
     {
-        var lines = _renderer.FormatItemTable(items, lib, filterSequence, sortSequence, localSizeInBytes, Console.WindowWidth);
+        var lines = _renderer.FormatItemTable(items, lib, filterSequence, sortSequence, localSizeInBytes, itemNameFilter, Console.WindowWidth);
         _emitter.PrintLines(lines);
     }
     
@@ -86,4 +88,3 @@ public class ConsolePresenter : IPresenter
 
 
 }
-

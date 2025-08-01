@@ -13,7 +13,7 @@ public class User : IUser
 {
     public string Id { get; set; } = "";
     public string Name { get; set; } = "Unknown";
-    public AccessLevel UserAccessLevel { get; set; } = AccessLevel.User;
+    public AccessLevel UserAccessLevel { get; set; } = AccessLevel.Public;
     public AccessCredentials Credentials { get; set; } = new();
 
     [JsonIgnore]
@@ -23,12 +23,12 @@ public class User : IUser
 
     public User(UntrustedAccessInfo accessInfo)
     {
-        Name = accessInfo.Name ?? "";
-        Id = accessInfo.Id;
+        Name = accessInfo?.Name ?? "";
+        Id = accessInfo?.Id ?? "";
         Credentials = new AccessCredentials
         {
             UserId = Id,
-            PlainPassword = accessInfo.Password
+            PlainPassword = accessInfo?.Password ?? ""
         };
     }
     
@@ -42,6 +42,9 @@ public class User : IUser
             PlainPassword = ""
         };
     }
+
+    public bool IsLoggedIn      => State == UserState.LoggedIn;
+    public bool IsNotLoggedIn   => !IsLoggedIn;
 }
 
 

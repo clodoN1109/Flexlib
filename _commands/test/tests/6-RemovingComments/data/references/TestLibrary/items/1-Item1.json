@@ -10,12 +10,16 @@
       "Author": {
         "Id": "",
         "Name": "dev",
+        "UserAccessLevel": 0,
         "Credentials": {
           "UserId": "dev",
-          "HashedPassword": null
-        }
+          "HashedPassword": null,
+          "IsLegitimate": false
+        },
+        "IsLoggedIn": false,
+        "IsNotLoggedIn": true
       },
-      "CreatedTime": "2025-07-28T01:39:46",
+      "CreatedTime": "2025-08-01T01:48:31",
       "EditedTime": "",
       "References": []
     },
@@ -25,12 +29,16 @@
       "Author": {
         "Id": "",
         "Name": "dev",
+        "UserAccessLevel": 0,
         "Credentials": {
           "UserId": "dev",
-          "HashedPassword": null
-        }
+          "HashedPassword": null,
+          "IsLegitimate": false
+        },
+        "IsLoggedIn": false,
+        "IsNotLoggedIn": true
       },
-      "CreatedTime": "2025-07-28T01:39:46",
+      "CreatedTime": "2025-08-01T01:48:31",
       "EditedTime": "",
       "References": []
     }

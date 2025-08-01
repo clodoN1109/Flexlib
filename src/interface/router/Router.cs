@@ -8,30 +8,24 @@ namespace Flexlib.Interface.Router;
 
 public static class Router
 {
+    private static AgnosticEmitter _emitter = new();
 
-    private static AgnosticEmitter _emitter = new AgnosticEmitter();
-
-    public static void Route(ParsedInput input)
+    public static void Route(ProcessedInput input)
     {
-       switch(input)
-       {
+        switch (input)
+        {
             case Command cmd:
                 ConsoleRouter.Route(cmd);
                 break;
 
             case GUIStartUp gui:
-                if (gui.IsValid())
-                {
-                    _emitter.Emit("Launching Flexlib GUI.");
-                    // GUIController.Handle(gui, user);
-                }
+                _emitter.Emit("Launching Flexlib GUI.");
                 break;
-            
+
             default:
-                _emitter.Emit("Invalid input.");
+                _emitter.Emit("\nInvalid input.\n");
                 break;
-
-       }
-    } 
-
+        }
+    }
 }
+

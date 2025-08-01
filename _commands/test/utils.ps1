@@ -131,3 +131,18 @@ function CursorMoveY {
     [System.Console]::SetCursorPosition($left, $top)
 }
 
+function Remove-TimeFields($obj) {
+    if ($obj -is [System.Collections.IDictionary]) {
+        $obj.Remove('CreatedTime')
+        $obj.Remove('EditedTime')
+        foreach ($key in $obj.Keys) {
+            Remove-TimeFields $obj[$key]
+        }
+    }
+    elseif ($obj -is [System.Collections.IEnumerable] -and -not ($obj -is [string])) {
+        foreach ($item in $obj) {
+            Remove-TimeFields $item
+        }
+    }
+}
+

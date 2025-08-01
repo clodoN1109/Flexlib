@@ -3,27 +3,30 @@ namespace Flexlib.Interface.CLI;
 public static class CommandsList
 {
     public static List<string> Items { get; } = new List<string> {
-        "help",
         "new-user",
+        "login",
+        "logout",
         "new-lib",
-        "list-libs",
-        "remove-lib",
-        "set-layout",
-        "get-layout",
         "new-item",
-        "list-items",
         "remove-item",
         "view-item",
-        "new-comment",
-        "list-comments",
-        "edit-comment",
-        "remove-comment",
+        "list-libs",
+        "list-items",
+        "get-layout",
+        "set-layout",
         "new-prop",
         "list-props",
         "set-prop",
         "remove-prop",
+        "new-comment",
+        "list-comments",
+        "edit-comment",
+        "remove-comment",
         "fetch-files",
-        "gui"
+        "remove-lib",
+        "gui",
+        "help"
     };
 }
+
 
