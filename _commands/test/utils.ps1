@@ -119,7 +119,17 @@ function SetCursorX {
     [System.Console]::SetCursorPosition($XPosition, $top)
 }
 
-function CursorMoveY {
+function SetCursorY {
+    param (
+        [int]$YPosition
+    )
+
+    $currentColumn  = [System.Console]::CursorLeft
+
+    [System.Console]::SetCursorPosition($currentColumn, $YPosition)
+}
+
+function MoveCursorY {
     param (
         [int]$Offset
     )
@@ -143,6 +153,79 @@ function Remove-TimeFields($obj) {
         foreach ($item in $obj) {
             Remove-TimeFields $item
         }
+    }
+}
+
+function AnimatedArrow {
+    param(
+        [int]$ColumnStart,
+        [int]$ColumnEnd,
+        [int]$Row = [System.Console]::CursorTop,
+        [ConsoleColor]$Color = [ConsoleColor]::White,
+        [switch]$ReturnToLastPosition
+    )
+
+    [System.Console]::CursorVisible = $false
+    # Store original cursor position
+    $lastColumn = [System.Console]::CursorLeft
+    $lastRow = [System.Console]::CursorTop
+
+    if ($ColumnEnd -lt $ColumnStart) {
+        throw "ColumnEnd must be greater than ColumnStart."
+    }
+
+    $arrowShaft = '-' * ($ColumnEnd - $ColumnStart)
+    $arrowHead = '>'
+
+    [System.Console]::SetCursorPosition($ColumnStart, $Row)
+    [System.Console]::ForegroundColor = $Color
+
+    foreach ($char in ($arrowShaft + $arrowHead).ToCharArray()) {
+        Write-Host $char -NoNewLine
+        Start-Sleep -Milliseconds 25
+    }
+
+    [System.Console]::ResetColor()
+
+    if ($ReturnToLastPosition) {
+        [System.Console]::SetCursorPosition($lastColumn, $lastRow)
+    } else {
+        Write-Host  # move to next line
+    }
+}
+
+function ArrowMessage {
+    param(
+        [string]$Message,
+        [int]$ColumnStart = 0,
+        [int]$ArrowLength = 10,
+        [int]$Row = [System.Console]::CursorTop,
+        [ConsoleColor]$ArrowColor = [ConsoleColor]::White,
+        [ConsoleColor]$MessageColor = [ConsoleColor]::Gray,
+        [switch]$ReturnToLastPosition
+    )
+
+    # Store original cursor position
+    $lastColumn = [System.Console]::CursorLeft
+    $lastRow = [System.Console]::CursorTop
+
+    $ColumnEnd = $ColumnStart + $ArrowLength
+
+    AnimatedArrow -ColumnStart $ColumnStart `
+                  -ColumnEnd $ColumnEnd `
+                  -Row $Row `
+                  -Color $ArrowColor `
+                  -ReturnToLastPosition:$false
+
+    [System.Console]::SetCursorPosition($ColumnEnd + 1, $Row)
+    [System.Console]::ForegroundColor = $MessageColor
+    Write-Host " $Message" -NoNewLine
+    [System.Console]::ResetColor()
+
+    if ($ReturnToLastPosition) {
+        [System.Console]::SetCursorPosition($lastColumn, $lastRow)
+    } else {
+        Write-Host
     }
 }
 
