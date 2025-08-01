@@ -183,7 +183,10 @@ public class Library
     public List<LibraryItem> GetItems(FilterSequence filterSequence, SortSequence sortSequence, List<string> itemNameFilter)
     {        
 
-        if ( !RenderLayout().IsSuccess )
+        if ( LayoutSequence.Count == 0 )
+            return Items.ToList();
+
+        if ( RenderLayout().IsFailure )
             return new List<LibraryItem>();
         
         object branch = ExtractLayoutBranch(filterSequence);
