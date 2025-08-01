@@ -1,10 +1,15 @@
 param (
     [string]$Cmd = 'help',
     [string[]]$TestsList = @(),
-    [switch]$NoClearHost
+    [switch]$NoClearHost,
+    [switch]$UpdateReferences
 )
 
-. "$PSScriptRoot/interface.ps1" 
+$projectRoot = "C:\Users\clovi\OneDrive\Área de Trabalho\Clodo\Work\Projects\Incubator\FlexLib"
+$devCommands = "$projectRoot/Dev/_commands"
+$testCommandDir = "$devCommands/test"
 
-Interface $Cmd $TestsList -NoClearHost:$NoClearHost
+. "$testCommandDir/interface.ps1" 
+
+Interface $Cmd $TestsList -NoClearHost:$NoClearHost -UpdateReferences:$UpdateReferences
 
