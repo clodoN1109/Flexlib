@@ -35,7 +35,7 @@ public class JsonLibraryRepository : ILibraryRepository
 
         Config = LoadOrCreateConfig();
 
-        _dataDirectory = EnsureDataDirectory();
+        _dataDirectory =  EnsureDataDirectory(ExeFolder, AppDataFolder);
         _metaFile = EnsureMetaFile();
         _cache = LoadCache(_metaFile);
 
@@ -58,18 +58,19 @@ public class JsonLibraryRepository : ILibraryRepository
         return cache;
     }
 
-    private string EnsureDataDirectory()
+    private string EnsureDataDirectory(string exeFolder, string appDataFolder)
     {
-#if DEBUG
-        string dataDirectory = Path.Combine(ExeFolder!, "data");
-        Directory.CreateDirectory(dataDirectory);
-#else
-        string flexlibDir = Path.Combine(AppDataFolder!, "Flexlib");
-        string dataDirectory =  Path.Combine(flexlibDir, "data");
+        string dataDirectory;
+
+    #if DEBUG
+        dataDirectory = Path.Combine(exeFolder, "data");
+    #else
+        string flexlibDir = Path.Combine(appDataFolder, "Flexlib");
         Directory.CreateDirectory(flexlibDir);
-#endif 
+        dataDirectory = Path.Combine(flexlibDir, "data");
+    #endif
+
         Directory.CreateDirectory(dataDirectory);
-    
         return dataDirectory;
     }
 

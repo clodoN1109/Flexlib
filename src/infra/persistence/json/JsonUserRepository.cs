@@ -10,11 +10,10 @@ namespace Flexlib.Infrastructure.Persistence;
 
 public class JsonUserRepository : IUserRepository
 {
-    private readonly string _filePath;
+    private readonly string _usersFilePath;
     private readonly string _dataDirectory;
     private readonly List<IUser> _cache = new();
     private readonly string _sessionFilePath;
-
 
     private readonly JsonSerializerOptions _jsonOptions = new()
     {
@@ -24,7 +23,7 @@ public class JsonUserRepository : IUserRepository
 
     public JsonUserRepository()
     {
-        string? exeFolder = Flexlib.Infrastructure.Environment.Env.GetExecutingAssemblyLocation();
+        string? exeFolder = Env.GetExecutingAssemblyLocation();
         if (string.IsNullOrWhiteSpace(exeFolder) || !Directory.Exists(exeFolder))
             throw new DirectoryNotFoundException($"Executable directory not found: {exeFolder}");
 
@@ -32,14 +31,14 @@ public class JsonUserRepository : IUserRepository
         if (string.IsNullOrWhiteSpace(appDataFolder) || !Directory.Exists(appDataFolder))
             throw new DirectoryNotFoundException($"AppData directory not found: {appDataFolder}");
 
-        _dataDirectory = EnsureDataDirectory(exeFolder, appDataFolder);
-        _filePath = Path.Combine(_dataDirectory, "users.json");
-   
-        string sessionDir = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "Flexlib");
+        _dataDirectory =  EnsureDataDirectory(exeFolder, appDataFolder);
+        _usersFilePath = Path.Combine(_dataDirectory, "users.json");
+
+        string sessionDir = Path.Combine(appDataFolder, "Flexlib");
         Directory.CreateDirectory(sessionDir);
         _sessionFilePath = Path.Combine(sessionDir, ".session");
 
-        EnsureFileExists();
+        EnsureFilesExist();
         LoadCache();
     }
 
@@ -47,63 +46,89 @@ public class JsonUserRepository : IUserRepository
     {
         string dataDirectory;
 
-#if DEBUG
+    #if DEBUG
         dataDirectory = Path.Combine(exeFolder, "data");
-#else
+    #else
         string flexlibDir = Path.Combine(appDataFolder, "Flexlib");
         Directory.CreateDirectory(flexlibDir);
         dataDirectory = Path.Combine(flexlibDir, "data");
-#endif
+    #endif
 
         Directory.CreateDirectory(dataDirectory);
         return dataDirectory;
     }
 
-    private void LoadCache()
+    public Result SaveSession(string id)
     {
-        _cache.Clear();
-        _cache.AddRange(LoadAllUsers());
-    }
-
-    public Result SaveSessionFile(string id)
-    {
-        try 
+        try
         {
-            File.WriteAllText(_sessionFilePath, id);
+            var session = new Session
+            {
+                Id = Session.HashId(id),
+                CreationDate = DateTime.UtcNow
+            };
+
+            var json = JsonSerializer.Serialize(session, _jsonOptions);
+            File.WriteAllText(_sessionFilePath, json);
             return Result.Success("Session file updated.");
         }
-        catch 
+        catch (Exception ex)
         {
-            return Result.Fail("Could not update session file.");
+            return Result.Fail($"Could not save session: {ex.Message}");
         }
     }
 
-    public string? GetCurrentSessionID()
+    public Session GetSession()
     {
-        if (!File.Exists(_sessionFilePath))
-            return null;
+        try
+        {
+            if (!File.Exists(_sessionFilePath))
+                return new Session { Id = "", CreationDate = DateTime.MinValue };
 
-        var id = File.ReadAllText(_sessionFilePath).Trim();
-        
-        return id;
+            var json = File.ReadAllText(_sessionFilePath);
+            var session = JsonSerializer.Deserialize<Session>(json, _jsonOptions);
+
+            return session ?? new Session { Id = "", CreationDate = DateTime.MinValue };
+        }
+        catch
+        {
+            return new Session { Id = "", CreationDate = DateTime.MinValue };
+        }
     }
-        
-    public Result RemoveSessionFile()
+
+    public Result CloseSession()
     {
-        try 
+        try
         {
-            File.WriteAllText(_sessionFilePath, string.Empty);
-            return Result.Success("Session file erased.");
+            if (File.Exists(_sessionFilePath))
+                File.Delete(_sessionFilePath);
+
+            return Result.Success("Session closed.");
         }
-        catch 
+        catch (Exception ex)
         {
-            return Result.Fail("Could not erase session file.");
+            return Result.Fail($"Could not close session: {ex.Message}");
         }
     }
+
 
     public IUser? Get(string id)
     {
         return _cache.FirstOrDefault(u => u.Credentials.UserId.ToLowerInvariant() == id.ToLowerInvariant());
+    }
+
+    public IUser? GetByHashedId(string hashedId)
+    {
+        foreach (var user in _cache)
+        {
+            string userId = user.Credentials.UserId;
+            string hashed = Session.HashId(userId);
+
+            if (hashed == hashedId)
+                return user;
+        }
+
+        return null;
     }
 
     public bool Exists(string id)
@@ -136,14 +161,20 @@ public class JsonUserRepository : IUserRepository
         return _cache;
     }
 
+    private void LoadCache()
+    {
+        _cache.Clear();
+        _cache.AddRange(LoadAllUsers());
+    }
+
     private List<User> LoadAllUsers()
     {
         try
         {
-            if (!File.Exists(_filePath))
+            if (!File.Exists(_usersFilePath))
                 return new List<User>();
 
-            var json = File.ReadAllText(_filePath);
+            var json = File.ReadAllText(_usersFilePath);
             var users = JsonSerializer.Deserialize<List<User>>(json, _jsonOptions);
             return users ?? new List<User>();
         }
@@ -157,14 +188,12 @@ public class JsonUserRepository : IUserRepository
     private void SaveAllUsers(List<User> users)
     {
         var json = JsonSerializer.Serialize(users, _jsonOptions);
-        File.WriteAllText(_filePath, json);
+        File.WriteAllText(_usersFilePath, json);
     }
 
-    private void EnsureFileExists()
+    private void EnsureFilesExist()
     {
-        if (!File.Exists(_filePath))
+        if (!File.Exists(_usersFilePath))
             SaveAllUsers(new List<User>());
     }
 }
-
-
