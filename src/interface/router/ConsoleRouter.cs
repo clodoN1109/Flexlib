@@ -28,21 +28,21 @@ public static class ConsoleRouter
                 return;
             
             case NewUserCommand newUserCmd:
-                _presenter.Auth( _auth.RegisterUser().Message ?? "") ;
+                _presenter.AuthStatus( _auth.RegisterUser().Message ?? "") ;
                 return;
                
             case LoginCommand loginCmd:
-                _presenter.Auth( _auth.Login().Message ?? "");
+                _presenter.AuthStatus( _auth.Login().Message ?? "");
                 return;
                     
             case LogoutCommand logoutCmd:
-                _presenter.Auth( _auth.Logout().Message ?? "");
+                _presenter.AuthStatus( _auth.Logout().Message ?? "");
                 return;
         }
 
         if (_auth.Authenticate(out IUser user, out Result authResult).IsNotLoggedIn)
         {
-            _presenter.Auth( "Authentication failed.");
+            _presenter.AuthStatus( "Authentication failed.");
             return;
         }
 

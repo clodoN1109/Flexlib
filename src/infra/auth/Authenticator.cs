@@ -134,23 +134,22 @@ public class Authenticator
 
     public Result RegisterUser()
     {
-        Console.Write("Enter your name: ");
-        string? name = Console.ReadLine()?.Trim();
 
-        Console.Write("Choose a unique user ID: ");
-        string id = Console.ReadLine()?.Trim() ?? "";
+        UntrustedAccessInfo untrusted = AuthPrompt.PromptUserRegistration();
 
-        string? password = _reader.ReadPassword("Create a password: ");
-
-        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(password))
+        string? name = untrusted.Name;
+        string? id = untrusted.Id;
+        string? untrustedPassword = untrusted.Password; 
+        
+        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(untrustedPassword))
             return Result.Fail("Name, ID and password are required.");
 
         if (_userRepo.Exists(id))
             return Result.Fail("A user with this ID already exists.");
 
-        string hashedPassword = Password.Hash(password);
+            string hashedPassword = Password.Hash(untrustedPassword);
 
-        var user = new User(new UntrustedAccessInfo(id, password, name)){ UserAccessLevel = AccessLevel.User };
+        var user = new User(new UntrustedAccessInfo(id, untrustedPassword, name)){ UserAccessLevel = AccessLevel.User };
         user.Credentials.HashedPassword = hashedPassword;
 
         _userRepo.Save(user);
@@ -163,10 +162,10 @@ public class Authenticator
     {
         Logout();
 
-        Console.Write("\nEnter your ID: ");
-        string id = Console.ReadLine()?.Trim() ?? "";
+        UntrustedAccessInfo untrusted = AuthPrompt.PromptUserIdentification();
 
-        string? untrustedPassword = _reader.ReadPassword("\nEnter your password: ");
+        string? id = untrusted.Id;
+        string? untrustedPassword = untrusted.Password; 
 
         if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(untrustedPassword))
             return Result.Fail("ID and password are required.");
