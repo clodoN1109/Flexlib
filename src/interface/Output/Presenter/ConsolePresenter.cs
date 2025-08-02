@@ -1,6 +1,7 @@
 using Flexlib.Application.Ports; 
 using Flexlib.Domain;
 using Flexlib.Interface.CLI;
+using Flexlib.Interface.Input;
 using Flexlib.Infrastructure.Interop;
 
 namespace Flexlib.Interface.Output;
@@ -36,9 +37,27 @@ public class ConsolePresenter : IPresenter
         _emitter.PrintLines(_renderer.AvailableActions(actions, Console.WindowWidth), false);
     }
 
-    public void Auth(string message)
+    public void AuthStatus(string message)
     {
-        _emitter.PrintLines(_renderer.Auth(message).Lines);
+        _emitter.PrintLines(_renderer.AuthStatus(message).Lines);
+    }
+
+    public void AuthPrompt(out AuthPromptScreen screen)
+    {
+        screen = _renderer.AuthPromptRender(Console.WindowWidth);
+
+        _emitter.PrintLines(screen.Lines);
+
+        Console.SetCursorPosition(screen.IDPosition.X, screen.IDPosition.Y);
+    }
+
+    public void RegistrationPrompt(out RegistrationPromptScreen screen)
+    {
+        screen = _renderer.RegistrationPromptRender(Console.WindowWidth);
+
+        _emitter.PrintLines(screen.Lines);
+
+        Console.SetCursorPosition(screen.IDPosition.X, screen.IDPosition.Y);
     }
 
     public void ShowError(string message)
