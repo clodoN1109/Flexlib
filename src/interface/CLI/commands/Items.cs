@@ -111,6 +111,63 @@ public class RemoveItemCommand : Command
     }
 }
 
+public class ViewItemCommand : Command
+{
+    public string LibraryName { get; }
+    public object ItemId { get; }
+    public string Application{ get; }
+    
+    public ViewItemCommand(string[] options)
+    {
+        Options = options;
+        ItemId =  options.Length > 0 ? options[0] : "";
+        LibraryName = options.Length > 1 ? options[1] : "Default Library";
+        Application = options.Length > 2 ? options[1] : "Default App";
+    }
+
+    public override string Type => "view-item";
+
+    public override bool IsValid()
+    {
+        return Options.Length > 0 && Options.Length < 4;
+    }
+    
+    public override UsageInfo GetUsageInfo()
+    {
+        return new UsageInfo
+        {
+            Meta = new List<string> {},
+            Title = "view-item",
+            Description = "Opens for visualization the selected item from the selected library.",
+            Group = CommandGroups.Items,
+            Syntax = "flexlib view-item <item id> [library name] [preferred application]",
+            Options = new List<CommandOption>
+            {
+                new CommandOption{
+                    Name = "item id",
+                    OptionDomain = new VariableDomain(),
+                    Mandatory = true
+                },
+                
+                new CommandOption{
+                    Name = "library name",
+                    OptionDomain = new VariableDomain(),
+                    Mandatory = false,
+                    DefaultValue = "Default Library"
+                },
+                
+                new CommandOption{
+                    Name = "preferred application",
+                    OptionDomain = new VariableDomain(),
+                    Mandatory = false,
+                    DefaultValue = "Default Application"
+                },
+
+            }
+        };
+    }
+}
+
 public class ListItemsCommand : Command
 {
     public string LibraryName { get; }

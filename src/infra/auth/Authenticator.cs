@@ -79,11 +79,11 @@ public class Authenticator
             State = UserState.LoggedOut
         };
 
-        string? sessionId = _userRepo.GetCurrentSessionID(); 
+        string? sessionId = _userRepo.GetSession().Id; 
         if (string.IsNullOrWhiteSpace(sessionId))
             return Result.Fail("No session ID found.");
 
-        var restoredUser = _userRepo.Get(sessionId);
+        var restoredUser = _userRepo.GetByHashedId(sessionId);
         if (restoredUser == null)
         {
             ClearSession();
@@ -119,17 +119,17 @@ public class Authenticator
 
     public void ClearSession()
     {       
-        _userRepo.RemoveSessionFile();
+        _userRepo.CloseSession();
     }
 
     private Result SaveSession(string id)
     {
-        return _userRepo.SaveSessionFile(id);
+        return _userRepo.SaveSession(id);
     }
 
-    private Result EndSession()
+    private Result CloseSession()
     {
-        return _userRepo.RemoveSessionFile();
+        return _userRepo.CloseSession();
     }
 
     public Result RegisterUser()
@@ -186,7 +186,7 @@ public class Authenticator
     public Result Logout()
     {
         
-        EndSession();
+        CloseSession();
 
         return Result.Success($"Session closed.");
     }

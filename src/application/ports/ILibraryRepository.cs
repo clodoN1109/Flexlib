@@ -1,7 +1,8 @@
-namespace Flexlib.Application.Ports;
-
 using Flexlib.Domain;
 using Flexlib.Infrastructure.Interop;
+
+namespace Flexlib.Application.Ports;
+
 
 public interface ILibraryRepository
 {
@@ -16,5 +17,6 @@ public interface ILibraryRepository
     double GetLocalItemFileSizes(List<LibraryItem> items, Library lib);
     Result VerifyAndRebalanceLocalStorage();
     Result VerifyAndRebalanceLocalStorage(Library lib);
+    string? GetItemLocalCopy(LibraryItem item, Library lib);
 
 }

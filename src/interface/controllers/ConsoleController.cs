@@ -58,6 +58,9 @@ public static class ConsoleController
 
             case RemoveItemCommand c:
                 return RemoveItem.Execute(c.ItemId, c.LibraryName, _libRepo);
+            
+            case ViewItemCommand c:
+                return ViewItem.Execute(c.ItemId, c.LibraryName, c.Application, _libRepo, _presenter);
 
             case ListLibrariesCommand c:
                 return ListLibs.Execute(_libRepo, _presenter);

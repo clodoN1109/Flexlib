@@ -3,6 +3,7 @@ using Flexlib.Domain;
 using Flexlib.Interface.CLI;
 using Flexlib.Interface.Input;
 using Flexlib.Infrastructure.Interop;
+using Flexlib.Services.Media;
 
 namespace Flexlib.Interface.Output;
 
@@ -11,6 +12,7 @@ public class ConsolePresenter : IPresenter
 
     private readonly ConsoleRenderer _renderer = new();
     private readonly ConsoleEmitter _emitter = new();
+    private readonly IMediaService _mediaService = MediaServiceFactory.CreateDefault();
 
     public void Message(string message = "")
     {
@@ -27,6 +29,11 @@ public class ConsolePresenter : IPresenter
         _emitter.PrintLines(_renderer.UsageInfo(info, Console.WindowWidth));
     }
 
+    public Result File(string filePath)
+    {
+        return _mediaService.TryOpenFile(filePath);
+    }
+    
     public void UserInfo(string info)
     {
         _emitter.PrintLines(_renderer.UserInfo(info).Lines, false);
