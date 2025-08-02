@@ -24,6 +24,7 @@ public static partial class Input
             "new-lib"        => new NewLibraryCommand(options),
             "new-item"       => new NewItemCommand(options),
             "remove-item"    => new RemoveItemCommand(options),
+            "view-item"      => new ViewItemCommand(options),
             "list-libs"      => new ListLibrariesCommand(options),
             "list-items"     => new ListItemsCommand(options),
             "get-layout"     => new GetLibraryLayoutCommand(options),
