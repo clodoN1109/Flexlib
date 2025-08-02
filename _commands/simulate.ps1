@@ -7,9 +7,15 @@ param (
     [string]$Version
 )
 
+if (($Mode -eq 'Release') -and (-not $Version)) {
+    Write-Host "`n❌ You must specify a version in Release mode." -ForegroundColor Red
+    return
+}
+
 . "$PSScriptRoot/simulate/Utils.ps1"
 . "$PSScriptRoot/simulate/Help.ps1"
 . "$PSScriptRoot/simulate/ResolvePaths.ps1"
+
 
 
 if ($ClearLastResults) { 
@@ -28,8 +34,7 @@ if ($Help -or ($SimulationName -eq '') ) {
 
 Write-Host ( "`n░░░░ SIMULATION " + "░" * ( [System.Console]::WindowWidth - 16))
 Write-Host ''
-Write-Host "     $SimulationName"
-Write-Host ''
+Write-Host "     $SimulationName `($($Mode.ToUpper()) mode`)"
 
 # Execute selected simulation
 if (Test-Path $requestedSimulation) {

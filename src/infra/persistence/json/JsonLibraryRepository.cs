@@ -1,11 +1,13 @@
 using Flexlib.Application.Ports;
 using Flexlib.Infrastructure.Interop;
 using Flexlib.Infrastructure.Persistence;
+using Flexlib.Infrastructure.Config;
 using Flexlib.Infrastructure.Environment;
 using Flexlib.Interface.Input.Heuristics;
 using Flexlib.Domain;
 using System.IO;
 using System;
+using System.Text.Json;
 
 namespace Flexlib.Infrastructure.Persistence;
 
@@ -16,6 +18,8 @@ public class JsonLibraryRepository : ILibraryRepository
     private List<Library> _cache;
     private string? ExeFolder;
     private string? AppDataFolder;
+    private string? AppConfigFolder;
+    private FlexlibConfig Config;
 
     public JsonLibraryRepository()
     {
@@ -26,11 +30,13 @@ public class JsonLibraryRepository : ILibraryRepository
         AppDataFolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData);
         if (AppDataFolder == null || !Directory.Exists(AppDataFolder))
             throw new DirectoryNotFoundException($"AppData file directory not found: {AppDataFolder}");
-        
+
+        AppConfigFolder = Path.Combine(ExeFolder, "config");
+
+        Config = LoadOrCreateConfig();
+
         _dataDirectory = EnsureDataDirectory();
-
         _metaFile = EnsureMetaFile();
-
         _cache = LoadCache(_metaFile);
 
     }
@@ -102,6 +108,37 @@ public class JsonLibraryRepository : ILibraryRepository
         return UpdateLocalStorage(lib);
        
     }
+
+    private FlexlibConfig LoadOrCreateConfig()
+    {
+        string configFilePath = Path.Combine(AppConfigFolder!, "FlexlibConfig.json");
+
+        if (!Directory.Exists(AppConfigFolder))
+            Directory.CreateDirectory(AppConfigFolder!);
+
+        if (File.Exists(configFilePath))
+        {
+            try
+            {
+                string json = File.ReadAllText(configFilePath);
+                var config = JsonSerializer.Deserialize<FlexlibConfig>(json);
+                if (config != null)
+                    return config;
+            }
+            catch
+            {
+                // Optionally log or handle corrupted file
+            }
+        }
+
+        // Fallback to defaults
+        var defaultConfig = new FlexlibConfig();
+        string defaultJson = JsonSerializer.Serialize(defaultConfig, new JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(configFilePath, defaultJson);
+
+        return defaultConfig;
+    }
+
 
     public Result Save(LibraryItem item, Library lib){
         
@@ -187,9 +224,22 @@ public class JsonLibraryRepository : ILibraryRepository
 
         string itemsFolder = Path.Combine(libraryFolder, "items");
         string localItemsFolder = Path.Combine(itemsFolder, "local");
-
         string itemJsonPath = Path.Combine(itemsFolder, $"{item.Name}.json");
-        string itemDataPath = Path.Combine(localItemsFolder, $"{item.Name}{item.FileExtension}");
+
+        // Build expected file name
+        string fileName = $"{item.Id}-{item.Name}{item.FileExtension}";
+
+        // Locate the file inside segmented local/ subfolders
+        string? itemDataPath = null;
+        foreach (string subdir in Directory.GetDirectories(localItemsFolder))
+        {
+            string candidatePath = Path.Combine(subdir, fileName);
+            if (File.Exists(candidatePath))
+            {
+                itemDataPath = candidatePath;
+                break;
+            }
+        }
 
         Console.WriteLine($"\nAre you sure you want to delete the item '{item.Name}' from library '{lib.Name}'?\n\n");
         Console.Write("(y/N) > ");
@@ -199,22 +249,32 @@ public class JsonLibraryRepository : ILibraryRepository
 
         try
         {
-
-            string libFilePath = Path.Combine(libraryFolder, $"{lib.Name}.json");
-            JsonHelpers.WriteJson(libFilePath, lib);
-
-            JsonHelpers.WriteJson(_metaFile, _cache); // Assuming `lib` is a reference within `_cache`
-
+            // Remove metadata from disk
             if (File.Exists(itemJsonPath))
                 File.Delete(itemJsonPath);
 
-            if (File.Exists(itemDataPath))
+            // Remove item data file from disk
+            if (itemDataPath != null && File.Exists(itemDataPath))
+            {
                 File.Delete(itemDataPath);
 
+                // Optional: clean up empty subdir
+                string? parentDir = Path.GetDirectoryName(itemDataPath);
+                if (parentDir != null && Directory.Exists(parentDir) && !Directory.EnumerateFileSystemEntries(parentDir).Any())
+                {
+                    Directory.Delete(parentDir);
+                }
+            }
+
+            // Update library in memory and on disk
             lib.Items.RemoveAll(i => i.Id == item.Id);
 
+            string libFilePath = Path.Combine(libraryFolder, $"{lib.Name}.json");
+            JsonHelpers.WriteJson(libFilePath, lib);
+            JsonHelpers.WriteJson(_metaFile, _cache);
+
             Save(lib);
-            
+
             return Result.Success($"Item '{item.Name}' removed from library '{lib.Name}'.");
         }
         catch (Exception ex)
@@ -222,6 +282,7 @@ public class JsonLibraryRepository : ILibraryRepository
             return Result.Fail($"Failed to remove item '{item.Name}': {ex.Message}");
         }
     }
+
 
     private void UpdateItems(Library lib)
     {
@@ -259,27 +320,48 @@ public class JsonLibraryRepository : ILibraryRepository
 
         Directory.CreateDirectory(localDir);
 
-        var localFiles = new HashSet<string?>(
-            Directory.GetFiles(localDir).Select(Path.GetFileName),
-            StringComparer.OrdinalIgnoreCase
-        );
-
-        string sourcePath = item.Origin!;
-        
         string itemId = item.Id!.ToString();
         string itemName = item.Name!;
-        string fileExtension = Path.GetExtension( Path.GetFileName(sourcePath) );
+        string fileExtension = Path.GetExtension(Path.GetFileName(item.Origin!));
         string fileName = $"{itemId}-{itemName}{fileExtension}";
 
-        string targetPath = Path.Combine(localDir, fileName);
-
-        if (!localFiles.Contains(fileName))
+        string? existingPath = FileSystem.FindExistingItemPath(localDir, fileName);
+        if (existingPath != null)
         {
-            AddressType type = AddressAnalysis.GetAddressType(sourcePath);
-            return CopyHelpers.TryCopyToLocal(type, sourcePath, targetPath);
+            return Result.Success($"Selected library '{lib.Name}' already up to date.");
         }
 
-        return Result.Success($"Selected library '{lib.Name}' already up to date.");
+        // Try to find or create a subfolder with room
+        string? targetFolder = FileSystem.FindOrCreateAvailableFolder(localDir, Config.MaxFilesPerFolder, fileName);
+        if (targetFolder == null)
+        {
+            return Result.Fail("Could not find or create a suitable subfolder.");
+        }
+
+        string targetPath = Path.Combine(targetFolder, fileName);
+        AddressType type = AddressAnalysis.GetAddressType(item.Origin!);
+        return FetchSystem.TryCopyToLocal(type, item.Origin!, targetPath);
+    }
+
+    public string? GetItemLocalCopy(LibraryItem item, Library lib)
+    {
+        string libDir = Path.Combine(lib.Path, lib.Name!);
+        string itemsDir = Path.Combine(libDir, "items");
+        string localDir = Path.Combine(itemsDir, "local");
+
+        string itemId = item.Id!.ToString();
+        string itemName = item.Name!;
+        string extension = Path.GetExtension(Path.GetFileName(item.Origin!));
+        string fileName = $"{itemId}-{itemName}{extension}";
+
+        foreach (string subdir in Directory.GetDirectories(localDir))
+        {
+            string candidatePath = Path.Combine(subdir, fileName);
+            if (File.Exists(candidatePath))
+                return candidatePath;
+        }
+
+        return null;
     }
 
     private void UpdateLibFileStructure(Library lib)
@@ -398,5 +480,142 @@ public class JsonLibraryRepository : ILibraryRepository
     public Library? GetByName(string name) => _cache.FirstOrDefault(l => l.Name?.ToLowerInvariant() == name.ToLowerInvariant());
 
     public IEnumerable<Library> GetAll() => _cache;
+
+    public Result VerifyAndRebalanceLocalStorage()
+    {
+        foreach (var library in _cache)
+        {
+            RebalanceLibrary(library);
+        }
+
+        return Result.Success("");
+    }
+
+    public Result VerifyAndRebalanceLocalStorage(Library lib)
+    {
+        RebalanceLibrary(lib);
+        return Result.Success("");
+    }
+
+    private void RebalanceLibrary(Library lib)
+    {
+        string libDir = Path.Combine(lib.Path!, lib.Name!);
+        string localDir = Path.Combine(libDir, "items", "local");
+
+        if (!Directory.Exists(localDir))
+            return;
+
+        var subfolders = Directory.GetDirectories(localDir);
+
+        foreach (var folder in subfolders)
+        {
+            int fileCount = Directory.GetFiles(folder).Length;
+            if (fileCount > Config.MaxFilesPerFolder)
+            {
+                RebalanceFolder(localDir, folder);
+            }
+        }
+
+        MergeUnderfilledFolders(localDir);
+    }
+
+    private void RebalanceFolder(string localRoot, string oversizedFolder)
+    {
+        var allFolders = Directory.GetDirectories(localRoot).ToList();
+        var filesToMove = Directory.GetFiles(oversizedFolder);
+
+        foreach (var file in filesToMove)
+        {
+            bool moved = false;
+
+            foreach (var folder in allFolders)
+            {
+                if (folder == oversizedFolder) continue;
+
+                int count = Directory.GetFiles(folder).Length;
+                if (count < Config.MaxFilesPerFolder)
+                {
+                    string fileName = Path.GetFileName(file);
+                    string destination = Path.Combine(folder, fileName);
+
+                    if (!File.Exists(destination))
+                    {
+                        File.Move(file, destination);
+                        moved = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!moved)
+            {
+                string newFolder = FileSystem.CreateNextSubfolder(localRoot, allFolders.Count);
+                allFolders.Add(newFolder);
+
+                string fileName = Path.GetFileName(file);
+                string destination = Path.Combine(newFolder, fileName);
+                File.Move(file, destination);
+            }
+        }
+
+        if (!Directory.GetFiles(oversizedFolder).Any())
+        {
+            Directory.Delete(oversizedFolder);
+        }
+    }
+
+    private void MergeUnderfilledFolders(string localDir)
+    {
+        var folders = Directory.GetDirectories(localDir)
+            .OrderBy(path => path)
+            .ToList();
+
+        var folderFileLists = folders
+            .Select(f => new { Path = f, Files = Directory.GetFiles(f).ToList() })
+            .Where(x => x.Files.Count < Config.MaxFilesPerFolder)
+            .ToList();
+
+        int i = 0;
+        while (i < folderFileLists.Count)
+        {
+            var target = folderFileLists[i];
+            int capacity = Config.MaxFilesPerFolder - target.Files.Count;
+
+            int j = i + 1;
+            while (capacity > 0 && j < folderFileLists.Count)
+            {
+                var donor = folderFileLists[j];
+                var filesToMove = donor.Files.Take(capacity).ToList();
+
+                foreach (var file in filesToMove)
+                {
+                    string fileName = Path.GetFileName(file);
+                    string destination = Path.Combine(target.Path, fileName);
+                    if (!File.Exists(destination))
+                    {
+                        File.Move(file, destination);
+                        donor.Files.Remove(file);
+                        capacity--;
+                    }
+                }
+
+                // If donor folder becomes empty, remove it
+                if (!donor.Files.Any())
+                {
+                    Directory.Delete(donor.Path);
+                    folderFileLists.RemoveAt(j);
+                    // Do not increment j
+                }
+                else
+                {
+                    j++;
+                }
+            }
+
+            i++;
+        }
+    }
+
+
 
 }

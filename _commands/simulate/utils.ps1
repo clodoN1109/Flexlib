@@ -4,26 +4,26 @@ function Safe-Cleanup {
     )
 
     if ([string]::IsNullOrWhiteSpace($TargetPath)) {
-        Write-Warning "Target path is empty. Skipping cleanup."
+        Write-Warning "`nTarget path is empty. Skipping cleanup.`n"
         return
     }
 
     $resolvedPath = Resolve-Path -Path $TargetPath -ErrorAction SilentlyContinue
 
     if (-not $resolvedPath) {
-        Write-Warning "Path '$TargetPath' does not exist. Skipping."
+        Write-Warning "`nPath '$TargetPath' does not exist. Skipping."
         return
     }
 
     # Extra safety: prevent deletion of root directories
     $root = [System.IO.Path]::GetPathRoot($resolvedPath.Path)
     if ($resolvedPath.Path -eq $root) {
-        Write-Warning "Refusing to delete contents of system root '$root'. Skipping."
+        Write-Warning "`nRefusing to delete contents of system root '$root'. Skipping."
         return
     }
 
     # Optionally: confirm (remove for automation)
-    Write-Host "`nAbout to delete contents of '$resolvedPath'. Are you sure? [y/N] : " -NoNewLine -ForegroundColor Yellow
+    Write-Host "`nAbout to delete contents of '$resolvedPath'.`n`n`tAre you sure? [y/N] : " -NoNewLine -ForegroundColor Yellow
     $confirm = [Console]::ReadLine()
     if ($confirm -ne 'y') {
         Write-Host "`nSkipped cleanup of '$resolvedPath'.`n"
@@ -40,14 +40,14 @@ function Safe-Remove {
     )
 
     if ([string]::IsNullOrWhiteSpace($TargetPath)) {
-        Write-Warning "Target path is empty. Skipping removal."
+        Write-Warning "`nTarget path is empty. Skipping removal."
         return
     }
 
     $resolvedPath = Resolve-Path -Path $TargetPath -ErrorAction SilentlyContinue
 
     if (-not $resolvedPath) {
-        Write-Warning "Path '$TargetPath' does not exist. Skipping."
+        Write-Warning "`nPath '$TargetPath' does not exist. Skipping."
         return
     }
 
@@ -60,7 +60,7 @@ function Safe-Remove {
     }
 
     # Optionally confirm (remove or comment out for automation)
-    Write-Host "`nAbout to delete directory '$fullPath' and all contents. Are you sure? [y/N] : " -NoNewLine -ForegroundColor Yellow
+    Write-Host "`nAbout to delete directory '$fullPath' and all contents.`n`n`tAre you sure? [y/N] : " -NoNewLine -ForegroundColor Yellow
     $confirm = [Console]::ReadLine()
     if ($confirm -ne 'y') {
         Write-Host "`n❎ Skipped deletion of '$fullPath'.`n"

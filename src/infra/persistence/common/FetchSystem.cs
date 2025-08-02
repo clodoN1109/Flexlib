@@ -3,7 +3,7 @@ using Flexlib.Interface.Input.Heuristics;
 
 namespace Flexlib.Infrastructure.Persistence;
 
-public static class CopyHelpers
+public static class FetchSystem
 {
     public static Result TryCopyToLocal(AddressType type, string sourcePath, string targetPath)
     {

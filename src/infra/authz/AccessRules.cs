@@ -27,6 +27,7 @@ public static class ActionAccessRules
         ["set-prop"]        = AccessLevel.User,
         ["remove-prop"]     = AccessLevel.User,
         ["fetch-files"]     = AccessLevel.User,
+        ["rebalance"]       = AccessLevel.User,
         ["gui"]             = AccessLevel.Public
     };
 

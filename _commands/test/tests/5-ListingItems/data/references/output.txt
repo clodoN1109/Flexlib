@@ -1,19 +1,19 @@
 
->::>    flexlib                                                                                          1316.1e7f003861d6372f38eccdf93416e047badf7cbc
+>::>    flexlib                                                                                                1321.26bc3d3bdd54cf46974c6b96f59dbb0cf8482e3f
 
-░░░░ LIBRARY ITEMS ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░ LIBRARY ITEMS ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
- TestLibrary/*/mathematics/*/newton|pascal|euler/1935-2002                                                                                            
+ TestLibrary/*/mathematics/*/newton|pascal|euler/1935-2002                                                                                                  
 
 ID | name
 ---|-----
 
-░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
-theme/publisher/author/year                                                                                                         0 items 0,00 bytes
----――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――┐
-  commands: help  new-user  login  logout  new-lib  list-libs  remove-lib  set-layout  get-layout  new-item  list-items  remove-item  view-item    │
-            new-comment  list-comments  edit-comment  remove-comment  new-prop  list-props  set-prop  remove-prop  fetch-files  gui                │
----――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――┘
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+theme/publisher/author/year                                                                                                               0 items 0,00 bytes
+---――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――┐
+  commands: help  new-user  login  logout  new-lib  list-libs  remove-lib  set-layout  get-layout  new-item  list-items  remove-item  view-item          │
+            new-comment  list-comments  edit-comment  remove-comment  new-prop  list-props  set-prop  remove-prop  fetch-files  gui                      │
+---――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――┘
 ---―――┐
     ✓ │
 ---―――┘

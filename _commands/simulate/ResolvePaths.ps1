@@ -8,17 +8,12 @@ switch ($Mode.ToLower()) {
 
     "release" {
 
-        if (-not $Version) {
-            Write-Host "❌ You must specify a version in Release mode." -ForegroundColor Red
-            return
-        }
-
         $releasesPath = Resolve-Path "$HOME/Projects/Incubator/Flexlib/Ops/Delivery/releases/"
         $versionFolder = Join-Path $releasesPath $Version
         $zipFile = Join-Path $versionFolder "Flexlib-$Version.zip"
 
         if (-not (Test-Path $zipFile)) {
-            Write-Host "❌ Zip file not found: $zipFile" -ForegroundColor Red
+            Write-Host "`n❌ Zip file not found: $zipFile" -ForegroundColor Red
             return
         }
 
@@ -52,7 +47,7 @@ switch ($Mode.ToLower()) {
     }
 
     default {
-        Write-Host "❌ Invalid mode: $Mode" -ForegroundColor Red
+        Write-Host "`n❌ Invalid mode: $Mode" -ForegroundColor Red
         return
     }
 }

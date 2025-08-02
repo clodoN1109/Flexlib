@@ -73,6 +73,9 @@ public static class ConsoleController
 
             case FetchFilesCommand c:
                 return FetchFiles.Execute(c.LibraryName, _libRepo);
+            
+            case RebalanceLocalStorageCommand c:
+                return RebalanceLocalStorage.Execute(c.LibraryName, _libRepo);
 
             case NewPropertyCommand c:
                 return AddProperty.Execute(c.LibName, c.PropName, c.PropType, _libRepo);
