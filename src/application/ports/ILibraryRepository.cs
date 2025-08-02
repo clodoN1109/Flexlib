@@ -14,4 +14,7 @@ public interface ILibraryRepository
     IEnumerable<Library> GetAll();
     string GetDataDirectory();
     double GetLocalItemFileSizes(List<LibraryItem> items, Library lib);
+    Result VerifyAndRebalanceLocalStorage();
+    Result VerifyAndRebalanceLocalStorage(Library lib);
+
 }

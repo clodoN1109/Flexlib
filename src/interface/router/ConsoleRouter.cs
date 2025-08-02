@@ -50,7 +50,8 @@ public static class ConsoleRouter
 
         _presenter.UserInfo(user?.Id ?? "");
         
-        _presenter.Result(authResult);
+        if (authResult.IsFailureOrWarning)
+            _presenter.Result(authResult);
     }
 }
 

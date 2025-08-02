@@ -18,6 +18,9 @@ Safe-Cleanup $flexlibDataPath
 
 Write-Host ""
 
+if ($Mode -ne "DEBUG") {
+    & $flexlibPath new-user
+}
 # ========== LIBRARIES =========
 
 & $flexlibPath new-lib GeneralLibrary  $resultsPath

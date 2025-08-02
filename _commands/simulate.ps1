@@ -1,22 +1,22 @@
 param (
     [string]$SimulationName = '',
     [switch]$ClearLastResults,
-    [switch]$Help
+    [switch]$Help,
+    [ValidateSet("Debug", "Release", "Production")]
+    [string]$Mode = "Debug",
+    [string]$Version
 )
 
-. "$PSScriptRoot\simulate\Utils.ps1"
-. "$PSScriptRoot\simulate\Help.ps1"
+if (($Mode -eq 'Release') -and (-not $Version)) {
+    Write-Host "`n❌ You must specify a version in Release mode." -ForegroundColor Red
+    return
+}
 
-# Resolve paths
-$flexlibPath            = Resolve-Path "$PSScriptRoot/flexlib.ps1"
-$flexlibDataPath        = "$HOME/Projects/Incubator/FlexLib/Dev/builds/last/Debug/net8.0/data"
-$dataPath               = "$PSScriptRoot/simulate/data"  
-$resultsPath            = "$dataPath/results"
-$simulateCommandDir     = "$PSScriptRoot/simulate"
-$simulationsPath        = "$simulateCommandDir/simulations"
-$requestedSimulation    = "$simulationsPath/$SimulationName.ps1"
+. "$PSScriptRoot/simulate/Utils.ps1"
+. "$PSScriptRoot/simulate/Help.ps1"
+. "$PSScriptRoot/simulate/ResolvePaths.ps1"
 
-$ProgressPreference = 'SilentlyContinue'
+
 
 if ($ClearLastResults) { 
 
@@ -34,8 +34,7 @@ if ($Help -or ($SimulationName -eq '') ) {
 
 Write-Host ( "`n░░░░ SIMULATION " + "░" * ( [System.Console]::WindowWidth - 16))
 Write-Host ''
-Write-Host "     $SimulationName"
-Write-Host ''
+Write-Host "     $SimulationName `($($Mode.ToUpper()) mode`)"
 
 # Execute selected simulation
 if (Test-Path $requestedSimulation) {
@@ -44,9 +43,19 @@ if (Test-Path $requestedSimulation) {
 
 } else {
 
-    Write-Host ( "`n░░░░ SIMULATION $SimulationName NOT FOUND" + "░" * ( [System.Console]::WindowWidth - 26 - $SimulationName.Length)) -ForegroundColor Red
+    Write-Host ( "`n░░░░ SIMULATION $SimulationName NOT FOUND " + "░" * ( [System.Console]::WindowWidth - 26 - $SimulationName.Length)) -ForegroundColor Red
 
 }
 
 Write-Host ""
 Write-Host ("░" * [System.Console]::WindowWidth )
+
+if ($Mode -eq 'Release') {
+
+    try {
+        Safe-Remove "$tempDir"
+    } catch {
+        Write-Host "⚠️ Failed to remove temporary directory: $tempDir" -ForegroundColor Yellow
+    }
+
+}

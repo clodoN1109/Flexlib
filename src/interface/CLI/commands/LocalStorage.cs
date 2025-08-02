@@ -49,3 +49,43 @@ public class FetchFilesCommand : Command
 
 }
 
+public class RebalanceLocalStorageCommand : Command
+{
+    public string? LibraryName { get; } 
+
+    public RebalanceLocalStorageCommand(string[] options)
+    {
+        Options = options;
+        LibraryName = options.Length > 0 ? options[0] : null;
+    }
+    
+    public override string Type => "rebalance";
+
+    public override bool IsValid()
+    {
+        return (Options.Length <= 1);
+    }
+    
+    public override UsageInfo GetUsageInfo()
+    {
+        return new UsageInfo
+        {
+            Meta = new List<string> {},
+            Title = "rebalance",
+            Description = "Rebalances the local storage subfolders of the selected libraries to conform to the current configuration.",
+            Group = CommandGroups.Storage,
+            Syntax = "flexlib rebalance [library name]",
+            Options = new List<CommandOption>
+            {
+                new CommandOption{
+                    Name = "library name",
+                    OptionDomain = new VariableDomain(),
+                    Mandatory = false,
+                    DefaultValue = ""
+                }
+            }
+        };
+    }
+
+}
+

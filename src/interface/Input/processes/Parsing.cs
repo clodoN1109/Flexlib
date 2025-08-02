@@ -37,6 +37,7 @@ public static partial class Input
             "edit-comment"   => new EditCommentCommand(options),
             "remove-comment" => new RemoveCommentCommand(options),
             "fetch-files"    => new FetchFilesCommand(options),
+            "rebalance"      => new RebalanceLocalStorageCommand(options),
             "remove-lib"     => new RemoveLibraryCommand(options),
             "gui"            => new GUIStartUp(new GUIConfig()),
             "help"           => new HelpCommand(options),

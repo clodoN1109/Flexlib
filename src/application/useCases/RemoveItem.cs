@@ -25,10 +25,8 @@ public static class RemoveItem
         var selectedLibrary = parsedArgs.Repo.GetByName(parsedArgs.LibName)!;
         
         var selectedItem = selectedLibrary.GetItemById(parsedArgs.ItemId);
-        if (selectedItem == null)
-            return Result.Fail($"Library '{parsedArgs.LibName}' has no item with ID '{parsedArgs.ItemId}'.");
         
-        return parsedArgs.Repo.RemoveItem(selectedItem, selectedLibrary);
+        return parsedArgs.Repo.RemoveItem(selectedItem!, selectedLibrary);
 
     }
 
@@ -49,7 +47,6 @@ public static class RemoveItem
             return Result.Fail($"Item ID must be informed.");
 
         var selectedItem = selectedLibrary.GetItemById(parsedArgs.ItemId);
-        
         if (selectedItem == null)
             return Result.Fail($"Library '{parsedArgs.LibName}' has no item with ID '{parsedArgs.ItemId}'.");
         

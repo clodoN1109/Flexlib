@@ -23,6 +23,7 @@ public static class CommandsList
         "edit-comment",
         "remove-comment",
         "fetch-files",
+        "rebalance",
         "remove-lib",
         "gui",
         "help"
