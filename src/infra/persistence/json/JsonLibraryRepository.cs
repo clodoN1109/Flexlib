@@ -444,31 +444,36 @@ public class JsonLibraryRepository : ILibraryRepository
         if (items == null || library == null || string.IsNullOrEmpty(library.Path) || string.IsNullOrEmpty(library.Name))
             return 0;
 
-        string localFolderPath = Path.Combine(library.Path, library.Name, "items", "local");
+        string localRoot = Path.Combine(library.Path, library.Name, "items", "local");
 
-        if (!Directory.Exists(localFolderPath))
+        if (!Directory.Exists(localRoot))
             return 0;
 
         double totalBytes = 0;
 
+        // Get all subdirectories under local recursively
+        var allFolders = Directory.GetDirectories(localRoot, "*", SearchOption.AllDirectories);
+
         foreach (var item in items)
         {
-            if (item?.Id == null)
+            if (string.IsNullOrWhiteSpace(item?.Id.ToString()))
                 continue;
 
-            // Match any file starting with "{id}-"
             string searchPattern = $"{item.Id}-*";
-            var matchingFiles = Directory.GetFiles(localFolderPath, searchPattern);
 
-            foreach (var file in matchingFiles)
+            foreach (var folder in allFolders)
             {
-                try
+                var matchingFiles = Directory.GetFiles(folder, searchPattern);
+                foreach (var file in matchingFiles)
                 {
-                    var fileInfo = new FileInfo(file);
-                    totalBytes += fileInfo.Length;
-                }
-                catch
-                {
+                    try
+                    {
+                        totalBytes += new FileInfo(file).Length;
+                    }
+                    catch
+                    {
+                        // Skip unreadable files
+                    }
                 }
             }
         }

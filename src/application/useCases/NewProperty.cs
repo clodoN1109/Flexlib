@@ -5,7 +5,7 @@ using Flexlib.Domain;
 
 namespace Flexlib.Application.UseCases;
 
-public static class AddProperty
+public static class NewProperty
 {
     public static Result Execute(string libName, string propName, string propType, ILibraryRepository repo)
     {
@@ -41,7 +41,7 @@ public static class AddProperty
         if (lib == null)
             return Result.Fail($"Library '{parsedArgs.LibName}' not found.");
 
-        lib.AddPropertyDefinition(parsedArgs.PropName, parsedArgs.PropType);
+        lib.NewPropertyDefinition(parsedArgs.PropName, parsedArgs.PropType);
         parsedArgs.Repo.Save(lib);
 
         return Result.Success($"Property '{parsedArgs.PropName}' added to library '{lib.Name}'.");
@@ -51,7 +51,7 @@ public static class AddProperty
     {
         foreach (var lib in parsedArgs.Repo.GetAll().ToList())
         {
-            lib.AddPropertyDefinition(parsedArgs.PropName, parsedArgs.PropType);
+            lib.NewPropertyDefinition(parsedArgs.PropName, parsedArgs.PropType);
             parsedArgs.Repo.Save(lib);
         }
 
@@ -90,7 +90,7 @@ public static class AddProperty
         public ParsedArgs(string libName, string propName, string propType, ILibraryRepository repo)
         {
             LibName = libName;
-            PropName = propName;
+            PropName = propName.ToLowerInvariant();
             PropType = propType;
             Repo = repo;
         }
