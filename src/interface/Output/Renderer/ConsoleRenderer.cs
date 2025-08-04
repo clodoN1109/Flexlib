@@ -243,7 +243,7 @@ public class ConsoleRenderer
         string statsBar  = Components.LineFilled(consoleWidth, "right", ' ', $"{comments.Count} comments");
         string bottomBar = new string('░', consoleWidth);
 
-        var headers = new[] { "ID", "Author", "Text", "Created at", "Edited at" };
+        var headers = new[] { "ID", "AUTHOR", "TEXT", "CREATED AT", "EDITED AT" };
         const int padding = 3;
         const string ellipsis = "…";
 
@@ -268,10 +268,11 @@ public class ConsoleRenderer
         int[] colWidths = new int[headers.Length];
         for (int i = 0; i < headers.Length; i++)
         {
-            colWidths[i] = Math.Max(
-                headers[i].Length,
-                rows.Max(r => r[i].Split('\n').Max(line => line.Length))
-            );
+            int maxRowLength = rows.Any()
+                ? rows.Max(r => r[i].Split('\n').Max(line => line.Length))
+                : 0;
+
+            colWidths[i] = Math.Max(headers[i].Length, maxRowLength);
         }
 
         // Adjust widths to fit console
@@ -374,7 +375,7 @@ public class ConsoleRenderer
             .OrderBy(k => k)
             .ToList();
 
-        var headers = new[] { "ID", "name" }.Concat(allKeys).ToList();
+        var headers = new[] { "ID", "NAME" }.Concat(allKeys).ToList();
         int columnCount = headers.Count;
 
         var rows = new List<string[]>();
@@ -486,11 +487,11 @@ public class ConsoleRenderer
 
         var columns = new List<(string Header, Func<Library, string> ValueSelector, bool TruncateStart)>
         {
-            ("Name", lib => lib.Name ?? "", false),
-            ("Items", lib => lib.Items?.Count.ToString() ?? "0", false),
-            ("Properties", lib => lib.PropertyDefinitions != null ? string.Join(", ", lib.PropertyDefinitions.Select(p => p.Name)) : "", false),
-            ("Layout", lib => lib.LayoutSequence != null ? string.Join("/", lib.LayoutSequence.Select(l => l.Name)) : "", true),
-            ("Location", lib => lib.Path ?? "", false)
+            ("NAME", lib => lib.Name ?? "", false),
+            ("ITEMS", lib => lib.Items?.Count.ToString() ?? "0", false),
+            ("PROPERTIES", lib => lib.PropertyDefinitions != null ? string.Join(", ", lib.PropertyDefinitions.Select(p => p.Name)) : "", false),
+            ("LAYOUT", lib => lib.LayoutSequence != null ? string.Join("/", lib.LayoutSequence.Select(l => l.Name)) : "", true),
+            ("LOCATION", lib => lib.Path ?? "", false)
         };
 
         int columnCount = columns.Count;

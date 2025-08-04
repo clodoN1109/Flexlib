@@ -22,38 +22,6 @@ public static class SetProperty
         return _SetProperty(args);
     }
 
-    private static Result IsOperationAllowed(ParsedArgs args)
-    {
-        
-        if (args.LibName == "Default Library" && AssureDefaultLibrary.Execute(args.Repo).IsFailure)
-            return Result.Fail($"Default Library not found.");
-
-        if (string.IsNullOrWhiteSpace(args.PropName.ToLowerInvariant()))
-            return Result.Fail("Property name must be provided.");
-
-        if (!string.IsNullOrWhiteSpace(args.LibName))
-        {
-            var lib = args.Repo.GetByName(args.LibName);
-            if (lib == null)
-                return Result.Fail($"Library '{args.LibName}' not found.");
-
-            if (!lib.ContainsId(args.ItemId))
-                return Result.Fail($"Item '{args.ItemId}' not found in library '{args.LibName}'.");
-
-            var item = lib.GetItemById(args.ItemId);
-
-            if (!item!.PropertyValues.ContainsKey(args.PropName.ToLowerInvariant()))
-                return Result.Fail($"Property '{args.PropName.ToLowerInvariant()}' not found in item '{args.ItemId}'.");
-        
-            var propertyDef = lib.PropertyDefinitions.FirstOrDefault(d => d.Name == args.PropName.ToLowerInvariant());
-            if (propertyDef == null)
-                return Result.Fail($"Property {args.PropName.ToLowerInvariant()} is not defined in library {args.LibName}.");
-        }
-
-
-        return Result.Success("Operation allowed.");
-    }
-
     private static Result _SetProperty(ParsedArgs args)
     {
         var lib = args.Repo.GetByName(args.LibName); 
@@ -89,6 +57,39 @@ public static class SetProperty
         args.Repo.Save(lib);
 
         return Result.Success( $"Property '{args.PropName.ToLowerInvariant()}' updated in item '{args.ItemId}' of library '{args.LibName}'.");
+    }
+
+
+    private static Result IsOperationAllowed(ParsedArgs args)
+    {
+        
+        if (args.LibName == "Default Library" && AssureDefaultLibrary.Execute(args.Repo).IsFailure)
+            return Result.Fail($"Default Library not found.");
+
+        if (string.IsNullOrWhiteSpace(args.PropName.ToLowerInvariant()))
+            return Result.Fail("Property name must be provided.");
+
+        if (!string.IsNullOrWhiteSpace(args.LibName))
+        {
+            var lib = args.Repo.GetByName(args.LibName);
+            if (lib == null)
+                return Result.Fail($"Library '{args.LibName}' not found.");
+
+            if (!lib.ContainsId(args.ItemId))
+                return Result.Fail($"Item '{args.ItemId}' not found in library '{args.LibName}'.");
+
+            var item = lib.GetItemById(args.ItemId);
+
+            if (!item!.PropertyValues.ContainsKey(args.PropName.ToLowerInvariant()))
+                return Result.Fail($"Property '{args.PropName.ToLowerInvariant()}' not found in item '{args.ItemId}'.");
+        
+            var propertyDef = lib.PropertyDefinitions.FirstOrDefault(d => d.Name == args.PropName.ToLowerInvariant());
+            if (propertyDef == null)
+                return Result.Fail($"Property {args.PropName.ToLowerInvariant()} is not defined in library {args.LibName}.");
+        }
+
+
+        return Result.Success("Operation allowed.");
     }
 
     public class ParsedArgs

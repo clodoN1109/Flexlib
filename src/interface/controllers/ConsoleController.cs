@@ -81,7 +81,7 @@ public static class ConsoleController
                 return RebalanceLocalStorage.Execute(c.LibraryName, _libRepo);
 
             case NewPropertyCommand c:
-                return AddProperty.Execute(c.LibName, c.PropName, c.PropType, _libRepo);
+                return NewProperty.Execute(c.LibName, c.PropName, c.PropType, _libRepo);
 
             case ListPropertiesCommand c:
                 return ListProperties.Execute(c.LibName, c.ItemName, _libRepo);

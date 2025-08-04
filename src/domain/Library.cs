@@ -31,7 +31,7 @@ public class Library
 
         foreach (var def in PropertyDefinitions)
         {
-            AddPropertyToItem(def, newItem);
+            NewPropertyToItem(def, newItem);
         }
 
         Items.Add(newItem);
@@ -85,7 +85,7 @@ public class Library
         }
     }
 
-    public void AddPropertyDefinition(string propName, string propType)
+    public void NewPropertyDefinition(string propName, string propType)
     {
         var def = new ItemPropertyDefinition(propName, propType);
 
@@ -93,11 +93,11 @@ public class Library
 
         foreach (LibraryItem item in Items)
         {
-            AddPropertyToItem(def, item);
+            NewPropertyToItem(def, item);
         }
     }
 
-    private void AddPropertyToItem(ItemPropertyDefinition def, LibraryItem item)
+    private void NewPropertyToItem(ItemPropertyDefinition def, LibraryItem item)
     {
         if (!item.PropertyValues.ContainsKey(def.Name))
             item.PropertyValues.Add(def.Name, null);
