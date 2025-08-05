@@ -6,7 +6,7 @@ public static class ActionAccessRules
     private static readonly Dictionary<string, AccessLevel> _rules = new()
     {
         ["help"]            = AccessLevel.Public,
-        ["new-user"]        = AccessLevel.Public,
+        ["signup"]        = AccessLevel.Public,
         ["login"]           = AccessLevel.Public,
         ["logout"]          = AccessLevel.Public,
         ["new-lib"]         = AccessLevel.User,

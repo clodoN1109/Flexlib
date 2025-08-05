@@ -36,17 +36,6 @@ public static class ConsoleController
 
     private static Result Execute(Command cmd, IUser authUser)
     {
-        if (!cmd.IsValid())
-        {
-            _presenter.ExplainUsage(cmd.GetUsageInfo());
-            return Result.Success("");
-        }
-        
-        if (cmd.IsSpecificHelp())
-        {
-            _presenter.ExplainUsage(cmd.GetUsageInfo());
-            return Result.Success("");
-        }
 
         switch (cmd)
         {

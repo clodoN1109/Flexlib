@@ -17,11 +17,11 @@ public class NewUserCommand : Command
         Options = options;
     }
 
-    public override string Type => "new-user";
+    public override string Type => "signup";
 
     public override bool IsValid()
     {
-        if (Options.Length == 0)
+        if (Options.Length < 2)
         {
             return true;
         }
@@ -34,10 +34,10 @@ public class NewUserCommand : Command
         return new UsageInfo
         {
             Meta = new List<string> {},
-            Title = "new-user",
-            Description = "Creates a new user.",
+            Title = "signup",
+            Description = "Registers a new user.",
             Group = CommandGroups.Authentication,
-            Syntax = "flexlib new-user",
+            Syntax = "flexlib signup",
             Options = new List<CommandOption>()
         };
     }
@@ -55,7 +55,7 @@ public class LoginCommand : Command
 
     public override bool IsValid()
     {
-        if (Options.Length == 0)
+        if (Options.Length < 2)
         {
             return true;
         }
@@ -89,7 +89,7 @@ public class LogoutCommand : Command
 
     public override bool IsValid()
     {
-        if (Options.Length == 0)
+        if (Options.Length < 2)
         {
             return true;
         }

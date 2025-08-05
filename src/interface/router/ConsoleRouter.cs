@@ -20,7 +20,17 @@ public static class ConsoleRouter
 
     public static void Route(Command cmd)
     {        
+        if (!cmd.IsValid())
+        {
+            _presenter.ExplainUsage(cmd.GetUsageInfo());
+            return;
+        }
         
+        if (cmd.IsSpecificHelp())
+        {
+            _presenter.ExplainUsage(cmd.GetUsageInfo());
+            return;
+        }
         switch (cmd)
         {         
             case HelpCommand helpCmd:
