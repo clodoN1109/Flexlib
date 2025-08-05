@@ -6,6 +6,7 @@ using Flexlib.Interface.CLI;
 using Flexlib.Infrastructure.Interop;
 using Flexlib.Interface.Output;
 using Flexlib.Interface.Input;
+using System.Linq;
 
 namespace Flexlib.Interface.Output;
 
@@ -368,10 +369,9 @@ public class ConsoleRenderer
         string Truncate(string text, int max) =>
             string.IsNullOrEmpty(text) ? "" : text.Length <= max ? text : text[..Math.Max(0, max - 1)] + ellipsis;
 
-        var allKeys = items
-            .Where(i => i.PropertyValues != null)
-            .SelectMany(i => i.PropertyValues.Keys)
-            .Distinct()
+        var allKeys = lib
+            .PropertyDefinitions
+            .Select(d => d.Name)
             .OrderBy(k => k)
             .ToList();
 
