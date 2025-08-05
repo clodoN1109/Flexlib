@@ -43,7 +43,9 @@ public class User : IUser
         };
     }
 
+    [JsonIgnore]
     public bool IsLoggedIn      => State == UserState.LoggedIn;
+    [JsonIgnore]
     public bool IsNotLoggedIn   => !IsLoggedIn;
 }
 
