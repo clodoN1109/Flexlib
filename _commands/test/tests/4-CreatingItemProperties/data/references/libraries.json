@@ -4,11 +4,11 @@
     "Path": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\4-CreatingItemProperties\\data\\results",
     "PropertyDefinitions": [
       {
-        "Name": "Property1",
+        "Name": "property1",
         "TypeName": "string"
       },
       {
-        "Name": "Property2",
+        "Name": "property2",
         "TypeName": "string"
       }
     ],
@@ -20,8 +20,8 @@
         "FileExtension": ".pdf",
         "Comments": [],
         "PropertyValues": {
-          "Property1": null,
-          "Property2": null
+          "property1": "NewValue",
+          "property2": null
         }
       },
       {
@@ -31,8 +31,8 @@
         "FileExtension": ".pdf",
         "Comments": [],
         "PropertyValues": {
-          "Property1": null,
-          "Property2": null
+          "property1": null,
+          "property2": "NewValue"
         }
       },
       {
@@ -42,8 +42,8 @@
         "FileExtension": ".pdf",
         "Comments": [],
         "PropertyValues": {
-          "Property1": null,
-          "Property2": null
+          "property1": null,
+          "property2": null
         }
       }
     ],
