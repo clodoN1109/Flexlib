@@ -29,4 +29,6 @@ public interface IPresenter
     void    ListLayoutSequence(List<string> layoutSequence);
     void    AvailableActions(List<string> actions);
     Result  File(string filePath);
+    void    ItemProperties(LibraryItem item, Library lib);
+    void    LibraryProperties(Library lib);
 } 

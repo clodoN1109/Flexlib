@@ -698,6 +698,189 @@ public class ConsoleRenderer
         };
     }
 
+    public List<Components.ColoredLine> FormatItemPropertiesTable(LibraryItem item, Library lib, int consoleWidth)
+    {
+        var output = new List<Components.ColoredLine>();
+
+        string logoBar = Components.LogoLine(consoleWidth);
+        string titleBar = $"░░░░ ITEM PROPERTIES {new string('░', Math.Max(0, consoleWidth - 25))}";
+        string header = Components.LineFilled(consoleWidth, "left", ' ', $"{lib.Name!}/{item.Name!}" );
+        string bottomBar = new string('░', consoleWidth);
+
+        const int padding = 4;
+        const string ellipsis = "…";
+
+        string Truncate(string text, int max) =>
+            string.IsNullOrEmpty(text) ? "" : text.Length <= max ? text : text[..Math.Max(0, max - 1)] + ellipsis;
+
+        var properties = lib.PropertyDefinitions
+            .Select(d => d.Name)
+            .OrderBy(name => name)
+            .ToList();
+
+        var propertyValues = item.GetPropertyValuesAsListOfStrings();
+
+        var rows = properties
+            .Select(name => new[] {
+                name,
+                propertyValues.TryGetValue(name, out var values) && values != null
+                    ? string.Join(", ", values)
+                    : ""
+            })
+            .ToList();
+
+        int[] idealColWidths = new int[2];
+        if (rows.Count > 0) {
+            idealColWidths[0] = Math.Max("PROPERTY".Length, rows.Max(r => r[0]?.Length ?? 0));
+            idealColWidths[1] = Math.Max("VALUE".Length, rows.Max(r => r[1]?.Length ?? 0));
+        }
+        else {
+            idealColWidths[0] = "PROPERTY".Length;
+            idealColWidths[1] = "VALUE".Length;
+        }
+
+        int totalPadding = padding;
+        int idealTotalWidth = idealColWidths.Sum() + totalPadding;
+
+        int[] colWidths = new int[2];
+        if (idealTotalWidth <= consoleWidth)
+        {
+            Array.Copy(idealColWidths, colWidths, 2);
+        }
+        else
+        {
+            int availableWidth = consoleWidth - totalPadding;
+            double scale = (double)availableWidth / idealColWidths.Sum();
+
+            for (int i = 0; i < 2; i++)
+                colWidths[i] = Math.Max(6, (int)Math.Floor(idealColWidths[i] * scale));
+
+            int diff = availableWidth - colWidths.Sum();
+            for (int i = 0; diff != 0 && i < 2; i++)
+            {
+                int adjust = diff > 0 ? 1 : -1;
+                colWidths[i] += adjust;
+                diff -= adjust;
+            }
+        }
+
+        output.Add(new Components.ColoredLine(""));
+        output.Add(new Components.ColoredLine(logoBar));
+        output.Add(new Components.ColoredLine(""));
+        output.Add(new Components.ColoredLine(titleBar, ConsoleColor.Gray));
+        output.Add(new Components.ColoredLine(""));
+        output.Add(new Components.ColoredLine(header, ConsoleColor.DarkGray));
+        output.Add(new Components.ColoredLine(""));
+
+        output.Add(new Components.ColoredLine(
+            Truncate("PROPERTY", colWidths[0]).PadRight(colWidths[0]) + " │ " +
+            Truncate("VALUE", colWidths[1]).PadRight(colWidths[1]),
+            ConsoleColor.DarkGray));
+
+        output.Add(new Components.ColoredLine(
+            new string('-', colWidths[0]) + "-┼-" + new string('-', colWidths[1]),
+            ConsoleColor.DarkGray));
+
+        foreach (var row in rows)
+        {
+            output.Add(new Components.ColoredLine(
+                Truncate(row[0], colWidths[0]).PadRight(colWidths[0]) + " │ " +
+                Truncate(row[1], colWidths[1]).PadRight(colWidths[1])));
+        }
+
+        output.Add(new Components.ColoredLine(""));
+        output.Add(new Components.ColoredLine(bottomBar, ConsoleColor.Gray));
+
+        return output;
+    }
+
+    public List<Components.ColoredLine> FormatPropertyDefinitionsTable(Library lib, int consoleWidth)
+    {
+        var output = new List<Components.ColoredLine>();
+
+        string logoBar = Components.LogoLine(consoleWidth);
+        string titleBar = $"░░░░ PROPERTY DEFINITIONS {new string('░', Math.Max(0, consoleWidth - 30))}";
+        string header = Components.LineFilled(consoleWidth, "left", ' ', lib.Name!, $"{lib.PropertyDefinitions.Count} properties");
+        string bottomBar = new string('░', consoleWidth);
+
+        const int padding = 4;
+        const string ellipsis = "…";
+
+        string Truncate(string text, int max) =>
+            string.IsNullOrEmpty(text) ? "" : text.Length <= max ? text : text[..Math.Max(0, max - 1)] + ellipsis;
+
+        var rows = lib.PropertyDefinitions
+            .OrderBy(d => d.Name)
+            .Select(d => new[] {
+                d.Name ?? "",
+                d.TypeName ?? "",
+                ""
+            })
+            .ToList();
+
+        var headers = new[] { "NAME", "TYPE", "DESCRIPTION" };
+        int columnCount = headers.Length;
+
+        int[] idealColWidths = new int[columnCount];
+        if (rows.Count > 0) {
+            for (int i = 0; i < columnCount; i++)
+                idealColWidths[i] = Math.Max(headers[i].Length, rows.Max(r => r[i]?.Length ?? 0));
+        }
+        else {
+            for (int i = 0; i < columnCount; i++)
+                idealColWidths[i] = headers[i].Length;
+        }
+
+        int totalPadding = (columnCount - 1) * padding;
+        int idealTotalWidth = idealColWidths.Sum() + totalPadding;
+
+        int[] colWidths = new int[columnCount];
+        if (idealTotalWidth <= consoleWidth)
+        {
+            Array.Copy(idealColWidths, colWidths, columnCount);
+        }
+        else
+        {
+            int availableWidth = consoleWidth - totalPadding;
+            double scale = (double)availableWidth / idealColWidths.Sum();
+
+            for (int i = 0; i < columnCount; i++)
+                colWidths[i] = Math.Max(6, (int)Math.Floor(idealColWidths[i] * scale));
+
+            int diff = availableWidth - colWidths.Sum();
+            for (int i = 0; diff != 0 && i < columnCount; i++)
+            {
+                int adjust = diff > 0 ? 1 : -1;
+                colWidths[i] += adjust;
+                diff -= adjust;
+            }
+        }
+
+        output.Add(new Components.ColoredLine(""));
+        output.Add(new Components.ColoredLine(logoBar));
+        output.Add(new Components.ColoredLine(""));
+        output.Add(new Components.ColoredLine(titleBar, ConsoleColor.Gray));
+        output.Add(new Components.ColoredLine(""));
+        output.Add(new Components.ColoredLine(header, ConsoleColor.DarkGray));
+        output.Add(new Components.ColoredLine(""));
+
+        output.Add(new Components.ColoredLine(string.Join(" │ ",
+            headers.Select((h, i) => Truncate(h, colWidths[i]).PadRight(colWidths[i]))), ConsoleColor.DarkGray));
+
+        output.Add(new Components.ColoredLine(string.Join("-┼-", colWidths.Select(w => new string('-', w))), ConsoleColor.DarkGray));
+
+        foreach (var row in rows)
+        {
+            output.Add(new Components.ColoredLine(string.Join(" │ ",
+                row.Select((cell, i) => Truncate(cell, colWidths[i]).PadRight(colWidths[i])))));
+        }
+
+        output.Add(new Components.ColoredLine(""));
+        output.Add(new Components.ColoredLine(bottomBar, ConsoleColor.Gray));
+
+        return output;
+    }
+
 }
 
 

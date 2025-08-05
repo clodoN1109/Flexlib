@@ -73,7 +73,7 @@ public static class ConsoleController
                 return NewProperty.Execute(c.LibName, c.PropName, c.PropType, _libRepo);
 
             case ListPropertiesCommand c:
-                return ListProperties.Execute(c.LibName, c.ItemName, _libRepo);
+                return ListProperties.Execute(c.LibName, c.ItemId, _libRepo, _presenter);
 
             case SetPropertyCommand c:
                 return SetProperty.Execute(c.PropName, c.NewValue, c.LibName, c.ItemId, _libRepo);

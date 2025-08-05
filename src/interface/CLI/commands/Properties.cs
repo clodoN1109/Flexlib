@@ -69,13 +69,13 @@ public class NewPropertyCommand : Command
 public class ListPropertiesCommand : Command
 {
     public string LibName { get; } 
-    public string ItemName { get; } 
+    public string ItemId { get; } 
 
     public ListPropertiesCommand(string[] options)
     {
         Options = options;
         LibName = options.Length > 0 ? options[0] : "Default Library";
-        ItemName = options.Length > 1 ? options[1] : "";
+        ItemId = options.Length > 1 ? options[1] : "";
     }
 
     public override string Type => "list-props";
@@ -91,9 +91,9 @@ public class ListPropertiesCommand : Command
         {
             Meta = new List<string> {},
             Title = "list properties",
-            Description = "List all defined properties for the selected library.",
+            Description = "List all defined properties for the selected library or item.",
             Group = CommandGroups.Properties,
-            Syntax = "flexlib list-props [library name] [item name]",
+            Syntax = "flexlib list-props [library name] [item id]",
             Options = new List<CommandOption>
             {
                 new CommandOption{
@@ -103,7 +103,7 @@ public class ListPropertiesCommand : Command
                 },
                 
                 new CommandOption{
-                    Name = "item name",
+                    Name = "item id",
                     OptionDomain = new VariableDomain()
                 },
 

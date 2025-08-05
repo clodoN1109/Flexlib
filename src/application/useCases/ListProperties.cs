@@ -8,9 +8,9 @@ namespace Flexlib.Application.UseCases;
 
 public static class ListProperties
 {
-    public static Result Execute(string libName, string itemName, ILibraryRepository repo)
+    public static Result Execute(string libName, string itemId, ILibraryRepository repo, IPresenter presenter)
     {
-        var parsedArgs = new ParsedArgs(libName, itemName, repo); 
+        var parsedArgs = new ParsedArgs(libName, itemId, repo, presenter); 
 
         var validation = IsOperationAllowed(parsedArgs);
 
@@ -23,49 +23,29 @@ public static class ListProperties
     {
         var selectedLibrary = parsedArgs.Repo.GetByName(parsedArgs.LibName)!;
 
-        if (string.IsNullOrWhiteSpace(parsedArgs.ItemName))
+        if (string.IsNullOrWhiteSpace(parsedArgs.ItemId))
         {
-            return ListPropertyDefinitions(selectedLibrary);
+            return ListPropertyDefinitions(selectedLibrary, parsedArgs);
         }
 
         return ListItemPropertiesWithValues(selectedLibrary, parsedArgs);
     }
 
-    private static Result ListPropertyDefinitions(Library selectedLibrary)
+    private static Result ListPropertyDefinitions(Library selectedLibrary, ParsedArgs parsedArgs)
     {
-        if (!selectedLibrary.PropertyDefinitions.Any())
-            return Result.Success("This library has no property definitions.");
+        parsedArgs.Presenter.LibraryProperties(selectedLibrary);        
 
-        var sb = new StringBuilder();
-        sb.AppendLine($"Property definitions in library '{selectedLibrary.Name}':\n");
-
-        foreach (var def in selectedLibrary.PropertyDefinitions)
-            sb.AppendLine($"- {def.Name} : {def.TypeName}");
-
-        return Result.Success(sb.ToString());
+        return Result.Success("");
     }
 
     private static Result ListItemPropertiesWithValues(Library selectedLibrary, ParsedArgs parsedArgs)
     {
 
-        var selectedItem = selectedLibrary.GetItemByName(parsedArgs.ItemName);
+        var selectedItem = selectedLibrary.GetItemById(parsedArgs.ItemId);
 
-        if (selectedItem == null)
-            return Result.Fail($"Item '{parsedArgs.ItemName}' not found in library '{selectedLibrary.Name}'.");
+        parsedArgs.Presenter.ItemProperties(selectedItem!, selectedLibrary!);        
 
-        if (!selectedItem.PropertyValues.Any())
-            return Result.Success($"Item '{selectedItem.Name}' has no property values.");
-
-        var sb2 = new StringBuilder();
-        sb2.AppendLine($"Property values for item '{selectedItem.Name}':\n");
-
-        foreach (var kv in selectedItem.PropertyValues)
-        {
-            var value = kv.Value ?? "(null)";
-            sb2.AppendLine($"- {kv.Key} = {value}");
-        }
-
-        return Result.Success(sb2.ToString());
+        return Result.Success("");
     }
 
     private static Result IsOperationAllowed(ParsedArgs parsedArgs)
@@ -80,11 +60,11 @@ public static class ListProperties
         if (selectedLibrary == null)
             return Result.Fail($"Library '{parsedArgs.LibName}' not found.");
 
-        if (string.IsNullOrWhiteSpace(parsedArgs.ItemName))
+        if (string.IsNullOrWhiteSpace(parsedArgs.ItemId))
             return Result.Success("Operation allowed.");
 
-        if (!selectedLibrary.ContainsName(parsedArgs.ItemName))
-            return Result.Fail($"Library '{parsedArgs.LibName}' has no item named '{parsedArgs.ItemName}'.");
+        if (!selectedLibrary.PropertyDefinitions.Any())
+            return Result.Success("This library has no property definitions.");
 
         return Result.Success("Operation allowed.");
     }
@@ -92,14 +72,16 @@ public static class ListProperties
     public class ParsedArgs
     {
         public string LibName { get; }
-        public string ItemName { get; }
+        public string ItemId { get; }
         public ILibraryRepository Repo { get; }
+        public IPresenter Presenter { get; }
 
-        public ParsedArgs(string libName, string? itemName, ILibraryRepository repo)
+        public ParsedArgs(string libName, string? itemId, ILibraryRepository repo, IPresenter presenter)
         {
             LibName = libName ?? "";
-            ItemName = itemName ?? "";
+            ItemId = itemId ?? "";
             Repo = repo;
+            Presenter = presenter;
         }
     }
 }
