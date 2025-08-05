@@ -8,6 +8,7 @@ param (
 $projectRoot = "C:\Users\clovi\OneDrive\Área de Trabalho\Clodo\Work\Projects\Incubator\FlexLib"
 $devCommands = "$projectRoot/Dev/_commands"
 $testCommandDir = "$devCommands/test"
+$flexlibDataPath   = "$HOME/Projects/Incubator/FlexLib/Dev/builds/last/Debug/net8.0/win-x64/data/"
 
 . "$testCommandDir/interface.ps1" 
 

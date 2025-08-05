@@ -1,18 +1,18 @@
 
->::>    flexlib                                                                                                                                1216.e36a73e663bba1dcb2748250976f58bc8b123ab7
+>::>    flexlib                                                                                                                                1271.55ec2410d98457fab03e4ad67568d5cc7c6fcc62
 
 ░░░░ LIBRARY ITEMS ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
  TestLibrary/*/mathematics/*/newton|pascal|euler/1935-2002                                                                                                                                  
 
-ID | name
----|-----
+ID | NAME | author | publisher | theme | year
+---|------|--------|-----------|-------|-----
 
 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 theme/publisher/author/year                                                                                                                                               0 items 0,00 bytes
 ---――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――┐
-  commands: help  new-user  login  logout  new-lib  list-libs  remove-lib  set-layout  get-layout  new-item  list-items  remove-item  view-item  new-comment  list-comments              │
-            edit-comment  remove-comment  new-prop  list-props  set-prop  remove-prop  fetch-files  rebalance  gui                                                                       │
+  commands: help  signup  login  logout  new-lib  list-libs  remove-lib  set-layout  get-layout  new-item  list-items  remove-item  view-item  new-comment  list-comments  edit-comment  │
+            remove-comment  new-prop  list-props  set-prop  remove-prop  fetch-files  rebalance  gui                                                                                     │
 ---――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――┘
 ---―――┐
     ✓ │
