@@ -118,27 +118,41 @@ function DetermineBuildID {
 function SaveBuildHistory {
 
     param (
-        
         [string]$BuildConfiguration,
         [int]$BuildID,   
         [int]$ErrorCount = 0,
         [int]$WarningCount = 0,
+        [double]$BuildSize,
         [string]$BuildHistoryPath = "$PSScriptRoot\..\..\builds\builds.json"
-
     )
 
     $history = GetBuildHistory $BuildHistoryPath
 
-    $timestamp  = (Get-Date).ToString("s")  # ISO 8601 format
+    $timestamp = (Get-Date).ToString("s")  # ISO 8601 format
+
+    # Try to read build-target-info.json (if it exists)
+    $targetInfoPath = "$PSScriptRoot\..\..\builds\last\build-target-info.json"
+    $targetInfo = $null
+
+    if (Test-Path $targetInfoPath) {
+        try {
+            $targetInfo = Get-Content $targetInfoPath -Raw | ConvertFrom-Json
+        } catch {
+            Write-Warning "Failed to parse build-target-info.json: $_"
+        }
+    }
 
     $newEntry = [PSCustomObject]@{
-        id = $BuildID
-        configuration = $BuildConfiguration
-        timestamp = $timestamp
-        errors = $ErrorCount
-        warnings = $WarningCount
+        id                  = $BuildID
+        configuration       = $BuildConfiguration
+        timestamp           = $timestamp
+        errors              = $ErrorCount
+        warnings            = $WarningCount
+        targetFramework     = $targetInfo.TargetFramework
+        runtimeIdentifier   = $targetInfo.RuntimeIdentifier
+        buildSize           = $BuildSize 
     }
-    
+
     $history.builds += $newEntry
     $history.count = $BuildID + 1
 
@@ -146,7 +160,6 @@ function SaveBuildHistory {
     Set-Content -Path $BuildHistoryPath -Value $json
 
     return $newEntry
-
 }
 
 function GetBuildHistory()

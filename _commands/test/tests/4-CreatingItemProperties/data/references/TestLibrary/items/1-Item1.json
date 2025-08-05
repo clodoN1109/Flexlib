@@ -5,7 +5,7 @@
   "FileExtension": ".pdf",
   "Comments": [],
   "PropertyValues": {
-    "Property1": null,
-    "Property2": null
+    "property1": "NewValue",
+    "property2": null
   }
 }

@@ -28,6 +28,20 @@ if ($HistoryGraph)
     return
 }
 
+$BuildArtifactsPath = if ($Configuration -eq 'Debug') {
+    "$PSScriptRoot\..\builds\last\Debug"
+} else {
+    "$PSScriptRoot\..\builds\last\Release"
+}
+
+$buildSize = 0
+if (Test-Path $BuildArtifactsPath) {
+    $buildSize = Get-ChildItem -Path $BuildArtifactsPath -Recurse -File | Measure-Object -Property Length -Sum | Select-Object -ExpandProperty Sum
+} else {
+    Write-Warning "Build artifacts path not found: $BuildArtifactsPath"
+    $buildSize = 0
+}
+
 Write-Fill "BUILD" -ForegroundColor Cyan
 
 $env:DOTNET_CLI_UI_LANGUAGE = "en"
@@ -38,7 +52,7 @@ $LogStream = ExecuteBuildProcess $Configuration $buildID $Version
 
 $errorCount, $warningCount = HandleLog $LogStream
     
-$newEntry = SaveBuildHistory $Configuration $buildID $ErrorCount $WarningCount
+$newEntry = SaveBuildHistory $Configuration $buildID $ErrorCount $WarningCount $buildSize
 
 $buildID = $newEntry.id
 
