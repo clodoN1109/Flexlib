@@ -704,7 +704,7 @@ public class ConsoleRenderer
 
         string logoBar = Components.LogoLine(consoleWidth);
         string titleBar = $"░░░░ ITEM PROPERTIES {new string('░', Math.Max(0, consoleWidth - 25))}";
-        string header = Components.LineFilled(consoleWidth, "left", ' ', $"{lib.Name!}/{item.Name!}" );
+        string header = Components.LineFilled(consoleWidth, "left", ' ', $"{lib.Name!}/'{item.Name!}'" );
         string bottomBar = new string('░', consoleWidth);
 
         const int padding = 4;

@@ -65,12 +65,10 @@ public class FilterSequence
                     return result;
                 }
 
-                // If not numeric, fallback to literal endpoints
-                return new List<string> { startStr, endStr };
+                return new List<string> { $"{startStr}-{endStr}" };
             }
         }
 
-        // Fallback: comma-separated values
         return input
             .Split(',', StringSplitOptions.RemoveEmptyEntries)
             .Select(s => s.Trim())
