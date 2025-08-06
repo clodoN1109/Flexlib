@@ -65,6 +65,13 @@ public static class ListProperties
 
         if (!selectedLibrary.PropertyDefinitions.Any())
             return Result.Success("This library has no property definitions.");
+        
+        if (parsedArgs.ItemId != null)
+        {
+            var selectedItem = selectedLibrary.GetItemById(parsedArgs.ItemId);
+            if (selectedItem == null)
+                return Result.Fail($"Item with ID {parsedArgs.ItemId} not found.");
+        }
 
         return Result.Success("Operation allowed.");
     }

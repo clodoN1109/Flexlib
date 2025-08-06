@@ -140,7 +140,6 @@ public class JsonLibraryRepository : ILibraryRepository
         return defaultConfig;
     }
 
-
     public Result Save(LibraryItem item, Library lib){
         
         if ( string.IsNullOrWhiteSpace(lib.Path) )
@@ -154,8 +153,11 @@ public class JsonLibraryRepository : ILibraryRepository
 
         UpdateLibMetaFile(lib);
         UpdateItemMetaFile(item, lib);
-        
-        return UpdateLocalStorage(item, lib); 
+        var result = UpdateLocalStorage(item, lib);
+        if (result.IsSuccess)
+            return Result.Success($"Item {item.Name} was added to library {lib.Name} with ID {item.Id}");
+        else
+            return Result.Warn($"Item {item.Name} was added to library {lib.Name} with ID {item.Id}, but a local copy could not be retrieved from the origin. {item.Origin}");
 
     }
 
