@@ -177,6 +177,63 @@ public class SetPropertyCommand : Command
 
 }
 
+public class RenamePropertyCommand : Command
+{
+    public string PropName { get; } 
+    public string NewName { get; } 
+    public string LibName { get; } 
+
+    public RenamePropertyCommand(string[] options)
+    {
+        Options     = options;
+        PropName    = options.Length > 0 ? options[0] : "";
+        NewName    = options.Length > 1 ? options[1] : "";
+        LibName     = options.Length > 2 ? options[2]  : "";
+    }
+    
+    public override string Type => "new-prop";
+
+    public override bool IsValid()
+    {
+        return (Options.Length == 3);
+    }
+    
+    public override UsageInfo GetUsageInfo()
+    {
+        return new UsageInfo
+        {
+            Meta = new List<string> {},
+            Title = "new-prop",
+            Description = "Rename a property for the selected library and all its items.",
+            Group = CommandGroups.Properties,
+            Syntax = "flexlib set-prop <property name> <new name> <library name>",
+            Options = new List<CommandOption>
+            {
+                new CommandOption{
+                    Name = "property name",
+                    OptionDomain = new VariableDomain(),
+                    Mandatory = true
+                },
+                
+                new CommandOption{
+                    Name = "new value",
+                    OptionDomain = new VariableDomain(),
+                    Mandatory = true
+                },
+
+                new CommandOption{
+                    Name = "library name",
+                    OptionDomain = new VariableDomain(),
+                    Mandatory = true
+                }
+
+
+            }
+        };
+    }
+
+}
+
 public class UnsetPropertyCommand : Command
 {
     public string PropName { get; } 

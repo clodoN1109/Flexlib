@@ -48,6 +48,12 @@ public static class ConsoleController
             case RemoveItemCommand c:
                 return RemoveItem.Execute(c.ItemId, c.LibraryName, _libRepo);
             
+            case RenameItemCommand c:
+                return RenameItem.Execute(c.ItemId, c.NewName, c.LibraryName, _libRepo);
+            
+            case UpdateItemOriginCommand c:
+                return UpdateItemOrigin.Execute(c.ItemId, c.NewOrigin, c.LibraryName, _libRepo);
+            
             case ViewItemCommand c:
                 return ViewItem.Execute(c.ItemId, c.LibraryName, c.Application, _libRepo, _presenter);
 
@@ -77,6 +83,9 @@ public static class ConsoleController
             
             case SetPropertyCommand c:
                 return SetProperty.Execute(c.PropName, c.NewValue, c.LibName, c.ItemId, _libRepo);
+            
+            case RenamePropertyCommand c:
+                return RenameProperty.Execute(c.PropName, c.NewName, c.LibName, _libRepo);
 
             case UnsetPropertyCommand c:
                 return UnsetProperty.Execute(c.PropName, c.TargetValue, c.LibName, c.ItemId, _libRepo);

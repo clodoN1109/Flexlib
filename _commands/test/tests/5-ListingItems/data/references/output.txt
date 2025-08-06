@@ -1,5 +1,5 @@
 
->::>    flexlib                                                                                                                                1271.55ec2410d98457fab03e4ad67568d5cc7c6fcc62
+>::>    flexlib                                                                                                                                1310.23b32868409600e096a068b9ec7df34d8402ae71
 
 ░░░░ LIBRARY ITEMS ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
@@ -12,7 +12,7 @@ ID | NAME | author | publisher | theme | year
 theme/publisher/author/year                                                                                                                                               0 items 0,00 bytes
 ---――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――┐
   commands: help  signup  login  logout  new-lib  list-libs  remove-lib  set-layout  get-layout  new-item  list-items  remove-item  view-item  new-comment  list-comments  edit-comment  │
-            remove-comment  new-prop  list-props  set-prop  remove-prop  fetch-files  rebalance  gui                                                                                     │
+            remove-comment  new-prop  list-props  set-prop  unset-prop  remove-prop  fetch-files  rebalance  gui                                                                         │
 ---――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――┘
 ---―――┐
     ✓ │

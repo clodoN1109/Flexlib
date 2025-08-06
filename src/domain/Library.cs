@@ -231,7 +231,7 @@ public class Library
         return RenderLayout();
     }
 
-    private Result RenderLayout()
+    public Result RenderLayout()
     { 
 
         if (LayoutSequence.Count == 0) 

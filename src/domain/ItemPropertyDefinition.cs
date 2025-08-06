@@ -4,7 +4,7 @@ namespace Flexlib.Domain;
 
 public class ItemPropertyDefinition
 {
-    public string Name { get; }
+    public string Name { get; set; }
     public string TypeName { get; }
 
     public ItemPropertyDefinition(string name, string typeName)
@@ -26,7 +26,13 @@ public class ItemPropertyDefinition
             _         => throw new ArgumentException($"Unsupported type name: {TypeName}")
         };
     }
-    
+
+    public void RenameTo(string newName)
+    {
+        if (!string.IsNullOrWhiteSpace(newName))
+            Name = newName;
+    }
+
     [JsonIgnore]
     public bool IsList => TypeName.ToLowerInvariant() == "list";
 }

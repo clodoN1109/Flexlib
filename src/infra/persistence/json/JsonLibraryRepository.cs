@@ -104,7 +104,6 @@ public class JsonLibraryRepository : ILibraryRepository
 
         UpdateLibFileStructure(lib);
         UpdateLibMetaFile(lib);
-        UpdateItems(lib);
 
         return UpdateLocalStorage(lib);
        
@@ -152,7 +151,6 @@ public class JsonLibraryRepository : ILibraryRepository
         JsonHelpers.WriteJson(_metaFile, _cache);
 
         UpdateLibMetaFile(lib);
-        UpdateItemMetaFile(item, lib);
         var result = UpdateLocalStorage(item, lib);
         if (result.IsSuccess)
             return Result.Success($"Item {item.Name} was added to library {lib.Name} with ID {item.Id}");
@@ -225,9 +223,7 @@ public class JsonLibraryRepository : ILibraryRepository
         if (!Directory.Exists(libraryFolder))
             return Result.Fail($"Library folder '{libraryFolder}' does not exist.");
 
-        string itemsFolder = Path.Combine(libraryFolder, "items");
-        string localItemsFolder = Path.Combine(itemsFolder, "local");
-        string itemJsonPath = Path.Combine(itemsFolder, $"{item.Name}.json");
+        string localItemsFolder = Path.Combine(libraryFolder, "items");
 
         // Build expected file name
         string fileName = $"{item.Id}-{item.Name}{item.FileExtension}";
@@ -252,10 +248,6 @@ public class JsonLibraryRepository : ILibraryRepository
 
         try
         {
-            // Remove metadata from disk
-            if (File.Exists(itemJsonPath))
-                File.Delete(itemJsonPath);
-
             // Remove item data file from disk
             if (itemDataPath != null && File.Exists(itemDataPath))
             {
@@ -286,17 +278,6 @@ public class JsonLibraryRepository : ILibraryRepository
         }
     }
 
-
-    private void UpdateItems(Library lib)
-    {
-        string itemsDir = Path.Combine(lib.Path, "items/");
-
-        foreach (LibraryItem item in lib.Items)
-        {
-            UpdateItemMetaFile(item, lib);
-        }
-    }
-    
     private Result UpdateLocalStorage(Library lib)
     {
         List<string> failed = new();
@@ -318,8 +299,7 @@ public class JsonLibraryRepository : ILibraryRepository
     private Result UpdateLocalStorage(LibraryItem item, Library lib)
     {
         string libDir = Path.Combine(lib.Path, lib.Name!);
-        string itemsDir = Path.Combine(libDir, "items");
-        string localDir = Path.Combine(itemsDir, "local");
+        string localDir = Path.Combine(libDir, "items");
 
         Directory.CreateDirectory(localDir);
 
@@ -329,28 +309,131 @@ public class JsonLibraryRepository : ILibraryRepository
         string fileName = $"{itemId}-{itemName}{fileExtension}";
 
         string? existingPath = FileSystem.FindExistingItemPath(localDir, fileName);
+
+        string tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + fileExtension);
+        AddressType type = AddressAnalysis.GetAddressType(item.Origin!);
+
+        var fetchResult = FetchSystem.TryCopyToLocal(type, item.Origin!, tempPath);
+        if (fetchResult.IsFailure)
+            return fetchResult;
+
         if (existingPath != null)
         {
-            return Result.Success($"Selected library '{lib.Name}' already up to date.");
+            try
+            {
+                byte[] existingBytes = File.ReadAllBytes(existingPath);
+                byte[] tempBytes = File.ReadAllBytes(tempPath);
+
+                if (existingBytes.SequenceEqual(tempBytes))
+                {
+                    File.Delete(tempPath);
+                    return Result.Success($"Selected library '{lib.Name}' already up to date.");
+                }
+            }
+            catch (Exception ex)
+            {
+                File.Delete(tempPath);
+                return Result.Fail($"Error comparing files: {ex.Message}");
+            }
         }
 
         // Try to find or create a subfolder with room
         string? targetFolder = FileSystem.FindOrCreateAvailableFolder(localDir, Config.MaxFilesPerFolder, fileName);
         if (targetFolder == null)
         {
+            File.Delete(tempPath);
             return Result.Fail("Could not find or create a suitable subfolder.");
         }
 
         string targetPath = Path.Combine(targetFolder, fileName);
-        AddressType type = AddressAnalysis.GetAddressType(item.Origin!);
-        return FetchSystem.TryCopyToLocal(type, item.Origin!, targetPath);
+
+        try
+        {
+            File.Copy(tempPath, targetPath, overwrite: true);
+            if (existingPath != null && existingPath != targetPath)
+                File.Delete(existingPath);
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail($"Failed to copy updated file to local storage: {ex.Message}");
+        }
+        finally
+        {
+            File.Delete(tempPath);
+        }
+
+        return Result.Success($"Local copy of item '{item.Name}' updated successfully.");
+    }
+
+    public Result RenameItem(LibraryItem item, string newName, Library lib)
+    {
+        string oldName = item.Name!;
+        item.Name = newName.Trim();
+
+        try
+        {
+            Save(lib);
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail($"Failed to update repository: {ex.Message}");
+        }
+
+        var localRenameResult = RenameLocalCopy(item, oldName, lib);
+        if (localRenameResult.IsFailure)
+            return Result.Fail($"Item renamed, but local copy update failed: {localRenameResult.Message}");
+
+        return Result.Success($"Item '{item.Id}' renamed to '{newName}' in library '{lib.Name}'.");
+    }
+
+    private Result RenameLocalCopy(LibraryItem item, string oldName, Library lib)
+    {
+        string libDir = Path.Combine(lib.Path, lib.Name!);
+        string localDir = Path.Combine(libDir, "items");
+
+        Directory.CreateDirectory(localDir);
+
+        string itemId = item.Id!.ToString();
+        string fileExtension = Path.GetExtension(Path.GetFileName(item.Origin!));
+        string oldFileName = $"{itemId}-{oldName}{fileExtension}";
+        string newFileName = $"{itemId}-{item.Name}{fileExtension}";
+
+        string? oldFilePath = FileSystem.FindExistingItemPath(localDir, oldFileName);
+        if (oldFilePath == null)
+            return Result.Fail($"Local copy for item '{item.Id}' not found with name '{oldFileName}'.");
+
+        string? containingFolder = Path.GetDirectoryName(oldFilePath);
+        if (containingFolder == null)
+            return Result.Fail($"Could not determine folder for file '{oldFilePath}'.");
+
+        string newFilePath = Path.Combine(containingFolder, newFileName);
+
+        try
+        {
+            // If the new file already exists, we replace it; otherwise we rename (move)
+            if (File.Exists(newFilePath))
+            {
+                string backupPath = newFilePath + ".bak";
+                File.Replace(oldFilePath, newFilePath, backupPath);
+                File.Delete(backupPath); // Optional: clean backup after success
+            }
+            else
+            {
+                File.Move(oldFilePath, newFilePath);
+            }
+
+            return Result.Success($"Local copy renamed from '{oldFileName}' to '{newFileName}'.");
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail($"Failed to rename local copy: {ex.Message}");
+        }
     }
 
     public string? GetItemLocalCopy(LibraryItem item, Library lib)
     {
         string libDir = Path.Combine(lib.Path, lib.Name!);
-        string itemsDir = Path.Combine(libDir, "items");
-        string localDir = Path.Combine(itemsDir, "local");
+        string localDir = Path.Combine(libDir, "items");
 
         string itemId = item.Id!.ToString();
         string itemName = item.Name!;
@@ -370,11 +453,9 @@ public class JsonLibraryRepository : ILibraryRepository
     private void UpdateLibFileStructure(Library lib)
     {   
         string libDir = Path.Combine(lib.Path, $"{lib.Name}");
-        string itemsDir = Path.Combine(libDir, "items/");
-        string localDir = Path.Combine(itemsDir, "local/");
+        string localDir = Path.Combine(libDir, "items/");
 
         Directory.CreateDirectory(libDir);
-        Directory.CreateDirectory(itemsDir);
         Directory.CreateDirectory(localDir);
  
     }
@@ -389,18 +470,6 @@ public class JsonLibraryRepository : ILibraryRepository
     
     }
 
-    private void UpdateItemMetaFile(LibraryItem item, Library lib)
-    {            
-            string sourcePath = item.Origin!;
-            
-            string itemId = item.Id!.ToString();
-            string itemName = item.Name!;
-            string fileName = $"{itemId}-{itemName}";
-
-        string itemMetaFile = Path.Combine(lib.Path, lib.Name!, "items", $"{fileName}.json");
-        JsonHelpers.WriteJson(itemMetaFile, item);
-    }
-
     private void DeleteLibMetaFile(Library lib)
     {
         string libDir = Path.Combine(lib.Path, lib.Name!);
@@ -410,20 +479,6 @@ public class JsonLibraryRepository : ILibraryRepository
             File.Delete(libMetaFile);
     }
 
-    private void DeleteItemMetaFile(LibraryItem item, Library lib)
-    {
-        string sourcePath = item.Origin!;
-        
-        string itemId = item.Id!.ToString();
-        string itemName = item.Name!;
-        string fileName = $"{itemId}-{itemName}";
-
-        string itemMetaFile = Path.Combine(lib.Path, lib.Name!, "items", $"{fileName}.json");
-        if (File.Exists(itemMetaFile))
-            File.Delete(itemMetaFile);
-    }
-
-
     private void DeleteAllLocalMetaFiles()
     {
         foreach (var lib in _cache)
@@ -432,12 +487,6 @@ public class JsonLibraryRepository : ILibraryRepository
 
             DeleteLibMetaFile(lib);
 
-            if (lib.Items == null) continue;
-
-            foreach (var item in lib.Items)
-            {
-                DeleteItemMetaFile(item, lib);
-            }
         }
     }
 
@@ -446,7 +495,7 @@ public class JsonLibraryRepository : ILibraryRepository
         if (items == null || library == null || string.IsNullOrEmpty(library.Path) || string.IsNullOrEmpty(library.Name))
             return 0;
 
-        string localRoot = Path.Combine(library.Path, library.Name, "items", "local");
+        string localRoot = Path.Combine(library.Path, library.Name, "items");
 
         if (!Directory.Exists(localRoot))
             return 0;
@@ -508,7 +557,7 @@ public class JsonLibraryRepository : ILibraryRepository
     private void RebalanceLibrary(Library lib)
     {
         string libDir = Path.Combine(lib.Path!, lib.Name!);
-        string localDir = Path.Combine(libDir, "items", "local");
+        string localDir = Path.Combine(libDir, "items");
 
         if (!Directory.Exists(localDir))
             return;
