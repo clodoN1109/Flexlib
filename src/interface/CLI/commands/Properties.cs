@@ -177,6 +177,71 @@ public class SetPropertyCommand : Command
 
 }
 
+public class UnsetPropertyCommand : Command
+{
+    public string PropName { get; } 
+    public string TargetValue { get; } 
+    public object ItemId { get; } 
+    public string LibName { get; } 
+
+    public UnsetPropertyCommand(string[] options)
+    {
+        Options = options;
+        PropName = options.Length > 0 ? options[0] : "";
+        TargetValue = options.Length > 1 ? options[1] : "";
+        ItemId = options.Length > 2 ? options[2] : "";
+        LibName = options.Length > 3 ? options[3] : "";
+    }
+    
+    public override string Type => "unset-prop";
+
+    public override bool IsValid()
+    {
+        return (Options.Length == 4);
+    }
+    
+    public override UsageInfo GetUsageInfo()
+    {
+        return new UsageInfo
+        {
+            Meta = new List<string> {},
+            Title = "unset-prop",
+            Description = "Sets a new value for the selected property of the selected item.",
+            Group = CommandGroups.Properties,
+            Syntax = "flexlib set-prop <property name> <target value> <item id> <library name>",
+            Options = new List<CommandOption>
+            {
+                new CommandOption{
+                    Name = "property name",
+                    OptionDomain = new VariableDomain(),
+                    Mandatory = true
+                },
+                
+                new CommandOption{
+                    Name = "target value",
+                    OptionDomain = new VariableDomain("* removes all entries"),
+                    Mandatory = true
+                },
+
+                new CommandOption{
+                    Name = "item id",
+                    OptionDomain = new VariableDomain(),
+                    Mandatory = true
+                },
+                
+                new CommandOption{
+                    Name = "library name",
+                    OptionDomain = new VariableDomain(),
+                    Mandatory = true
+                }
+
+
+            }
+        };
+    }
+
+}
+
 public class RemovePropertyCommand : Command
 {
     public string PropName { get; } 

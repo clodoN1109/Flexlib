@@ -2,7 +2,7 @@ switch ($Mode.ToLower()) {
     
     "debug" {
         $flexlibPath     = Resolve-Path "$PSScriptRoot/../flexlib.ps1"
-        $flexlibDataPath = "$HOME/Projects/Incubator/FlexLib/Dev/builds/last/Debug/net8.0/data"
+        $flexlibDataPath = "$HOME/Projects/Incubator/FlexLib/Dev/builds/last/Debug/net8.0/win-x64/data"
         break
     }
 

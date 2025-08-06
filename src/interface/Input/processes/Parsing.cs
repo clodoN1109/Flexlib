@@ -32,6 +32,7 @@ public static partial class Input
             "new-prop"       => new NewPropertyCommand(options),
             "list-props"     => new ListPropertiesCommand(options),
             "set-prop"       => new SetPropertyCommand(options),
+            "unset-prop"     => new UnsetPropertyCommand(options),
             "remove-prop"    => new RemovePropertyCommand(options),
             "new-comment"    => new NewCommentCommand(options),
             "list-comments"  => new ListCommentsCommand(options),

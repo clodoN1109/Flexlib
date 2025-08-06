@@ -74,9 +74,12 @@ public static class ConsoleController
 
             case ListPropertiesCommand c:
                 return ListProperties.Execute(c.LibName, c.ItemId, _libRepo, _presenter);
-
+            
             case SetPropertyCommand c:
                 return SetProperty.Execute(c.PropName, c.NewValue, c.LibName, c.ItemId, _libRepo);
+
+            case UnsetPropertyCommand c:
+                return UnsetProperty.Execute(c.PropName, c.TargetValue, c.LibName, c.ItemId, _libRepo);
 
             case RemovePropertyCommand c:
                 return RemoveProperty.Execute(c.PropName, c.LibName, _libRepo);
