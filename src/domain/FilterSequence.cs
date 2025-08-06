@@ -65,7 +65,6 @@ public class FilterSequence
                     return result;
                 }
 
-                return new List<string> { $"{startStr}-{endStr}" };
             }
         }
 
