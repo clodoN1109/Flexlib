@@ -20,13 +20,13 @@ Safe-Cleanup $flexlibDataPath
 & $flexlibPath new-item $item1 Item1 TestLibrary
 & $flexlibPath new-item $item2 'Compound Name' TestLibrary
 & $flexlibPath new-item $item3 Item3 TestLibrary
-& $flexlibPath new-comment 1 TestLibrary 'This is a comment.'
-& $flexlibPath new-comment 1 TestLibrary 'Another comment.'
-& $flexlibPath new-comment 2 TestLibrary 'This is a comment quoting {TestLibrary/Item1}.'
-& $flexlibPath new-comment 3 TestLibrary 'This is a comment quoting {TestLibrary/Item1} and {TestLibrary/Compound Name}.'
-& $flexlibPath new-comment 3 TestLibrary 'This is a yet another comment.'
-& $flexlibPath remove-comment 3 1 TestLibrary 
-& $flexlibPath remove-comment 2 1 TestLibrary 
+& $flexlibPath new-note 1 TestLibrary 'This is a note.'
+& $flexlibPath new-note 1 TestLibrary 'Another note.'
+& $flexlibPath new-note 2 TestLibrary 'This is a note quoting {TestLibrary/Item1}.'
+& $flexlibPath new-note 3 TestLibrary 'This is a note quoting {TestLibrary/Item1} and {TestLibrary/Compound Name}.'
+& $flexlibPath new-note 3 TestLibrary 'This is a yet another note.'
+& $flexlibPath remove-note 3 1 TestLibrary 
+& $flexlibPath remove-note 2 1 TestLibrary 
 
 if ($UpdateReferences) {
     Safe-Cleanup $referencesPath

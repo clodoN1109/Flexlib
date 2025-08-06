@@ -7,30 +7,30 @@ using Flexlib.Interface;
 
 namespace Flexlib.Application.UseCases;
 
-public static class EditComment
+public static class EditNote
 {
-    public static Result Execute(object itemId, string commentId, string libName, IReader reader, ILibraryRepository repo)
+    public static Result Execute(object itemId, string noteId, string libName, IReader reader, ILibraryRepository repo)
     {
-        var parsedArgs = new ParsedArgs(itemId, commentId, libName, reader, repo); 
+        var parsedArgs = new ParsedArgs(itemId, noteId, libName, reader, repo); 
 
         var validation = IsOperationAllowed(parsedArgs);
 
         return validation.IsSuccess
-            ? _EditComment(parsedArgs)
+            ? _EditNote(parsedArgs)
             : validation;
     }
 
-    private static Result _EditComment(ParsedArgs parsedArgs)
+    private static Result _EditNote(ParsedArgs parsedArgs)
     {
         var selectedLibrary = parsedArgs.Repo.GetByName(parsedArgs.LibName)!;
         
         var selectedItem = selectedLibrary.GetItemById(parsedArgs.ItemId);
 
-        var selectedComment = selectedItem!.Comments.FirstOrDefault(c => c.Id.ToLowerInvariant() == parsedArgs.CommentId.ToLowerInvariant());
+        var selectedNote = selectedItem!.Notes.FirstOrDefault(c => c.Id.ToLowerInvariant() == parsedArgs.NoteId.ToLowerInvariant());
 
-        var currentText = selectedComment!.Text; 
+        var currentText = selectedNote!.Text; 
 
-        selectedComment.Text = (parsedArgs.Reader.ReadText(currentText) ?? "").Trim();
+        selectedNote.Text = (parsedArgs.Reader.ReadText(currentText) ?? "").Trim();
 
         parsedArgs.Repo.Save(selectedLibrary);
 
@@ -55,8 +55,8 @@ public static class EditComment
         if (selectedItem == null)
             return Result.Fail($"Library '{parsedArgs.LibName}' has no item with ID '{parsedArgs.ItemId}'.");
         
-        if (!selectedItem.Comments.Any(c => c.Id == parsedArgs.CommentId))
-            return Result.Fail($"Comment with id {parsedArgs.CommentId} not found.");
+        if (!selectedItem.Notes.Any(c => c.Id == parsedArgs.NoteId))
+            return Result.Fail($"Note with id {parsedArgs.NoteId} not found.");
 
         return Result.Success("Operation allowed.");
     }
@@ -64,15 +64,15 @@ public static class EditComment
     public class ParsedArgs
     {
         public object ItemId { get; }
-        public string CommentId { get; }
+        public string NoteId { get; }
         public string LibName { get; }
         public IReader Reader { get; }
         public ILibraryRepository Repo { get; }
 
-        public ParsedArgs(object itemId, string commentId, string libName, IReader reader, ILibraryRepository repo)
+        public ParsedArgs(object itemId, string noteId, string libName, IReader reader, ILibraryRepository repo)
         {
             LibName = libName;
-            CommentId = commentId;
+            NoteId = noteId;
             ItemId = itemId;
             Reader = reader;
             Repo = repo;

@@ -1,13 +1,13 @@
 [
   {
     "Name": "Item1",
-    "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\3-MakingComments\\data\\input\\Item1.pdf",
+    "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\3-MakingNotes\\data\\input\\Item1.pdf",
     "Id": 1,
     "FileExtension": ".pdf",
-    "Comments": [
+    "Notes": [
       {
         "Id": "1",
-        "Text": "This is a comment.",
+        "Text": "This is a note.",
         "Author": {
           "Id": "",
           "Name": "dev",
@@ -26,13 +26,13 @@
   },
   {
     "Name": "Compound Name",
-    "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\3-MakingComments\\data\\input\\Item2.pdf",
+    "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\3-MakingNotes\\data\\input\\Item2.pdf",
     "Id": 2,
     "FileExtension": ".pdf",
-    "Comments": [
+    "Notes": [
       {
         "Id": "1",
-        "Text": "This is a comment quoting {TestLibrary/Item1}.",
+        "Text": "This is a note quoting {TestLibrary/Item1}.",
         "Author": {
           "Id": "",
           "Name": "dev",
@@ -56,13 +56,13 @@
   },
   {
     "Name": "Item3",
-    "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\3-MakingComments\\data\\input\\Item3.pdf",
+    "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\3-MakingNotes\\data\\input\\Item3.pdf",
     "Id": 3,
     "FileExtension": ".pdf",
-    "Comments": [
+    "Notes": [
       {
         "Id": "1",
-        "Text": "This is a comment quoting {TestLibrary/Item1} and {TestLibrary/Compound Name}.",
+        "Text": "This is a note quoting {TestLibrary/Item1} and {TestLibrary/Compound Name}.",
         "Author": {
           "Id": "",
           "Name": "dev",

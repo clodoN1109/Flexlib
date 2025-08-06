@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Flexlib.Application.UseCases;
 
-public static class ListComments
+public static class ListNotes
 {
     public static Result Execute(object itemId, string libName, ILibraryRepository repo, IPresenter presenter)
     {
@@ -16,17 +16,17 @@ public static class ListComments
         var validation = IsOperationAllowed(parsedArgs);
 
         return validation.IsSuccess
-            ? _ListComments(parsedArgs)
+            ? _ListNotes(parsedArgs)
             : validation;
     }
 
-    private static Result _ListComments(ParsedArgs parsedArgs)
+    private static Result _ListNotes(ParsedArgs parsedArgs)
     {
         var selectedLibrary = parsedArgs.Repo.GetByName(parsedArgs.LibName)!;
         
         var selectedItem = selectedLibrary.GetItemById(parsedArgs.ItemId);
 
-        parsedArgs.Presenter.ListComments(selectedItem!.Comments, selectedItem!.Name ?? "", selectedLibrary!.Name ?? "");
+        parsedArgs.Presenter.ListNotes(selectedItem!.Notes, selectedItem!.Name ?? "", selectedLibrary!.Name ?? "");
 
         return Result.Success($"");
 

@@ -59,7 +59,7 @@ function Safe-Remove {
         return
     }
 
-    # Optionally confirm (remove or comment out for automation)
+    # Optionally confirm (remove or note out for automation)
     Write-Host "`nAbout to delete directory '$fullPath' and all contents.`n`n`tAre you sure? [y/N] : " -NoNewLine -ForegroundColor Yellow
     $confirm = [Console]::ReadLine()
     if ($confirm -ne 'y') {

@@ -93,24 +93,24 @@ public static class ConsoleController
             case RemovePropertyCommand c:
                 return RemoveProperty.Execute(c.PropName, c.LibName, _libRepo);
 
-            case NewCommentCommand c:
-                var comment = string.IsNullOrWhiteSpace(c.Comment)
+            case NewNoteCommand c:
+                var note = string.IsNullOrWhiteSpace(c.Note)
                     ? _reader.ReadText()
-                    : c.Comment;
+                    : c.Note;
 
-                if (string.IsNullOrWhiteSpace(comment))
+                if (string.IsNullOrWhiteSpace(note))
                     return Result.Fail("Failed to get text input.");
 
-                return NewComment.Execute(c.ItemId, c.LibName, comment, authUser, _libRepo);
+                return NewNote.Execute(c.ItemId, c.LibName, note, authUser, _libRepo);
 
-            case ListCommentsCommand c:
-                return ListComments.Execute(c.ItemId, c.LibName, _libRepo, _presenter);
+            case ListNotesCommand c:
+                return ListNotes.Execute(c.ItemId, c.LibName, _libRepo, _presenter);
 
-            case EditCommentCommand c:
-                return EditComment.Execute(c.ItemId, c.CommentId, c.LibName, _reader, _libRepo);
+            case EditNoteCommand c:
+                return EditNote.Execute(c.ItemId, c.NoteId, c.LibName, _reader, _libRepo);
 
-            case RemoveCommentCommand c:
-                return RemoveComment.Execute(c.ItemId, c.CommentId, c.LibName, _libRepo);
+            case RemoveNoteCommand c:
+                return RemoveNote.Execute(c.ItemId, c.NoteId, c.LibName, _libRepo);
 
             case RemoveLibraryCommand c:
                 return RemoveLibrary.Execute(c.Name, _libRepo);

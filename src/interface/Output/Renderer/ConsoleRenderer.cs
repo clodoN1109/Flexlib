@@ -233,15 +233,15 @@ public class ConsoleRenderer
         return lines;
     }
 
-    public List<Components.ColoredLine> FormatCommentTable(List<Comment> comments, string itemName, string libName, int consoleWidth)
+    public List<Components.ColoredLine> FormatNoteTable(List<Note> notes, string itemName, string libName, int consoleWidth)
     {
         var output = new List<Components.ColoredLine>();
 
         // Setup headers and metadata
         string logoBar   = Components.LogoLine(consoleWidth);
-        string titleBar  = "░░░░ COMMENTS " + new string('░', Math.Max(0, consoleWidth - 14));
+        string titleBar  = "░░░░ NOTES " + new string('░', Math.Max(0, consoleWidth - 14));
         string header    = Components.LineFilled(consoleWidth, "left", ' ', $"{libName}/{itemName}");
-        string statsBar  = Components.LineFilled(consoleWidth, "right", ' ', $"{comments.Count} comments");
+        string statsBar  = Components.LineFilled(consoleWidth, "right", ' ', $"{notes.Count} notes");
         string bottomBar = new string('░', consoleWidth);
 
         var headers = new[] { "ID", "AUTHOR", "TEXT", "CREATED AT", "EDITED AT" };
@@ -249,7 +249,7 @@ public class ConsoleRenderer
         const string ellipsis = "…";
 
         // Build table rows
-        var rows = comments
+        var rows = notes
             .Where(c => c != null)
             .Select(c => new[]
             {
