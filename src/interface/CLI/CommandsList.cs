@@ -3,7 +3,7 @@ namespace Flexlib.Interface.CLI;
 public static class CommandsList
 {
     public static List<string> Items { get; } = new List<string> {
-        "new-user",
+        "signup",
         "login",
         "logout",
         "new-lib",

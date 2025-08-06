@@ -12,6 +12,7 @@ public class AccessCredentials
 
     public string? HashedPassword { get; set; }
 
+    [JsonIgnore]
     public bool IsLegitimate =>
         !string.IsNullOrEmpty(PlainPassword) &&
         !string.IsNullOrEmpty(HashedPassword) &&

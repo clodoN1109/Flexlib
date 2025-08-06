@@ -36,17 +36,6 @@ public static class ConsoleController
 
     private static Result Execute(Command cmd, IUser authUser)
     {
-        if (!cmd.IsValid())
-        {
-            _presenter.ExplainUsage(cmd.GetUsageInfo());
-            return Result.Success("");
-        }
-        
-        if (cmd.IsSpecificHelp())
-        {
-            _presenter.ExplainUsage(cmd.GetUsageInfo());
-            return Result.Success("");
-        }
 
         switch (cmd)
         {
@@ -58,6 +47,12 @@ public static class ConsoleController
 
             case RemoveItemCommand c:
                 return RemoveItem.Execute(c.ItemId, c.LibraryName, _libRepo);
+            
+            case RenameItemCommand c:
+                return RenameItem.Execute(c.ItemId, c.NewName, c.LibraryName, _libRepo);
+            
+            case UpdateItemOriginCommand c:
+                return UpdateItemOrigin.Execute(c.ItemId, c.NewOrigin, c.LibraryName, _libRepo);
             
             case ViewItemCommand c:
                 return ViewItem.Execute(c.ItemId, c.LibraryName, c.Application, _libRepo, _presenter);
@@ -84,10 +79,16 @@ public static class ConsoleController
                 return NewProperty.Execute(c.LibName, c.PropName, c.PropType, _libRepo);
 
             case ListPropertiesCommand c:
-                return ListProperties.Execute(c.LibName, c.ItemName, _libRepo);
-
+                return ListProperties.Execute(c.LibName, c.ItemId, _libRepo, _presenter);
+            
             case SetPropertyCommand c:
                 return SetProperty.Execute(c.PropName, c.NewValue, c.LibName, c.ItemId, _libRepo);
+            
+            case RenamePropertyCommand c:
+                return RenameProperty.Execute(c.PropName, c.NewName, c.LibName, _libRepo);
+
+            case UnsetPropertyCommand c:
+                return UnsetProperty.Execute(c.PropName, c.TargetValue, c.LibName, c.ItemId, _libRepo);
 
             case RemovePropertyCommand c:
                 return RemoveProperty.Execute(c.PropName, c.LibName, _libRepo);

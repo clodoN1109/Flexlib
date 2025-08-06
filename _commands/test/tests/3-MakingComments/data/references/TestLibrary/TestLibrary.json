@@ -14,13 +14,10 @@
           "UserAccessLevel": 0,
           "Credentials": {
             "UserId": "dev",
-            "HashedPassword": null,
-            "IsLegitimate": false
-          },
-          "IsLoggedIn": false,
-          "IsNotLoggedIn": true
+            "HashedPassword": null
+          }
         },
-        "CreatedTime": "2025-08-02T18:58:39",
+        "CreatedTime": "2025-08-05T22:16:02",
         "EditedTime": "",
         "References": []
       }
@@ -42,13 +39,10 @@
           "UserAccessLevel": 0,
           "Credentials": {
             "UserId": "dev",
-            "HashedPassword": null,
-            "IsLegitimate": false
-          },
-          "IsLoggedIn": false,
-          "IsNotLoggedIn": true
+            "HashedPassword": null
+          }
         },
-        "CreatedTime": "2025-08-02T18:58:39",
+        "CreatedTime": "2025-08-05T22:16:02",
         "EditedTime": "",
         "References": [
           {
@@ -75,13 +69,10 @@
           "UserAccessLevel": 0,
           "Credentials": {
             "UserId": "dev",
-            "HashedPassword": null,
-            "IsLegitimate": false
-          },
-          "IsLoggedIn": false,
-          "IsNotLoggedIn": true
+            "HashedPassword": null
+          }
         },
-        "CreatedTime": "2025-08-02T18:58:39",
+        "CreatedTime": "2025-08-05T22:16:02",
         "EditedTime": "",
         "References": [
           {

@@ -18,5 +18,5 @@ public interface ILibraryRepository
     Result VerifyAndRebalanceLocalStorage();
     Result VerifyAndRebalanceLocalStorage(Library lib);
     string? GetItemLocalCopy(LibraryItem item, Library lib);
-
+    Result RenameItem(LibraryItem item, string newName, Library lib);
 }

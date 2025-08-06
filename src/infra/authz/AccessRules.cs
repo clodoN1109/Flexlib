@@ -6,7 +6,7 @@ public static class ActionAccessRules
     private static readonly Dictionary<string, AccessLevel> _rules = new()
     {
         ["help"]            = AccessLevel.Public,
-        ["new-user"]        = AccessLevel.Public,
+        ["signup"]          = AccessLevel.Public,
         ["login"]           = AccessLevel.Public,
         ["logout"]          = AccessLevel.Public,
         ["new-lib"]         = AccessLevel.User,
@@ -15,6 +15,8 @@ public static class ActionAccessRules
         ["set-layout"]      = AccessLevel.User,
         ["get-layout"]      = AccessLevel.User,
         ["new-item"]        = AccessLevel.User,
+        ["rename-item"]     = AccessLevel.User,
+        ["update-origin"]   = AccessLevel.User,
         ["list-items"]      = AccessLevel.User,
         ["remove-item"]     = AccessLevel.User,
         ["view-item"]       = AccessLevel.User,
@@ -23,8 +25,10 @@ public static class ActionAccessRules
         ["edit-comment"]    = AccessLevel.User,
         ["remove-comment"]  = AccessLevel.User,
         ["new-prop"]        = AccessLevel.User,
+        ["rename-prop"]     = AccessLevel.User,
         ["list-props"]      = AccessLevel.User,
         ["set-prop"]        = AccessLevel.User,
+        ["unset-prop"]      = AccessLevel.User,
         ["remove-prop"]     = AccessLevel.User,
         ["fetch-files"]     = AccessLevel.User,
         ["rebalance"]       = AccessLevel.User,

@@ -64,6 +64,116 @@ public class NewItemCommand : Command
     }
 }
 
+public class RenameItemCommand : Command
+{
+    public string LibraryName   { get; }
+    public string NewName       { get; }
+    public object ItemId        { get; }
+
+    public RenameItemCommand(string[] options)
+    {
+        ItemId      =   options.Length > 0 ? options[0]   :  "";
+        NewName     =   options.Length > 1 ? options[1]   :  "";
+        LibraryName =   options.Length > 2 ? options[2]   :  "";
+        Options     =   options;
+    }
+
+    public override string Type => "remove-item";
+
+    public override bool IsValid()
+    {
+        return Options.Length == 3;
+    }
+    
+    public override UsageInfo GetUsageInfo()
+    {
+        return new UsageInfo
+        {
+            Meta = new List<string> {},
+            Title = "rename-item",
+            Description = "Renames the selected item.",
+            Group = CommandGroups.Items,
+            Syntax = "flexlib rename-item <item id> <new name> <library name>",
+            Options = new List<CommandOption>
+            {
+                new CommandOption{
+                    Name = "item id",
+                    OptionDomain = new VariableDomain(),
+                    Mandatory = true
+                },
+                
+                new CommandOption{
+                    Name = "new name",
+                    OptionDomain = new VariableDomain(),
+                    Mandatory = true
+                },
+
+                new CommandOption{
+                    Name = "library name",
+                    OptionDomain = new VariableDomain(),
+                    Mandatory = true
+                },
+
+            }
+        };
+    }
+}
+
+public class UpdateItemOriginCommand : Command
+{
+    public string LibraryName   { get; }
+    public object ItemId        { get; }
+    public string NewOrigin     { get; }
+
+    public UpdateItemOriginCommand(string[] options)
+    {
+        ItemId      =   options.Length > 0 ? options[0]   :  "";
+        NewOrigin   =   options.Length > 1 ? options[1]   :  "";
+        LibraryName =   options.Length > 2 ? options[2]   :  "";
+        Options     =   options;
+    }
+
+    public override string Type => "update-origin";
+
+    public override bool IsValid()
+    {
+        return Options.Length == 3;
+    }
+    
+    public override UsageInfo GetUsageInfo()
+    {
+        return new UsageInfo
+        {
+            Meta = new List<string> {},
+            Title = "update-origin",
+            Description = "Updates the origin of the selected item.",
+            Group = CommandGroups.Items,
+            Syntax = "flexlib update-origin <item id> <new origin> <library name>",
+            Options = new List<CommandOption>
+            {
+                new CommandOption{
+                    Name = "item id",
+                    OptionDomain = new VariableDomain(),
+                    Mandatory = true
+                },
+                
+                new CommandOption{
+                    Name = "new origin",
+                    OptionDomain = new VariableDomain(),
+                    Mandatory = true
+                },
+
+                new CommandOption{
+                    Name = "library name",
+                    OptionDomain = new VariableDomain(),
+                    Mandatory = true
+                },
+
+            }
+        };
+    }
+}
+
 public class RemoveItemCommand : Command
 {
     public string LibraryName { get; }

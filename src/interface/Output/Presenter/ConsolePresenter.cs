@@ -44,6 +44,16 @@ public class ConsolePresenter : IPresenter
         _emitter.PrintLines(_renderer.AvailableActions(actions, Console.WindowWidth), false);
     }
 
+    public void ItemProperties( LibraryItem item, Library lib)
+    {
+        _emitter.PrintLines(_renderer.FormatItemPropertiesTable(item, lib, Console.WindowWidth));
+    }
+    
+    public void LibraryProperties(Library lib)
+    {
+        _emitter.PrintLines(_renderer.FormatPropertyDefinitionsTable(lib, Console.WindowWidth));
+    }
+
     public void AuthStatus(string message)
     {
         _emitter.PrintLines(_renderer.AuthStatus(message).Lines);
