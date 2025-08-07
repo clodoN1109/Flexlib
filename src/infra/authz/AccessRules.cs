@@ -1,6 +1,5 @@
 public static class ActionAccessRules
 {
-    
     public static Dictionary<string, AccessLevel> Rules => _rules;
 
     private static readonly Dictionary<string, AccessLevel> _rules = new()
@@ -20,10 +19,15 @@ public static class ActionAccessRules
         ["list-items"]      = AccessLevel.User,
         ["remove-item"]     = AccessLevel.User,
         ["view-item"]       = AccessLevel.User,
-        ["new-note"]     = AccessLevel.User,
-        ["list-notes"]   = AccessLevel.User,
-        ["edit-note"]    = AccessLevel.User,
-        ["remove-note"]  = AccessLevel.User,
+        ["new-desk"]        = AccessLevel.User,
+        ["list-desks"]      = AccessLevel.User,
+        ["view-desk"]       = AccessLevel.User,
+        ["borrow-item"]     = AccessLevel.User,
+        ["return-item"]     = AccessLevel.User,
+        ["new-note"]        = AccessLevel.User,
+        ["list-notes"]      = AccessLevel.User,
+        ["edit-note"]       = AccessLevel.User,
+        ["remove-note"]     = AccessLevel.User,
         ["new-prop"]        = AccessLevel.User,
         ["rename-prop"]     = AccessLevel.User,
         ["list-props"]      = AccessLevel.User,
@@ -38,4 +42,3 @@ public static class ActionAccessRules
     public static AccessLevel GetRequiredLevel(string actionName)
         => _rules.TryGetValue(actionName, out var level) ? level : AccessLevel.Dev;
 }
-

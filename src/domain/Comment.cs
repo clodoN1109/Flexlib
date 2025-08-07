@@ -15,7 +15,7 @@ public class Note
         {
             _text = value;
             References = ExtractReferencesFromText(_text);
-            EditedTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
+            EditedTime = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss");
         }
     }
 
@@ -39,7 +39,7 @@ public class Note
             Name = author.Name,
             Credentials = author.Credentials
         };
-        CreatedTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
+        CreatedTime = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss");
         EditedTime = "";
         References = ExtractReferencesFromText(_text);
     }

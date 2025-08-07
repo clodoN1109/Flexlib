@@ -88,6 +88,18 @@ public class ConsolePresenter : IPresenter
         _emitter.PrintLines(lines);
     }
     
+    public void ListDesks(List<Desk> desks, string? libName)
+    {
+        var lines = _renderer.FormatDesksTable(desks, libName ?? " ", Console.WindowWidth);
+        _emitter.PrintLines(lines);
+    }
+    
+    public void ViewDesk(Desk desk, string? libName)
+    {
+        var lines = _renderer.FormatDeskTable(desk, libName ?? " ", Console.WindowWidth);
+        _emitter.PrintLines(lines);
+    }
+    
     public void ListItems(List<LibraryItem> items, Library lib, string filterSequence, string sortSequence, double localSizeInBytes, List<string> itemNameFilter)
     {
         var lines = _renderer.FormatItemTable(items, lib, filterSequence, sortSequence, localSizeInBytes, itemNameFilter, Console.WindowWidth);

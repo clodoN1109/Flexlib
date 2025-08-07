@@ -4,6 +4,7 @@ using System.Drawing;
 using Flexlib.Application.Ports;
 using Flexlib.Interface.CLI;
 using Flexlib.Infrastructure.Interop;
+using Flexlib.Infrastructure.Processing;
 using Flexlib.Interface.Output;
 using Flexlib.Interface.Input;
 using System.Linq;
@@ -879,6 +880,223 @@ public class ConsoleRenderer
         output.Add(new Components.ColoredLine(bottomBar, ConsoleColor.Gray));
 
         return output;
+    }
+
+    public List<Components.ColoredLine> FormatDesksTable(List<Desk> desks, string libraryName, int consoleWidth)
+    {
+        var output = new List<Components.ColoredLine>();
+
+        string logoBar   = Components.LogoLine(consoleWidth);
+        string titleBar  = $"░░░░ DESKS IN LIBRARY: {libraryName.ToUpperInvariant()} " + new string('░', Math.Max(0, consoleWidth - 28 - libraryName.Length));
+        string statsBar  = Components.LineFilled(consoleWidth, "right", ' ', $"{desks.Count} desks");
+        string bottomBar = new string('░', consoleWidth);
+
+        const int padding = 3;
+        const string ellipsis = "…";
+
+        string TruncateEnd(string text, int max) =>
+            string.IsNullOrEmpty(text) || text.Length <= max ? text : text[..Math.Max(0, max - 1)] + ellipsis;
+
+        string TruncateStart(string text, int max) =>
+            string.IsNullOrEmpty(text) || text.Length <= max ? text : ellipsis + text[^Math.Max(0, max - 1)..];
+
+        var columns = new List<(string Header, Func<Desk, string> ValueSelector, bool TruncateStart)>
+        {
+            ("ID",              d => d.Id.ToString(), false),
+            ("NAME",            d => d.Name ?? "",    false),
+            ("BORROWED ITEMS",  d => d.BorrowedItems.Count.ToString(), false),
+        };
+
+        int columnCount = columns.Count;
+
+        var rows = desks.Select(d => columns.Select(col => col.ValueSelector(d)).ToArray()).ToList();
+
+        int[] idealWidths;
+        if (rows.Count > 0)
+        {
+            idealWidths = columns.Select((col, i) =>
+                Math.Max(col.Header.Length, rows.Max(r => r[i]?.Length ?? 0))
+            ).ToArray();
+        }
+        else
+        {
+            idealWidths = columns.Select(c => c.Header.Length).ToArray();
+        }
+
+        int totalPadding = (columnCount - 1) * padding;
+        int totalIdeal = idealWidths.Sum() + totalPadding;
+
+        int[] colWidths = new int[columnCount];
+        Array.Copy(idealWidths, colWidths, columnCount);
+
+        if (totalIdeal > consoleWidth)
+        {
+            int available = consoleWidth - totalPadding;
+            double scale = (double)available / idealWidths.Sum();
+            for (int i = 0; i < columnCount; i++)
+                colWidths[i] = Math.Max(6, (int)Math.Floor(idealWidths[i] * scale));
+
+            int adjust = available - colWidths.Sum();
+            for (int i = 0; adjust != 0 && i < columnCount; i++)
+            {
+                colWidths[i] += Math.Sign(adjust);
+                adjust -= Math.Sign(adjust);
+            }
+        }
+
+        // Render
+        output.Add(new Components.ColoredLine(""));
+        output.Add(new Components.ColoredLine(logoBar));
+        output.Add(new Components.ColoredLine(""));
+        output.Add(new Components.ColoredLine(titleBar, ConsoleColor.Gray));
+        output.Add(new Components.ColoredLine(""));
+
+        output.Add(new Components.ColoredLine(string.Join(" | ",
+            columns.Select((col, i) => TruncateEnd(col.Header, colWidths[i]).PadRight(colWidths[i]))),
+            ConsoleColor.DarkGray));
+
+        output.Add(new Components.ColoredLine(string.Join("-|-", colWidths.Select(w => new string('-', w))), ConsoleColor.DarkGray));
+
+        foreach (var row in rows)
+        {
+            var formattedRow = row.Select((cell, i) =>
+            {
+                var width = colWidths[i];
+                return (columns[i].TruncateStart ? TruncateStart(cell, width) : TruncateEnd(cell, width)).PadRight(width);
+            });
+
+            output.Add(new Components.ColoredLine(string.Join(" | ", formattedRow)));
+        }
+
+        output.Add(new Components.ColoredLine(""));
+        output.Add(new Components.ColoredLine(bottomBar, ConsoleColor.Gray));
+        output.Add(new Components.ColoredLine(statsBar, ConsoleColor.Gray));
+
+        return output;
+    }
+    
+    public List<Components.ColoredLine> FormatDeskTable(Desk desk, string libName, int consoleWidth)
+    {
+        var output = new List<Components.ColoredLine>();
+
+        string logoBar    = Components.LogoLine(consoleWidth);
+        string titleBar   = $"░░░░ DESK VIEW {new string('░', Math.Max(0, consoleWidth - 16))}";
+        string headerLine = Components.LineFilled(consoleWidth, "left", ' ', $"{libName}/{desk.Name}", $"Borrowed Items");
+        string bottomBar  = new string('░', consoleWidth);
+
+        const int padding = 3;
+        const string ellipsis = "…";
+
+        string Truncate(string text, int max) =>
+            string.IsNullOrEmpty(text) ? "" : text.Length <= max ? text : text[..Math.Max(0, max - 1)] + ellipsis;
+
+        var headers = new[] { "ID", "NAME", "BORROWED AT", "APPETITE", "PROGRESS", "PRIORITY" };
+        int columnCount = headers.Length;
+
+        var rows = new List<string[]>();
+        foreach (var item in desk.BorrowedItems)
+        {
+            string progress = FormatProgress(item.Progress);
+            rows.Add(new[]
+            {
+                item.Id ?? "",
+                item.Name ?? "",
+                item.BorrowedAt?.ToString("yyyy-MM-dd HH:mm") ?? "",
+                item.Appetite?.ToString("yyyy-MM-dd HH:mm") ?? "",
+                progress,
+                item.Priority.ToString()
+            });
+        }
+
+        // Calculate ideal column widths
+        int[] idealColWidths = new int[columnCount];
+        if (rows.Count > 0)
+        {
+            for (int i = 0; i < columnCount; i++)
+            {
+                int maxDataWidth = rows.Max(r => r[i]?.Length ?? 0);
+                idealColWidths[i] = Math.Max(headers[i].Length, maxDataWidth);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < columnCount; i++)
+            {
+                idealColWidths[i] = headers[i].Length;
+            }
+        }
+
+        int totalPadding = (columnCount - 1) * padding;
+        int idealTotalWidth = idealColWidths.Sum() + totalPadding;
+
+        int[] colWidths = new int[columnCount];
+        if (idealTotalWidth <= consoleWidth)
+        {
+            Array.Copy(idealColWidths, colWidths, columnCount);
+        }
+        else
+        {
+            int availableWidth = consoleWidth - totalPadding;
+            double scale = (double)availableWidth / idealColWidths.Sum();
+
+            for (int i = 0; i < columnCount; i++)
+                colWidths[i] = Math.Max(6, (int)Math.Floor(idealColWidths[i] * scale));
+
+            int diff = availableWidth - colWidths.Sum();
+            for (int i = 0; diff != 0 && i < columnCount; i++)
+            {
+                int adjust = diff > 0 ? 1 : -1;
+                colWidths[i] += adjust;
+                diff -= adjust;
+            }
+        }
+
+        // Render output
+        output.Add(new Components.ColoredLine(""));
+        output.Add(new Components.ColoredLine(logoBar));
+        output.Add(new Components.ColoredLine(""));
+        output.Add(new Components.ColoredLine(titleBar, ConsoleColor.Gray));
+        output.Add(new Components.ColoredLine(""));
+        output.Add(new Components.ColoredLine(headerLine, ConsoleColor.DarkGray));
+        output.Add(new Components.ColoredLine(""));
+
+        if (!rows.Any())
+        {
+            output.Add(new Components.ColoredLine(TextUtil.CenterText("No borrowed items.", consoleWidth)));
+        }
+        else
+        {
+            output.Add(new Components.ColoredLine(string.Join(" | ",
+                headers.Select((h, i) => Truncate(h, colWidths[i]).PadRight(colWidths[i]))), ConsoleColor.DarkGray));
+
+            output.Add(new Components.ColoredLine(string.Join("-|-",
+                colWidths.Select(w => new string('-', w))), ConsoleColor.DarkGray));
+
+            foreach (var row in rows)
+            {
+                output.Add(new Components.ColoredLine(string.Join(" | ",
+                    row.Select((cell, i) => Truncate(cell, colWidths[i]).PadRight(colWidths[i])))));
+            }
+        }
+
+        output.Add(new Components.ColoredLine(""));
+        output.Add(new Components.ColoredLine(bottomBar, ConsoleColor.Gray));
+
+        string footer = Components.LineSpacedBetween(consoleWidth,
+            $"Items on desk: {desk.BorrowedItems.Count}",
+            $"Desk ID: {desk.Id}");
+
+        output.Add(new Components.ColoredLine(footer, ConsoleColor.DarkGray));
+
+        return output;
+    }
+
+    private static string FormatProgress(BorrowedItem.ProgressVariable progress)
+    {
+        if (string.IsNullOrEmpty(progress.CurrentValue) && string.IsNullOrEmpty(progress.CompletionValue))
+            return "";
+
+        return $"{progress.CurrentValue}/{progress.CompletionValue}{progress.VariableUnit}";
     }
 
 }

@@ -19,10 +19,11 @@ public static class CommandGroups
     public static readonly CommandGroup Authentication  = new("authentication"  , "🪪");
     public static readonly CommandGroup Libraries       = new("libraries"       , "🏛 ");
     public static readonly CommandGroup Items           = new("items"           , "🕮 ");
-    public static readonly CommandGroup Notes        = new("notes"        , "𝒜");
+    public static readonly CommandGroup Notes           = new("notes"           , "𝒜");
     public static readonly CommandGroup Properties      = new("properties"      , "📐");
     public static readonly CommandGroup Storage         = new("storage"         , "🢃");
     public static readonly CommandGroup Interfaces      = new("interfaces"      , "🗔");
+    public static readonly CommandGroup Desks           = new("desks"           , "🛋️");
 
     public static IEnumerable<CommandGroup> All => new[]
     {

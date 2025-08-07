@@ -43,7 +43,7 @@ public class ProcessNode<TIn, TOut> : IProcessNode
     public required object OriginalInput { get; init; }
     public required TIn LastValue { get; init; }
     public required TOut NewValue { get; init; }
-    public DateTime Timestamp { get; init; } = DateTime.Now;
+    public DateTime Timestamp { get; init; } = DateTime.UtcNow;
 
     public object GetNewValue() => NewValue!;
 }

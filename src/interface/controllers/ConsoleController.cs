@@ -57,6 +57,21 @@ public static class ConsoleController
             case ViewItemCommand c:
                 return ViewItem.Execute(c.ItemId, c.LibraryName, c.Application, _libRepo, _presenter);
 
+            case NewDeskCommand c:
+                return NewDesk.Execute(c.DeskName, c.LibraryName, _libRepo);
+
+            case ListDesksCommand c:
+                return ListDesks.Execute(c.LibraryName, _libRepo, _presenter);
+
+            case ViewDeskCommand c:
+                return ViewDesk.Execute(c.DeskId, c.LibraryName, c.SortSequence, _libRepo, _presenter);
+
+            case BorrowItemCommand c:
+                return BorrowItem.Execute(c.ItemId, c.DeskId, c.LibraryName, authUser.Id, _libRepo);
+
+            case ReturnItemCommand c:
+                return ReturnItem.Execute(c.ItemId, c.DeskId, c.LibraryName, authUser.Id, _libRepo);
+
             case ListLibrariesCommand c:
                 return ListLibs.Execute(_libRepo, _presenter);
 

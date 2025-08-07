@@ -20,6 +20,17 @@ public class LibraryItem
 
     public Dictionary<string, object?> PropertyValues { get; set; }
 
+    public ItemBorrowHistory BorrowHistory { get; set; } = new();
+
+    public bool IsAvailable =>
+        BorrowHistory.Entries.Count == 0 ||
+        BorrowHistory.Entries.Last().WasReturned;
+
+    public class ItemBorrowHistory
+    {
+        public List<BorrowHistoryEntry> Entries { get; set; } = new();
+    }
+
     public LibraryItem(string name, string origin, Library library)
     {
         Name = TextUtil.Truncate(name, 50);

@@ -15,6 +15,7 @@ public class Library
     public List<ItemPropertyDefinition> LayoutSequence { get; set; }
     [JsonIgnore]
     private object? RenderedLayout { get; set; }
+    public List<Desk> Desks { get; set; } = new();
 
     public Library(string? name, string path)
     {
@@ -24,6 +25,64 @@ public class Library
         Items = new();
         LayoutSequence = new();
     }
+    
+
+    public Result NewDesk(string name)
+    {
+        int nextId = Desks.Any()
+            ? Desks.Max(d => d.Id) + 1
+            : 1;
+
+        var desk = new Desk(name, nextId);
+        Desks.Add(desk);
+
+        return Result.Success("");
+    }
+
+    public Result BorrowItem(string itemId, string userId, string deskId)
+    {
+        var item = GetItemById(itemId);
+        if (item == null)
+            return Result.Fail($"Item of ID {itemId} not found.");
+
+        var desk = GetDeskById(deskId);
+        if (desk == null)
+            return Result.Fail($"Desk of ID {deskId} not found.");
+
+        if (!item.IsAvailable)
+            return Result.Fail($"Item '{item.Name}' is not available.");
+
+        var borrowedItem = new BorrowedItem(item.Id.ToString(), item.Name ?? "Unknown");
+        desk.AddBorrowedItem(borrowedItem);
+
+        var entry = new BorrowHistoryEntry(userId);
+        item.BorrowHistory.Entries.Add(entry);
+
+        return Result.Success($"Item '{item.Name}' borrowed to desk '{desk.Name}'.");
+    }
+
+    public Result ReturnItem(string itemId, string userId, string deskId)
+    {
+        var item = GetItemById(itemId);
+        if (item == null)
+            return Result.Fail($"Item of ID {itemId} not found.");
+
+        var entry = item.BorrowHistory.Entries
+            .LastOrDefault(e => e.UserId == userId && !e.WasReturned);
+
+        if (entry == null)
+            return Result.Fail("No active borrow record found for this user.");
+
+        entry.MarkReturned();
+
+        var desk = GetDeskById(deskId);
+        desk?.RemoveBorrowedItem(itemId.ToString());
+
+        return Result.Success($"Item '{item.Name}' returned.");
+    }
+
+    public Desk? GetDeskById(string id) =>
+        Desks.FirstOrDefault(d => d.Id.ToString() == id);
 
     public LibraryItem NewItem(string name, string origin)
     {
@@ -38,7 +97,7 @@ public class Library
 
         return newItem;
     }
-
+ 
     public int GetHighestItemId() => Items.Any() ? Items.Max(i => i.Id) : 0;
         
     public Result RemovePropertyByName(string propertyName)

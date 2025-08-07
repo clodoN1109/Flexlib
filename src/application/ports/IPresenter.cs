@@ -31,4 +31,6 @@ public interface IPresenter
     Result  File(string filePath);
     void    ItemProperties(LibraryItem item, Library lib);
     void    LibraryProperties(Library lib);
+    void    ListDesks(List<Desk> desks, string libName);
+    void    ViewDesk(Desk desk, string libName);
 } 

@@ -18,4 +18,11 @@ public static class TextUtil
             .ToList();
     }
 
+    public static string CenterText(string text, int width)
+    {
+        int padding = Math.Max(0, (width - text.Length) / 2);
+        return new string(' ', padding) + text;
+    }
+
+
 }
