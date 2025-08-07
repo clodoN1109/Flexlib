@@ -82,9 +82,21 @@ public class ConsolePresenter : IPresenter
         _emitter.PrintLines(_renderer.Error(message).Lines);
     }
 
-    public void ListComments(List<Comment> comments, string? itemName, string? libName)
+    public void ListNotes(List<Note> notes, string? itemName, string? libName)
     {
-        var lines = _renderer.FormatCommentTable(comments, itemName ?? " ", libName ?? " ", Console.WindowWidth);
+        var lines = _renderer.FormatNoteTable(notes, itemName ?? " ", libName ?? " ", Console.WindowWidth);
+        _emitter.PrintLines(lines);
+    }
+    
+    public void ListDesks(List<Desk> desks, string? libName)
+    {
+        var lines = _renderer.FormatDesksTable(desks, libName ?? " ", Console.WindowWidth);
+        _emitter.PrintLines(lines);
+    }
+    
+    public void ViewDesk(Desk desk, string? libName)
+    {
+        var lines = _renderer.FormatDeskTable(desk, libName ?? " ", Console.WindowWidth);
         _emitter.PrintLines(lines);
     }
     

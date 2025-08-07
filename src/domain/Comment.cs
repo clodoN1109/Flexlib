@@ -3,7 +3,7 @@ using Flexlib.Application.Ports;
 
 namespace Flexlib.Domain;
 
-public class Comment
+public class Note
 {
     private string _text;
 
@@ -15,7 +15,7 @@ public class Comment
         {
             _text = value;
             References = ExtractReferencesFromText(_text);
-            EditedTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
+            EditedTime = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss");
         }
     }
 
@@ -25,12 +25,12 @@ public class Comment
 
     public List<LibraryItemReference> References { get; private set; } = new();
 
-    public Comment() 
+    public Note() 
     {
         _text = "";
     }
 
-    public Comment(string id, string text, IUser author)
+    public Note(string id, string text, IUser author)
     {
         Id = id;
         _text = text;
@@ -39,7 +39,7 @@ public class Comment
             Name = author.Name,
             Credentials = author.Credentials
         };
-        CreatedTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
+        CreatedTime = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss");
         EditedTime = "";
         References = ExtractReferencesFromText(_text);
     }

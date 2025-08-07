@@ -26,7 +26,7 @@
         "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\5-ListingItems\\data\\input\\Item1.pdf",
         "Id": 1,
         "FileExtension": ".pdf",
-        "Comments": [],
+        "Notes": [],
         "PropertyValues": {
           "author": "newton",
           "publisher": "dover",
@@ -42,7 +42,7 @@
         "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\5-ListingItems\\data\\input\\Item2.pdf",
         "Id": 2,
         "FileExtension": ".pdf",
-        "Comments": [],
+        "Notes": [],
         "PropertyValues": {
           "author": "pascal",
           "publisher": "dover",
@@ -58,7 +58,7 @@
         "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\5-ListingItems\\data\\input\\Item3.pdf",
         "Id": 3,
         "FileExtension": ".pdf",
-        "Comments": [],
+        "Notes": [],
         "PropertyValues": {
           "author": "einstein",
           "publisher": "nova fronteira",
@@ -74,7 +74,7 @@
         "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\5-ListingItems\\data\\input\\Item4.pdf",
         "Id": 4,
         "FileExtension": ".pdf",
-        "Comments": [],
+        "Notes": [],
         "PropertyValues": {
           "author": "euler",
           "publisher": "alta books",

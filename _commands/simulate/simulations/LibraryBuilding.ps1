@@ -132,28 +132,28 @@ foreach ($lib in $allLibs) {
 & $flexlibPath set-prop difficulty  hard                2 CultureLibrary
 & $flexlibPath set-prop difficulty  medium              3 CultureLibrary
 
-# ========== COMMENTS ==========
+# ========== NOTES ==========
 
-& $flexlibPath new-comment 1 GeneralLibrary "This is a single-line comment with a reference to {ScienceLibrary/Item1}." 
-& $flexlibPath new-comment 2 GeneralLibrary "This is a single-line comment with a reference to {ScienceLibrary/Item2}." 
-& $flexlibPath new-comment 3 GeneralLibrary "This is a single-line comment with a reference to {ScienceLibrary/Item3}." 
-& $flexlibpath new-comment 1 GeneralLibrary "This is a multi-line comment.`nThis is a second line.`nThis is a third line." 
-& $flexlibpath new-comment 2 GeneralLibrary "This is a multi-line comment.`nThis is a second line.`nThis is a third line." 
-& $flexlibpath new-comment 3 GeneralLibrary "This is a multi-line comment.`nThis is a second line.`nThis is a third line." 
+& $flexlibPath new-note 1 GeneralLibrary "This is a single-line note with a reference to {ScienceLibrary/Item1}." 
+& $flexlibPath new-note 2 GeneralLibrary "This is a single-line note with a reference to {ScienceLibrary/Item2}." 
+& $flexlibPath new-note 3 GeneralLibrary "This is a single-line note with a reference to {ScienceLibrary/Item3}." 
+& $flexlibpath new-note 1 GeneralLibrary "This is a multi-line note.`nThis is a second line.`nThis is a third line." 
+& $flexlibpath new-note 2 GeneralLibrary "This is a multi-line note.`nThis is a second line.`nThis is a third line." 
+& $flexlibpath new-note 3 GeneralLibrary "This is a multi-line note.`nThis is a second line.`nThis is a third line." 
 
-& $flexlibpath new-comment 1 ScienceLibrary "This is a single-line comment with a reference to {GeneralLibrary/item1}." 
-& $flexlibpath new-comment 2 ScienceLibrary "This is a single-line comment with a reference to {GeneralLibrary/item2}." 
-& $flexlibpath new-comment 3 ScienceLibrary "This is a single-line comment with a reference to {GeneralLibrary/item3}." 
-& $flexlibpath new-comment 1 ScienceLibrary "This is a multi-line comment.`nThis is a second line.`nThis is a third line." 
-& $flexlibpath new-comment 2 ScienceLibrary "This is a multi-line comment.`nThis is a second line.`nThis is a third line." 
-& $flexlibpath new-comment 3 ScienceLibrary "This is a multi-line comment.`nThis is a second line.`nThis is a third line." 
+& $flexlibpath new-note 1 ScienceLibrary "This is a single-line note with a reference to {GeneralLibrary/item1}." 
+& $flexlibpath new-note 2 ScienceLibrary "This is a single-line note with a reference to {GeneralLibrary/item2}." 
+& $flexlibpath new-note 3 ScienceLibrary "This is a single-line note with a reference to {GeneralLibrary/item3}." 
+& $flexlibpath new-note 1 ScienceLibrary "This is a multi-line note.`nThis is a second line.`nThis is a third line." 
+& $flexlibpath new-note 2 ScienceLibrary "This is a multi-line note.`nThis is a second line.`nThis is a third line." 
+& $flexlibpath new-note 3 ScienceLibrary "This is a multi-line note.`nThis is a second line.`nThis is a third line." 
 
-& $flexlibPath new-comment 1 CultureLibrary "This is a single-line comment with a reference to {ScienceLibrary/Item1}." 
-& $flexlibPath new-comment 2 CultureLibrary "This is a single-line comment with a reference to {ScienceLibrary/Item2}." 
-& $flexlibPath new-comment 3 CultureLibrary "This is a single-line comment with a reference to {ScienceLibrary/Item3}." 
-& $flexlibpath new-comment 1 CultureLibrary "This is a multi-line comment.`nThis is a second line.`nThis is a third line." 
-& $flexlibpath new-comment 2 CultureLibrary "This is a multi-line comment.`nThis is a second line.`nThis is a third line." 
-& $flexlibpath new-comment 3 CultureLibrary "This is a multi-line comment.`nThis is a second line.`nThis is a third line." 
+& $flexlibPath new-note 1 CultureLibrary "This is a single-line note with a reference to {ScienceLibrary/Item1}." 
+& $flexlibPath new-note 2 CultureLibrary "This is a single-line note with a reference to {ScienceLibrary/Item2}." 
+& $flexlibPath new-note 3 CultureLibrary "This is a single-line note with a reference to {ScienceLibrary/Item3}." 
+& $flexlibpath new-note 1 CultureLibrary "This is a multi-line note.`nThis is a second line.`nThis is a third line." 
+& $flexlibpath new-note 2 CultureLibrary "This is a multi-line note.`nThis is a second line.`nThis is a third line." 
+& $flexlibpath new-note 3 CultureLibrary "This is a multi-line note.`nThis is a second line.`nThis is a third line." 
 
 # ========== LAYOUTS ==========
 

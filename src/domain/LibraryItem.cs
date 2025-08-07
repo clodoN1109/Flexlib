@@ -16,9 +16,20 @@ public class LibraryItem
     [JsonIgnore]
     public readonly Library? _library;
 
-    public List<Comment> Comments { get; set; }
+    public List<Note> Notes { get; set; }
 
     public Dictionary<string, object?> PropertyValues { get; set; }
+
+    public ItemBorrowHistory BorrowHistory { get; set; } = new();
+
+    public bool IsAvailable =>
+        BorrowHistory.Entries.Count == 0 ||
+        BorrowHistory.Entries.Last().WasReturned;
+
+    public class ItemBorrowHistory
+    {
+        public List<BorrowHistoryEntry> Entries { get; set; } = new();
+    }
 
     public LibraryItem(string name, string origin, Library library)
     {
@@ -29,19 +40,19 @@ public class LibraryItem
             FileExtension = Path.GetExtension(Origin) ?? "";
 
         _library = library;
-        Comments = new List<Comment>();
+        Notes = new List<Note>();
         PropertyValues = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
     }
 
     public LibraryItem()
     {
-        Comments = new List<Comment>();
+        Notes = new List<Note>();
         PropertyValues = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
     }
 
-    public void RemoveComment(string commentID)
+    public void RemoveNote(string noteID)
     {
-        Comments.RemoveAll(c => c.Id.ToLowerInvariant() == commentID.ToLowerInvariant());
+        Notes.RemoveAll(c => c.Id.ToLowerInvariant() == noteID.ToLowerInvariant());
     }
         
     public T? GetValue<T>(string propertyName)
@@ -64,19 +75,19 @@ public class LibraryItem
         return _library;
     }
 
-    public void NewComment(Comment newComment)
+    public void NewNote(Note newNote)
     {
-        Comments.Add(newComment);
+        Notes.Add(newNote);
     }
 
-    public Comment? GetCommentById(string id)
+    public Note? GetNoteById(string id)
     {
-        return Comments.FirstOrDefault(c => c.Id.ToLowerInvariant() == id.ToLowerInvariant());
+        return Notes.FirstOrDefault(c => c.Id.ToLowerInvariant() == id.ToLowerInvariant());
     }
 
-    public int GetCommentCount()
+    public int GetNoteCount()
     {
-        return Comments.Count;
+        return Notes.Count;
     }
 
     public LibraryItemReference GetReference()

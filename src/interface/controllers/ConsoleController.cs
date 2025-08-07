@@ -57,6 +57,21 @@ public static class ConsoleController
             case ViewItemCommand c:
                 return ViewItem.Execute(c.ItemId, c.LibraryName, c.Application, _libRepo, _presenter);
 
+            case NewDeskCommand c:
+                return NewDesk.Execute(c.DeskName, c.LibraryName, _libRepo);
+
+            case ListDesksCommand c:
+                return ListDesks.Execute(c.LibraryName, _libRepo, _presenter);
+
+            case ViewDeskCommand c:
+                return ViewDesk.Execute(c.DeskId, c.LibraryName, c.SortSequence, _libRepo, _presenter);
+
+            case BorrowItemCommand c:
+                return BorrowItem.Execute(c.ItemId, c.DeskId, c.LibraryName, authUser.Id, _libRepo);
+
+            case ReturnItemCommand c:
+                return ReturnItem.Execute(c.ItemId, c.DeskId, c.LibraryName, authUser.Id, _libRepo);
+
             case ListLibrariesCommand c:
                 return ListLibs.Execute(_libRepo, _presenter);
 
@@ -93,24 +108,24 @@ public static class ConsoleController
             case RemovePropertyCommand c:
                 return RemoveProperty.Execute(c.PropName, c.LibName, _libRepo);
 
-            case NewCommentCommand c:
-                var comment = string.IsNullOrWhiteSpace(c.Comment)
+            case NewNoteCommand c:
+                var note = string.IsNullOrWhiteSpace(c.Note)
                     ? _reader.ReadText()
-                    : c.Comment;
+                    : c.Note;
 
-                if (string.IsNullOrWhiteSpace(comment))
+                if (string.IsNullOrWhiteSpace(note))
                     return Result.Fail("Failed to get text input.");
 
-                return NewComment.Execute(c.ItemId, c.LibName, comment, authUser, _libRepo);
+                return NewNote.Execute(c.ItemId, c.LibName, note, authUser, _libRepo);
 
-            case ListCommentsCommand c:
-                return ListComments.Execute(c.ItemId, c.LibName, _libRepo, _presenter);
+            case ListNotesCommand c:
+                return ListNotes.Execute(c.ItemId, c.LibName, _libRepo, _presenter);
 
-            case EditCommentCommand c:
-                return EditComment.Execute(c.ItemId, c.CommentId, c.LibName, _reader, _libRepo);
+            case EditNoteCommand c:
+                return EditNote.Execute(c.ItemId, c.NoteId, c.LibName, _reader, _libRepo);
 
-            case RemoveCommentCommand c:
-                return RemoveComment.Execute(c.ItemId, c.CommentId, c.LibName, _libRepo);
+            case RemoveNoteCommand c:
+                return RemoveNote.Execute(c.ItemId, c.NoteId, c.LibName, _libRepo);
 
             case RemoveLibraryCommand c:
                 return RemoveLibrary.Execute(c.Name, _libRepo);

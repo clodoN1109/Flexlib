@@ -7,26 +7,26 @@ using Flexlib.Interface;
 
 namespace Flexlib.Application.UseCases;
 
-public static class RemoveComment
+public static class RemoveNote
 {
-    public static Result Execute(object itemId, string commentId, string libName, ILibraryRepository repo)
+    public static Result Execute(object itemId, string noteId, string libName, ILibraryRepository repo)
     {
-        var parsedArgs = new ParsedArgs(itemId, commentId, libName, repo); 
+        var parsedArgs = new ParsedArgs(itemId, noteId, libName, repo); 
 
         var validation = IsOperationAllowed(parsedArgs);
 
         return validation.IsSuccess
-            ? _RemoveComment(parsedArgs)
+            ? _RemoveNote(parsedArgs)
             : validation;
     }
 
-    private static Result _RemoveComment(ParsedArgs parsedArgs)
+    private static Result _RemoveNote(ParsedArgs parsedArgs)
     {
         var selectedLibrary = parsedArgs.Repo.GetByName(parsedArgs.LibName)!;
         
         var selectedItem = selectedLibrary.GetItemById(parsedArgs.ItemId);
 
-        selectedItem!.RemoveComment(parsedArgs.CommentId);
+        selectedItem!.RemoveNote(parsedArgs.NoteId);
 
         parsedArgs.Repo.Save(selectedLibrary);
 
@@ -51,8 +51,8 @@ public static class RemoveComment
         if (selectedItem == null)
             return Result.Fail($"Library '{parsedArgs.LibName}' has no item with ID '{parsedArgs.ItemId}'.");
         
-        if (!selectedItem.Comments.Any(c => c.Id.ToLowerInvariant() == parsedArgs.CommentId.ToLowerInvariant()))
-            return Result.Fail($"Comment with id {parsedArgs.CommentId} not found.");
+        if (!selectedItem.Notes.Any(c => c.Id.ToLowerInvariant() == parsedArgs.NoteId.ToLowerInvariant()))
+            return Result.Fail($"Note with id {parsedArgs.NoteId} not found.");
 
         return Result.Success("Operation allowed.");
     }
@@ -60,14 +60,14 @@ public static class RemoveComment
     public class ParsedArgs
     {
         public object ItemId { get; }
-        public string CommentId { get; }
+        public string NoteId { get; }
         public string LibName { get; }
         public ILibraryRepository Repo { get; }
 
-        public ParsedArgs(object itemId, string commentId, string libName, ILibraryRepository repo)
+        public ParsedArgs(object itemId, string noteId, string libName, ILibraryRepository repo)
         {
             LibName = libName;
-            CommentId = commentId;
+            NoteId = noteId;
             ItemId = itemId;
             Repo = repo;
         }

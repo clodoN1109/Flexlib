@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Flexlib.Application.UseCases;
 
-public static class NewComment
+public static class NewNote
 {
     public static Result Execute(object itemId, string libName, string text, IUser user, ILibraryRepository repo)
     {
@@ -15,25 +15,25 @@ public static class NewComment
         var validation = IsOperationAllowed(parsedArgs);
 
         return validation.IsSuccess
-            ? _NewComment(parsedArgs)
+            ? _NewNote(parsedArgs)
             : validation;
     }
 
-    private static Result _NewComment(ParsedArgs parsedArgs)
+    private static Result _NewNote(ParsedArgs parsedArgs)
     {
         var selectedLibrary = parsedArgs.Repo.GetByName(parsedArgs.LibName)!;
         
         var selectedItem = selectedLibrary!.GetItemById(parsedArgs.ItemId);
        
-        string id = $"{selectedItem!.GetCommentCount() + 1}";
+        string id = $"{selectedItem!.GetNoteCount() + 1}";
 
-        var comment = new Comment(id, parsedArgs.Text, parsedArgs.Author);
+        var note = new Note(id, parsedArgs.Text, parsedArgs.Author);
 
-        selectedItem.NewComment(comment);
+        selectedItem.NewNote(note);
 
         parsedArgs.Repo.Save(selectedLibrary);
          
-        return Result.Success($"Comment of ID {id} was added to the item {selectedItem.Name} at library {selectedLibrary.Name}");
+        return Result.Success($"Note of ID {id} was added to the item {selectedItem.Name} at library {selectedLibrary.Name}");
 
     }
 

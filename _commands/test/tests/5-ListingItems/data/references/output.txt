@@ -11,8 +11,8 @@ ID | NAME | author | publisher | theme | year
 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 theme/publisher/author/year                                                                                                                                               0 items 0,00 bytes
 ---――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――┐
-  commands: help  signup  login  logout  new-lib  list-libs  remove-lib  set-layout  get-layout  new-item  rename-item  update-origin  list-items  remove-item  view-item  new-comment   │
-            list-comments  edit-comment  remove-comment  new-prop  rename-prop  list-props  set-prop  unset-prop  remove-prop  fetch-files  rebalance  gui                               │
+  commands: help  signup  login  logout  new-lib  list-libs  remove-lib  set-layout  get-layout  new-item  rename-item  update-origin  list-items  remove-item  view-item  new-note   │
+            list-notes  edit-note  remove-note  new-prop  rename-prop  list-props  set-prop  unset-prop  remove-prop  fetch-files  rebalance  gui                               │
 ---――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――┘
 ---―――┐
     ✓ │

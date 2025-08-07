@@ -16,7 +16,7 @@ public interface IPresenter
     void    AuthPrompt(out AuthPromptScreen screen);
     void    RegistrationPrompt(out RegistrationPromptScreen screen);
     void    ShowError(string message);
-    void    ListComments(List<Comment> comments, string itemName, string libName);
+    void    ListNotes(List<Note> notes, string itemName, string libName);
     void    ListLibs(List<Library> items);
     void    ListItems( 
                 List<LibraryItem> items, 
@@ -31,4 +31,6 @@ public interface IPresenter
     Result  File(string filePath);
     void    ItemProperties(LibraryItem item, Library lib);
     void    LibraryProperties(Library lib);
+    void    ListDesks(List<Desk> desks, string libName);
+    void    ViewDesk(Desk desk, string libName);
 } 

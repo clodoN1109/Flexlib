@@ -10,11 +10,11 @@ namespace Flexlib.Interface.CLI;
 
 
 
-public abstract class CommentCommand : Command
+public abstract class NoteCommand : Command
 {
     public object ItemId { get; } 
 
-    protected CommentCommand(string[] options)
+    protected NoteCommand(string[] options)
     {
         Options = options;
         ItemId = options.Length > 0 ? options[0] : "";
@@ -22,18 +22,18 @@ public abstract class CommentCommand : Command
 
 }
 
-public class NewCommentCommand : CommentCommand
+public class NewNoteCommand : NoteCommand
 {
-    public string? Comment { get; set; }
+    public string? Note { get; set; }
     public string LibName { get; set; }
 
-    public NewCommentCommand(string[] options) : base(options) 
+    public NewNoteCommand(string[] options) : base(options) 
     {
         LibName = options.Length > 1 ? options[1] : "Default Library";
-        Comment = options.Length > 2 ? options[2] : "";
+        Note = options.Length > 2 ? options[2] : "";
     }
     
-    public override string Type => "new-comment";
+    public override string Type => "new-note";
     
     public override bool IsValid()
     {
@@ -45,10 +45,10 @@ public class NewCommentCommand : CommentCommand
         return new UsageInfo
         {
             Meta = new List<string> {},
-            Title = "new-comment",
-            Description = "Creates a new comment for the selected library item.",
-            Group = CommandGroups.Comments,
-            Syntax = "flexlib new-comment <item id> [library name] [comment]" ,
+            Title = "new-note",
+            Description = "Creates a new note for the selected library item.",
+            Group = CommandGroups.Notes,
+            Syntax = "flexlib new-note <item id> [library name] [note]" ,
             Options = new List<CommandOption>
             {
                 new CommandOption{
@@ -62,7 +62,7 @@ public class NewCommentCommand : CommentCommand
                     DefaultValue = "Default Library" 
                 },
                 new CommandOption{
-                    Name = "comment",
+                    Name = "note",
                     OptionDomain = new VariableDomain()
                 }
             }
@@ -72,16 +72,16 @@ public class NewCommentCommand : CommentCommand
 
 }
 
-public class ListCommentsCommand : CommentCommand
+public class ListNotesCommand : NoteCommand
 {
     public string LibName { get; set; }
     
-    public ListCommentsCommand(string[] options) : base(options) 
+    public ListNotesCommand(string[] options) : base(options) 
     {
         LibName = options.Length > 1 ? options[1] : "Default Library";
     }
 
-    public override string Type => "list-comments";
+    public override string Type => "list-notes";
 
     public override bool IsValid()
     {
@@ -93,10 +93,10 @@ public class ListCommentsCommand : CommentCommand
         return new UsageInfo
         {
             Meta = new List<string> {},
-            Title = "list-comments",
-            Description = "List all comments from a selected library item.",
-            Group = CommandGroups.Comments,
-            Syntax = "flexlib list-comments <item id> [library name]",
+            Title = "list-notes",
+            Description = "List all notes from a selected library item.",
+            Group = CommandGroups.Notes,
+            Syntax = "flexlib list-notes <item id> [library name]",
             Options = new List<CommandOption>
             {
                 new CommandOption{
@@ -118,19 +118,19 @@ public class ListCommentsCommand : CommentCommand
 
 }
 
-public class EditCommentCommand : CommentCommand
+public class EditNoteCommand : NoteCommand
 {
-    public string CommentId;
+    public string NoteId;
     public string LibName { get; set; }
 
-    public EditCommentCommand(string[] options) : base(options) { 
+    public EditNoteCommand(string[] options) : base(options) { 
         
-        CommentId = options.Length > 1 ? options[1] : "";
+        NoteId = options.Length > 1 ? options[1] : "";
         LibName = options.Length > 2 ? options[2] : "Default Library"; 
    
     }
     
-    public override string Type => "edit-comment";
+    public override string Type => "edit-note";
 
     public override bool IsValid()
     {
@@ -142,10 +142,10 @@ public class EditCommentCommand : CommentCommand
         return new UsageInfo
         {
             Meta = new List<string> {},
-            Title = "edit-comment",
+            Title = "edit-note",
             Description = "Edit a selected commment.",
-            Group = CommandGroups.Comments,
-            Syntax = "flexlib edit-comment <item id> <comment id> [library name]",
+            Group = CommandGroups.Notes,
+            Syntax = "flexlib edit-note <item id> <note id> [library name]",
             Options = new List<CommandOption>
             {
                 new CommandOption{
@@ -154,7 +154,7 @@ public class EditCommentCommand : CommentCommand
                     Mandatory = true
                 },
                 new CommandOption{
-                    Name = "comment id",
+                    Name = "note id",
                     OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
@@ -170,19 +170,19 @@ public class EditCommentCommand : CommentCommand
 
 }
 
-public class RemoveCommentCommand : CommentCommand
+public class RemoveNoteCommand : NoteCommand
 {
-    public string CommentId;
+    public string NoteId;
     public string LibName { get; set; }
 
-    public RemoveCommentCommand(string[] options) : base(options) { 
+    public RemoveNoteCommand(string[] options) : base(options) { 
         
-        CommentId = options.Length > 1 ? options[1] : "";
+        NoteId = options.Length > 1 ? options[1] : "";
         LibName = options.Length > 2 ? options[2] : "Default Library"; 
    
     }
     
-    public override string Type => "remove-comment";
+    public override string Type => "remove-note";
 
     public override bool IsValid()
     {
@@ -194,10 +194,10 @@ public class RemoveCommentCommand : CommentCommand
         return new UsageInfo
         {
             Meta = new List<string> {},
-            Title = "remove-comment",
-            Description = "Remove a comment from a selected item.",
-            Group = CommandGroups.Comments,
-            Syntax = "flexlib remove-comment <item id> <comment id> [library name]",
+            Title = "remove-note",
+            Description = "Remove a note from a selected item.",
+            Group = CommandGroups.Notes,
+            Syntax = "flexlib remove-note <item id> <note id> [library name]",
             Options = new List<CommandOption>
             {
                 new CommandOption{
@@ -206,7 +206,7 @@ public class RemoveCommentCommand : CommentCommand
                     Mandatory = true
                 },
                 new CommandOption{
-                    Name = "comment id",
+                    Name = "note id",
                     OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
