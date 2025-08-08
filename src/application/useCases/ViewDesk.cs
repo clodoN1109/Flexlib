@@ -28,7 +28,10 @@ public static class ViewDesk
         
         try {
             var lib = repo.GetByName(libName);
-            var desk = lib!.GetDeskById(deskId); 
+            var desk = lib!.GetDeskById(deskId);
+
+            desk!.Sort( new SortSequence(sortSequence).Elements );
+
             presenter.ViewDesk(desk!, libName);
             
             return Result.Success($"");

@@ -66,8 +66,26 @@ public static class ConsoleController
             case ViewDeskCommand c:
                 return ViewDesk.Execute(c.DeskId, c.LibraryName, c.SortSequence, _libRepo, _presenter);
 
+            case SetAppetiteCommand c:
+                return SetAppetite.Execute(c.ItemID, c.DeskID, c.LibraryName, c.Date, _libRepo);
+
+            case SetProgressCommand c:
+                return SetProgress.Execute(c.NewValue, c.ItemID, c.DeskID, c.LibraryName, _libRepo);
+
+            case DefineProgressCommand c:
+                return DefineProgress.Execute(c.Unit, c.CompletionValue, c.ItemID, c.DeskID, c.LibraryName, _libRepo);
+
+            case SetPriorityCommand c:
+                return SetPriority.Execute(c.NewPriority, c.ItemID, c.DeskID, c.LibraryName, _libRepo);
+
+            case RenameDeskCommand c:
+                return RenameDesk.Execute(c.NewName, c.DeskID, c.LibraryName, _libRepo);
+
             case BorrowItemCommand c:
                 return BorrowItem.Execute(c.ItemId, c.DeskId, c.LibraryName, authUser.Id, _libRepo);
+
+            case ListLoansCommand c:
+                return ListLoans.Execute(c.ItemId, c.LibraryName, _libRepo, _presenter);
 
             case ReturnItemCommand c:
                 return ReturnItem.Execute(c.ItemId, c.DeskId, c.LibraryName, authUser.Id, _libRepo);

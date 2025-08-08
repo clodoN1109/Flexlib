@@ -36,9 +36,9 @@ public class BorrowedItem
 
     public class ProgressVariable
     {
-        public string  VariableUnit    { get; set; } = "%";
+        public string  Unit    { get; set; } = "%";
         public string? CurrentValue    { get; set; }
-        public string? CompletionValue { get; set; }
+        public string? CompletionValue { get; set; } = "100";
 
         public bool IsCompleted => CurrentValue == CompletionValue;
     }

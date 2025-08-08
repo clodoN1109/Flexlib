@@ -17,12 +17,16 @@
             "HashedPassword": null
           }
         },
-        "CreatedTime": "2025-08-06T02:35:28",
+        "CreatedTime": "2025-08-08T04:25:18",
         "EditedTime": "",
         "References": []
       }
     ],
-    "PropertyValues": {}
+    "PropertyValues": {},
+    "Loans": {
+      "Entries": []
+    },
+    "IsAvailable": true
   },
   {
     "Name": "Compound Name",
@@ -42,7 +46,7 @@
             "HashedPassword": null
           }
         },
-        "CreatedTime": "2025-08-06T02:35:28",
+        "CreatedTime": "2025-08-08T04:25:18",
         "EditedTime": "",
         "References": [
           {
@@ -52,7 +56,11 @@
         ]
       }
     ],
-    "PropertyValues": {}
+    "PropertyValues": {},
+    "Loans": {
+      "Entries": []
+    },
+    "IsAvailable": true
   },
   {
     "Name": "Item3",
@@ -72,7 +80,7 @@
             "HashedPassword": null
           }
         },
-        "CreatedTime": "2025-08-06T02:35:29",
+        "CreatedTime": "2025-08-08T04:25:18",
         "EditedTime": "",
         "References": [
           {
@@ -86,6 +94,10 @@
         ]
       }
     ],
-    "PropertyValues": {}
+    "PropertyValues": {},
+    "Loans": {
+      "Entries": []
+    },
+    "IsAvailable": true
   }
 ]

@@ -24,5 +24,13 @@ public static class TextUtil
         return new string(' ', padding) + text;
     }
 
-
 }
+
+public static class StringExtensions
+{
+    public static bool IsCompound(this string input)
+    {
+        return !string.IsNullOrWhiteSpace(input) && input.Trim().Contains(' ');
+    }
+}
+

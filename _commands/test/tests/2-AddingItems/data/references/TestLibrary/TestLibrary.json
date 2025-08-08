@@ -5,7 +5,11 @@
     "Id": 1,
     "FileExtension": ".pdf",
     "Notes": [],
-    "PropertyValues": {}
+    "PropertyValues": {},
+    "Loans": {
+      "Entries": []
+    },
+    "IsAvailable": true
   },
   {
     "Name": "Item2",
@@ -13,7 +17,11 @@
     "Id": 2,
     "FileExtension": ".pdf",
     "Notes": [],
-    "PropertyValues": {}
+    "PropertyValues": {},
+    "Loans": {
+      "Entries": []
+    },
+    "IsAvailable": true
   },
   {
     "Name": "Item3",
@@ -21,6 +29,10 @@
     "Id": 3,
     "FileExtension": ".pdf",
     "Notes": [],
-    "PropertyValues": {}
+    "PropertyValues": {},
+    "Loans": {
+      "Entries": []
+    },
+    "IsAvailable": true
   }
 ]

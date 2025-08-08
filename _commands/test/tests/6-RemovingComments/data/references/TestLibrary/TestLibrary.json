@@ -1,7 +1,7 @@
 [
   {
     "Name": "Item1",
-    "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\6-RemovingNotes\\data\\input\\Item1.pdf",
+    "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\6-RemovingComments\\data\\input\\Item1.pdf",
     "Id": 1,
     "FileExtension": ".pdf",
     "Notes": [
@@ -17,7 +17,7 @@
             "HashedPassword": null
           }
         },
-        "CreatedTime": "2025-08-06T02:35:41",
+        "CreatedTime": "2025-08-08T04:25:31",
         "EditedTime": "",
         "References": []
       },
@@ -33,24 +33,32 @@
             "HashedPassword": null
           }
         },
-        "CreatedTime": "2025-08-06T02:35:41",
+        "CreatedTime": "2025-08-08T04:25:31",
         "EditedTime": "",
         "References": []
       }
     ],
-    "PropertyValues": {}
+    "PropertyValues": {},
+    "Loans": {
+      "Entries": []
+    },
+    "IsAvailable": true
   },
   {
     "Name": "Compound Name",
-    "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\6-RemovingNotes\\data\\input\\Item2.pdf",
+    "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\6-RemovingComments\\data\\input\\Item2.pdf",
     "Id": 2,
     "FileExtension": ".pdf",
     "Notes": [],
-    "PropertyValues": {}
+    "PropertyValues": {},
+    "Loans": {
+      "Entries": []
+    },
+    "IsAvailable": true
   },
   {
     "Name": "Item3",
-    "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\6-RemovingNotes\\data\\input\\Item3.pdf",
+    "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\6-RemovingComments\\data\\input\\Item3.pdf",
     "Id": 3,
     "FileExtension": ".pdf",
     "Notes": [
@@ -66,11 +74,15 @@
             "HashedPassword": null
           }
         },
-        "CreatedTime": "2025-08-06T02:35:42",
+        "CreatedTime": "2025-08-08T04:25:31",
         "EditedTime": "",
         "References": []
       }
     ],
-    "PropertyValues": {}
+    "PropertyValues": {},
+    "Loans": {
+      "Entries": []
+    },
+    "IsAvailable": true
   }
 ]

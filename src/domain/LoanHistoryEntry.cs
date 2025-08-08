@@ -1,6 +1,6 @@
 namespace Flexlib.Domain;
 
-public class BorrowHistoryEntry
+public class LoanHistoryEntry
 {
     public string     UserId     { get; set; }
     public DateTime   BorrowedAt { get; set; }
@@ -8,7 +8,7 @@ public class BorrowHistoryEntry
 
     public bool WasReturned => ReturnedAt.HasValue;
 
-    public BorrowHistoryEntry(string userId)
+    public LoanHistoryEntry(string userId)
     {
         UserId = userId ?? throw new ArgumentNullException(nameof(userId));
         BorrowedAt = DateTime.UtcNow;
