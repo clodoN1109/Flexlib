@@ -33,4 +33,5 @@ public interface IPresenter
     void    LibraryProperties(Library lib);
     void    ListDesks(List<Desk> desks, string libName);
     void    ViewDesk(Desk desk, string libName);
+    void    PresentLoanHistory(LoanHistory history, LibraryItem item, string libName);
 } 

@@ -22,7 +22,11 @@
         "PropertyValues": {
           "property1": "NewValue",
           "property2": null
-        }
+        },
+        "Loans": {
+          "Entries": []
+        },
+        "IsAvailable": true
       },
       {
         "Name": "Item2",
@@ -33,7 +37,11 @@
         "PropertyValues": {
           "property1": null,
           "property2": "NewValue"
-        }
+        },
+        "Loans": {
+          "Entries": []
+        },
+        "IsAvailable": true
       },
       {
         "Name": "Item3",
@@ -44,9 +52,14 @@
         "PropertyValues": {
           "property1": null,
           "property2": null
-        }
+        },
+        "Loans": {
+          "Entries": []
+        },
+        "IsAvailable": true
       }
     ],
-    "LayoutSequence": []
+    "LayoutSequence": [],
+    "Desks": []
   }
 ]

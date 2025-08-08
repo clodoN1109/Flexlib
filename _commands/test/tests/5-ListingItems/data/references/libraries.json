@@ -35,7 +35,11 @@
             "physics"
           ],
           "year": "1920"
-        }
+        },
+        "Loans": {
+          "Entries": []
+        },
+        "IsAvailable": true
       },
       {
         "Name": "Item2",
@@ -51,7 +55,11 @@
             "philosophy"
           ],
           "year": "1940"
-        }
+        },
+        "Loans": {
+          "Entries": []
+        },
+        "IsAvailable": true
       },
       {
         "Name": "Item3",
@@ -67,7 +75,11 @@
             "history"
           ],
           "year": "1945"
-        }
+        },
+        "Loans": {
+          "Entries": []
+        },
+        "IsAvailable": true
       },
       {
         "Name": "Item4",
@@ -83,7 +95,11 @@
             "physics"
           ],
           "year": "2001"
-        }
+        },
+        "Loans": {
+          "Entries": []
+        },
+        "IsAvailable": true
       }
     ],
     "LayoutSequence": [
@@ -103,6 +119,7 @@
         "Name": "year",
         "TypeName": "int"
       }
-    ]
+    ],
+    "Desks": []
   }
 ]

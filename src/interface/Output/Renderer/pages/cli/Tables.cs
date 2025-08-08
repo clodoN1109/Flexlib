@@ -12,240 +12,124 @@ using System.Linq;
 namespace Flexlib.Interface.Output;
 
 
-public class ConsoleRenderer
+public partial class ConsoleRenderer
 {
 
-    public Components.WrappedMessage Message(string? message, ConsoleColor color = ConsoleColor.Gray)
+    public List<Components.ColoredLine> FormatLoanHistoryTable( LoanHistory history, LibraryItem item, string libName, int consoleWidth )
     {
-        var lines = new List<Components.ColoredLine>();
+        var output = new List<Components.ColoredLine>();
 
-        if (string.IsNullOrWhiteSpace(message))
-            return new Components.WrappedMessage { Lines = lines };
+        string logoBar   = Components.LogoLine(consoleWidth);
+        string titleBar  = "░░░░ LOAN HISTORY " + new string('░', Math.Max(0, consoleWidth - 20));
+        string header    = Components.LineFilled(consoleWidth, "left", ' ', $"{libName}/{item.Name ?? $"#{item.Id}"}");
+        string statsBar  = Components.LineFilled(consoleWidth, "right", ' ', $"{history.Entries.Count} entr{(history.Entries.Count == 1 ? "y" : "ies")}");
+        string bottomBar = new string('░', consoleWidth);
 
-        int maxBoxWidth = Console.WindowWidth - 4;
-        int innerWidth = Math.Max(10, maxBoxWidth - 6);
+        var tableHeaders = new[] { "BORROWED AT", "RETURNED AT", "BORROWER" };
+        const int padding = 3;
+        const string ellipsis = "…";
 
-        var wrappedLines = new List<string>();
-
-        foreach (var rawLine in message.Split('\n'))
-        {
-            var remaining = rawLine.Trim();
-            while (remaining.Length > innerWidth)
+        var rows = history.Entries
+            .Select(entry => new[]
             {
-                wrappedLines.Add("   " + remaining[..innerWidth]);
-                remaining = remaining[innerWidth..];
+                entry.BorrowedAt.ToString("yyyy-MM-dd"),
+                entry.WasReturned && entry.ReturnedAt.HasValue
+                    ? entry.ReturnedAt.Value.ToString("yyyy-MM-dd")
+                    : "—",
+                entry.UserId ?? "—",
+            })
+            .ToList();
+
+        string Truncate(string text, int max) =>
+            string.IsNullOrEmpty(text) ? "" : text.Length <= max ? text : text[..Math.Max(0, max - 1)] + ellipsis;
+
+        int[] colWidths = new int[tableHeaders.Length];
+        for (int i = 0; i < tableHeaders.Length; i++)
+        {
+            int maxRowLength = rows.Any()
+                ? rows.Max(r => r[i].Split('\n').Max(line => line.Length))
+                : 0;
+
+            colWidths[i] = Math.Max(tableHeaders[i].Length, maxRowLength);
+        }
+
+        int totalPadding = (tableHeaders.Length - 1) * padding;
+        int totalWidth = colWidths.Sum() + totalPadding;
+
+        if (totalWidth > consoleWidth)
+        {
+            int available = consoleWidth - totalPadding;
+            double scale = (double)available / colWidths.Sum();
+
+            for (int i = 0; i < colWidths.Length; i++)
+                colWidths[i] = Math.Max(6, (int)Math.Floor(colWidths[i] * scale));
+
+            int adjust = available - colWidths.Sum();
+            for (int i = 0; adjust != 0 && i < colWidths.Length; i++)
+            {
+                colWidths[i] += Math.Sign(adjust);
+                adjust -= Math.Sign(adjust);
+            }
+        }
+
+        output.Add(new Components.ColoredLine(""));
+        output.Add(new Components.ColoredLine(logoBar));
+        output.Add(new Components.ColoredLine(""));
+        output.Add(new Components.ColoredLine(titleBar, ConsoleColor.Gray));
+        output.Add(new Components.ColoredLine(""));
+        output.Add(new Components.ColoredLine(header));
+        output.Add(new Components.ColoredLine(""));
+
+        var headerLine = string.Join(" | ",
+            tableHeaders.Select((h, i) => Truncate(h, colWidths[i]).PadRight(colWidths[i])));
+        output.Add(new Components.ColoredLine(headerLine, ConsoleColor.DarkGray));
+        output.Add(new Components.ColoredLine(new string('-', consoleWidth), ConsoleColor.DarkGray));
+
+        foreach (var row in rows)
+        {
+            var splitCells = row.Select((cell, i) =>
+                cell.Split('\n')
+                    .Select(line => Truncate(line, colWidths[i]).PadRight(colWidths[i]))
+                    .ToList()
+            ).ToList();
+
+            int maxLines = splitCells.Max(lines => lines.Count);
+
+            for (int i = 0; i < splitCells.Count; i++)
+            {
+                while (splitCells[i].Count < maxLines)
+                    splitCells[i].Add(new string(' ', colWidths[i]));
             }
 
-            wrappedLines.Add("   " + remaining);
+            for (int line = 0; line < maxLines; line++)
+            {
+                var formattedLine = string.Join(" | ",
+                    splitCells.Select(col => col[line]));
+                output.Add(new Components.ColoredLine(formattedLine));
+            }
+
+            output.Add(new Components.ColoredLine(new string('-', consoleWidth), ConsoleColor.DarkGray));
         }
 
-        int contentWidth = wrappedLines.Max(l => l.Length);
-        int boxWidth = contentWidth + 2;
+        output.Add(new Components.ColoredLine(""));
+        output.Add(new Components.ColoredLine(bottomBar, ConsoleColor.Gray));
+        output.Add(new Components.ColoredLine(statsBar));
 
-        string top = "---" + new string('―', boxWidth - 3) + "┐";
-        string bottom = "---" + new string('―', boxWidth - 3) + "┘";
-
-        lines.Add(new Components.ColoredLine(top, color));
-
-        foreach (var line in wrappedLines)
-        {
-            string padded = line.PadRight(contentWidth);
-            lines.Add(new Components.ColoredLine($" {padded} │", color));
-        }
-
-        lines.Add(new Components.ColoredLine(bottom, color));
-
-        return new Components.WrappedMessage { Lines = lines };
+        return output;
     }
 
-    public Components.WrappedMessage Success(string message) =>
-        Message($"✓ {message}", ConsoleColor.Green);
-
-    public Components.WrappedMessage Warning(string message) =>
-        Message($"⚠  {message}", ConsoleColor.Yellow);
-
-    public Components.WrappedMessage Failure(string message) =>
-        Message($"✗ {message}", ConsoleColor.Red);
-
-    public Components.WrappedMessage RenderResult(Result result)
-    {
-        var all = new List<Components.ColoredLine>();
-
-        if (result.IsSuccess)
-            all.AddRange(Success(result.SuccessMessage ?? "").Lines);
-
-        if (result.IsWarning)
-            all.AddRange(Warning(result.WarningMessage ?? "").Lines);
-
-        if (!string.IsNullOrWhiteSpace(result.ErrorMessage))
-            all.AddRange(Failure(result.ErrorMessage).Lines);
-
-        return new Components.WrappedMessage { Lines = all };
-    }
-
-    public Components.WrappedMessage UserInfo(string userInfo) =>
-        Message($"{userInfo} 🪪", ConsoleColor.Cyan);
-
-    public Components.WrappedMessage AuthStatus(string message) =>
-        Message($"🪪 {message}", ConsoleColor.Cyan);
-
-    public Components.WrappedMessage Error(string message) =>
-        Message($"Error: {message}", ConsoleColor.Red);
-
-    public List<Components.ColoredLine> AvailableActions(List<string> actions, int consoleWidth)
-    {
-        var lines = new List<Components.ColoredLine>();
-
-        if (actions == null || actions.Count == 0)
-        {
-            lines.Add(new Components.ColoredLine("No available actions.", ConsoleColor.DarkGray));
-            return lines;
-        }
-
-        const int padding = 2;
-        string label = "commands: ";
-        var commandLines = new List<string>();
-
-        string currentLine = label;
-        int currentWidth = label.Length;
-
-        foreach (var cmd in actions)
-        {
-            string segment = cmd + new string(' ', padding);
-
-            if (currentWidth + segment.Length > consoleWidth - 4) // account for border + margin
-            {
-                commandLines.Add(currentLine.TrimEnd());
-                currentLine = new string(' ', label.Length) + segment;
-                currentWidth = label.Length + segment.Length;
-            }
-            else
-            {
-                currentLine += segment;
-                currentWidth += segment.Length;
-            }
-        }
-
-        if (!string.IsNullOrWhiteSpace(currentLine))
-        {
-            commandLines.Add(currentLine.TrimEnd());
-        }
-
-        // Render boxed output
-        string borderLine = "---" + new string('―', consoleWidth - 6) + "┐";
-        lines.Add(new Components.ColoredLine(borderLine, ConsoleColor.DarkGray));
-
-        foreach (var line in commandLines)
-        {
-            string padded = "  " + line.PadRight(consoleWidth - 6);
-            lines.Add(new Components.ColoredLine(padded + " │", ConsoleColor.Gray));
-        }
-
-        string bottomLine = "---" + new string('―', consoleWidth - 6) + "┘";
-        lines.Add(new Components.ColoredLine(bottomLine, ConsoleColor.DarkGray));
-
-        return lines;
-    }
-
-    public List<Components.ColoredLine> UsageInfo(UsageInfo info, int consoleWidth)
-    {
-        var lines = new List<Components.ColoredLine>();
-
-        string separator = new string('░', consoleWidth);
-        string logo = Components.LogoLine(consoleWidth);
-        string title = $"░░░░ {info.Group.Icon} {info.Title.ToUpperInvariant()}" + " ";
-        string paddedTitle = title + new string('░', Math.Max(0, consoleWidth - title.Length));
-
-        lines.Add(new Components.ColoredLine(""));
-        lines.Add(new Components.ColoredLine(logo));
-        lines.Add(new Components.ColoredLine(""));
-        lines.Add(new Components.ColoredLine(paddedTitle, ConsoleColor.Gray));
-
-        // Metadata
-        if (info.Meta?.Any() == true)
-        {
-            lines.Add(new Components.ColoredLine(""));
-            lines.Add(new Components.ColoredLine(string.Join("  •  ", info.Meta), ConsoleColor.DarkGray));
-        }
-
-        // Description
-        if (!string.IsNullOrWhiteSpace(info.Description))
-        {
-            lines.Add(new Components.ColoredLine(""));
-            var wrapped = Components.WrappedText(info.Description, consoleWidth);
-            foreach (var line in wrapped)
-                lines.Add(new Components.ColoredLine(line, ConsoleColor.White));
-        }
-
-        // Usage Syntax
-        if (!string.IsNullOrWhiteSpace(info.Syntax))
-        {
-            lines.Add(new Components.ColoredLine(""));
-            lines.Add(new Components.ColoredLine("usage:", ConsoleColor.Cyan));
-            lines.Add(new Components.ColoredLine(""));
-            lines.Add(new Components.ColoredLine("   " + info.Syntax, ConsoleColor.White));
-        }
-
-        // Options
-        if (info.Options?.Any() == true)
-        {
-            lines.Add(new Components.ColoredLine(""));
-            lines.Add(new Components.ColoredLine("options:", ConsoleColor.Cyan));
-            lines.Add(new Components.ColoredLine(""));
-
-            foreach (var opt in info.Options.OrderByDescending(opt => opt.Mandatory))
-            {
-                var name = opt.Mandatory ? $"<{opt.Name}>" : $"[{opt.Name}]";
-                var domain = opt.OptionDomain?.IncludedValues?.Any() == true
-                    ? $" ({string.Join("|", opt.OptionDomain.IncludedValues.OrderBy(v => v))})"
-                    : "";
-                var defaultVal = !string.IsNullOrWhiteSpace(opt.DefaultValue)
-                    ? $" (default: {opt.DefaultValue})"
-                    : "";
-
-                var label = $"    {name}{domain}{defaultVal}";
-                lines.Add(new Components.ColoredLine(label, opt.Mandatory ? ConsoleColor.Yellow : ConsoleColor.DarkGray, false));
-
-                var wrappedDesc = Components.WrappedText(opt.Description, consoleWidth - 6);
-                foreach (var descLine in wrappedDesc)
-                    lines.Add(new Components.ColoredLine("      " + descLine, ConsoleColor.Gray));
-                
-                lines.Add(new Components.ColoredLine("      " + opt.Syntax, ConsoleColor.Gray));
-            }
-        }
-
-        // Examples
-        if (info.Examples.Count > 0 ) 
-        {
-            lines.Add(new Components.ColoredLine("examples:", ConsoleColor.Cyan));
-        }
-        foreach (var example in info.Examples){
-            if (!string.IsNullOrWhiteSpace(example))
-            {
-                lines.Add(new Components.ColoredLine(""));
-                lines.Add(new Components.ColoredLine("   " + example, ConsoleColor.White));
-            }
-        }
-
-        lines.Add(new Components.ColoredLine(""));
-        lines.Add(new Components.ColoredLine(separator, ConsoleColor.Gray));
-        lines.Add(new Components.ColoredLine(""));
-
-        return lines;
-    }
 
     public List<Components.ColoredLine> FormatNoteTable(List<Note> notes, string itemName, string libName, int consoleWidth)
     {
         var output = new List<Components.ColoredLine>();
 
-        // Setup headers and metadata
         string logoBar   = Components.LogoLine(consoleWidth);
         string titleBar  = "░░░░ NOTES " + new string('░', Math.Max(0, consoleWidth - 14));
         string header    = Components.LineFilled(consoleWidth, "left", ' ', $"{libName}/{itemName}");
         string statsBar  = Components.LineFilled(consoleWidth, "right", ' ', $"{notes.Count} notes");
         string bottomBar = new string('░', consoleWidth);
 
-        var headers = new[] { "ID", "AUTHOR", "TEXT", "CREATED AT", "EDITED AT" };
+        var tableHeaders = new[] { "ID", "AUTHOR", "TEXT", "CREATED AT", "EDITED AT" };
         const int padding = 3;
         const string ellipsis = "…";
 
@@ -267,18 +151,18 @@ public class ConsoleRenderer
             string.IsNullOrEmpty(text) ? "" : text.Length <= max ? text : text[..Math.Max(0, max - 1)] + ellipsis;
 
         // Compute ideal column widths
-        int[] colWidths = new int[headers.Length];
-        for (int i = 0; i < headers.Length; i++)
+        int[] colWidths = new int[tableHeaders.Length];
+        for (int i = 0; i < tableHeaders.Length; i++)
         {
             int maxRowLength = rows.Any()
                 ? rows.Max(r => r[i].Split('\n').Max(line => line.Length))
                 : 0;
 
-            colWidths[i] = Math.Max(headers[i].Length, maxRowLength);
+            colWidths[i] = Math.Max(tableHeaders[i].Length, maxRowLength);
         }
 
         // Adjust widths to fit console
-        int totalPadding = (headers.Length - 1) * padding;
+        int totalPadding = (tableHeaders.Length - 1) * padding;
         int totalWidth = colWidths.Sum() + totalPadding;
 
         if (totalWidth > consoleWidth)
@@ -308,7 +192,7 @@ public class ConsoleRenderer
 
         // Table header
         var headerLine = string.Join(" | ",
-            headers.Select((h, i) => Truncate(h, colWidths[i]).PadRight(colWidths[i])));
+            tableHeaders.Select((h, i) => Truncate(h, colWidths[i]).PadRight(colWidths[i])));
         output.Add(new Components.ColoredLine(headerLine, ConsoleColor.DarkGray));
         output.Add(new Components.ColoredLine(new string('-', consoleWidth), ConsoleColor.DarkGray));
 
@@ -357,7 +241,13 @@ public class ConsoleRenderer
         string logoBar = Components.LogoLine(consoleWidth);
         string titleBar = "░░░░ LIBRARY ITEMS " + new string('░', Math.Max(0, consoleWidth - 20));
         string layoutSequence = string.Join("/", lib.LayoutSequence.Select(p => p.Name));
-        string header = Components.LineFilled(consoleWidth, "left", ' ', $"{lib.Name}/{filterSequence}/{string.Join('|', itemNameFilter)}", $"{sortSequence}");
+        string header = Components.LineFilled(
+            consoleWidth,
+            "left",
+            ' ',
+            $"{lib.Name}/{filterSequence}/{string.Join('|', itemNameFilter.Where(n => n != "*").Select(n => n.IsCompound() ? $"'{n}'" : n))}",
+            $"{sortSequence}"
+        );
 
         string stats = $"{items.Count} items" + " " + $"{localSizeInBytes:N2} bytes";
         string footer = Components.LineSpacedBetween(consoleWidth, layoutSequence, stats);
@@ -376,8 +266,8 @@ public class ConsoleRenderer
             .OrderBy(k => k)
             .ToList();
 
-        var headers = new[] { "ID", "NAME" }.Concat(allKeys).ToList();
-        int columnCount = headers.Count;
+        var tableHeaders = new[] { "ID", "NAME" }.Concat(allKeys).ToList();
+        int columnCount = tableHeaders.Count;
 
         var rows = new List<string[]>();
 
@@ -406,13 +296,13 @@ public class ConsoleRenderer
             for (int i = 0; i < columnCount; i++)
             {
                 int maxDataWidth = rows.Max(r => r[i]?.Length ?? 0);
-                idealColWidths[i] = Math.Max(headers[i].Length, maxDataWidth);
+                idealColWidths[i] = Math.Max(tableHeaders[i].Length, maxDataWidth);
             }
         }
         else {
             for (int i = 0; i < columnCount; i++)
             {
-                idealColWidths[i] = headers[i].Length;
+                idealColWidths[i] = tableHeaders[i].Length;
 
             }
         }
@@ -451,7 +341,7 @@ public class ConsoleRenderer
         output.Add(new Components.ColoredLine(""));
 
         output.Add(new Components.ColoredLine(string.Join(" | ",
-            headers.Select((h, i) => Truncate(h, colWidths[i]).PadRight(colWidths[i]))), ConsoleColor.DarkGray));
+            tableHeaders.Select((h, i) => Truncate(h, colWidths[i]).PadRight(colWidths[i]))), ConsoleColor.DarkGray));
 
         output.Add(new Components.ColoredLine(string.Join("-|-", colWidths.Select(w => new string('-', w))), ConsoleColor.DarkGray));
 
@@ -580,132 +470,18 @@ public class ConsoleRenderer
         return output;
     }
 
-    public AuthPromptScreen AuthPromptRender(int consoleWidth)
-    {
-        var lines = new List<Components.ColoredLine>();
-        string title = "🟦 Welcome to Flexlib";
-        string subtitle = "Please identify yourself to continue";
-
-        // Layout sizes
-        int innerWidth = Math.Min(consoleWidth - 8, 60);
-        int paddingX = (consoleWidth - innerWidth) / 2;
-        string padX = new(' ', paddingX);
-        string horizontal = new('─', innerWidth - 2);
-
-        // Content lines (excluding vertical centering)
-        var boxLines = new List<Components.ColoredLine>();
-
-        boxLines.Add(new Components.ColoredLine($"{padX}┌{horizontal}┐", ConsoleColor.DarkGray));
-        boxLines.Add(new Components.ColoredLine($"{padX}│ {title.PadRight(innerWidth - 3)}│", ConsoleColor.Cyan));
-        boxLines.Add(new Components.ColoredLine($"{padX}│ {subtitle.PadRight(innerWidth - 3)}│", ConsoleColor.Gray));
-        boxLines.Add(new Components.ColoredLine($"{padX}│{"".PadRight(innerWidth - 2)}│", ConsoleColor.Gray));
-
-        string idLabel = "🪪 ID:";
-        string passLabel = "🔒 Password:";
-        int labelPad = 4;
-        string idLine = $"{new string(' ', labelPad)}{idLabel}";
-        string passLine = $"{new string(' ', labelPad)}{passLabel}";
-
-        int idX = paddingX + 1 + labelPad + idLabel.Length + 2; // +1 because of box border +2 to get distance from prompt text
-        int idY = boxLines.Count;
-        
-        int passX = paddingX + 1 + labelPad + passLabel.Length + 2; // +1 because of box border +2 to get distance from prompt text
-        boxLines.Add(new Components.ColoredLine($"{padX}│ {idLine.PadRight(innerWidth - 3)}│", ConsoleColor.White));
-        int passY = boxLines.Count;
-        boxLines.Add(new Components.ColoredLine($"{padX}│ {passLine.PadRight(innerWidth - 3)}│", ConsoleColor.White));
-
-        boxLines.Add(new Components.ColoredLine($"{padX}│{"".PadRight(innerWidth - 2)}│", ConsoleColor.Gray));
-        boxLines.Add(new Components.ColoredLine($"{padX}└{horizontal}┘", ConsoleColor.DarkGray));
-
-        // Center vertically
-        int consoleHeight = Console.WindowHeight;
-        int verticalPad = Math.Max(0, (consoleHeight - boxLines.Count) / 2);
-
-        for (int i = 0; i < verticalPad; i++)
-            lines.Add(new Components.ColoredLine("", ConsoleColor.Gray)); // empty line for spacing
-
-        lines.AddRange(boxLines);
-
-        // Adjust Y positions after vertical padding
-        return new AuthPromptScreen
-        {
-            Lines = lines,
-            IDPosition = (idX, verticalPad + idY),
-            PasswordPosition = (passX, verticalPad + passY)
-        };
-    }
-
-    public RegistrationPromptScreen RegistrationPromptRender(int consoleWidth)
-    {
-        var lines = new List<Components.ColoredLine>();
-        string title = "🟦 Welcome to Flexlib";
-        string subtitle = "Please create your account";
-
-        // Layout sizes
-        int innerWidth = Math.Min(consoleWidth - 8, 60);
-        int paddingX = (consoleWidth - innerWidth) / 2;
-        string padX = new(' ', paddingX);
-        string horizontal = new('─', innerWidth - 2);
-
-        // Box content lines
-        var boxLines = new List<Components.ColoredLine>();
-
-        boxLines.Add(new($"{padX}┌{horizontal}┐", ConsoleColor.DarkGray));
-        boxLines.Add(new($"{padX}│ {title.PadRight(innerWidth - 3)}│", ConsoleColor.Cyan));
-        boxLines.Add(new($"{padX}│ {subtitle.PadRight(innerWidth - 3)}│", ConsoleColor.Gray));
-        boxLines.Add(new($"{padX}│{"".PadRight(innerWidth - 2)}│", ConsoleColor.Gray));
-
-        // Field labels
-        int labelPad = 4;
-        string nameLabel = "👤 Name:";
-        string idLabel   = "🪪 ID:";
-        string passLabel = "🔒 Password:";
-
-        string nameLine = $"{new string(' ', labelPad)}{nameLabel}";
-        string idLine   = $"{new string(' ', labelPad)}{idLabel}";
-        string passLine = $"{new string(' ', labelPad)}{passLabel}";
-
-        int nameX = paddingX + 1 + labelPad + nameLabel.Length + 2;
-        int idX   = paddingX + 1 + labelPad + idLabel.Length + 2;
-        int passX = paddingX + 1 + labelPad + passLabel.Length + 2;
-
-        int nameY = boxLines.Count;
-        boxLines.Add(new($"{padX}│ {nameLine.PadRight(innerWidth - 3)}│", ConsoleColor.White));
-
-        int idY = boxLines.Count;
-        boxLines.Add(new($"{padX}│ {idLine.PadRight(innerWidth - 3)}│", ConsoleColor.White));
-
-        int passY = boxLines.Count;
-        boxLines.Add(new($"{padX}│ {passLine.PadRight(innerWidth - 3)}│", ConsoleColor.White));
-
-        boxLines.Add(new($"{padX}│{"".PadRight(innerWidth - 2)}│", ConsoleColor.Gray));
-        boxLines.Add(new($"{padX}└{horizontal}┘", ConsoleColor.DarkGray));
-
-        // Center vertically
-        int consoleHeight = Console.WindowHeight;
-        int verticalPad = Math.Max(0, (consoleHeight - boxLines.Count) / 2);
-
-        for (int i = 0; i < verticalPad; i++)
-            lines.Add(new("", ConsoleColor.Gray)); // blank padding
-
-        lines.AddRange(boxLines);
-
-        return new RegistrationPromptScreen
-        {
-            Lines = lines,
-            NamePosition     = (nameX, verticalPad + nameY),
-            IDPosition       = (idX, verticalPad + idY),
-            PasswordPosition = (passX, verticalPad + passY)
-        };
-    }
 
     public List<Components.ColoredLine> FormatItemPropertiesTable(LibraryItem item, Library lib, int consoleWidth)
     {
         var output = new List<Components.ColoredLine>();
 
         string logoBar = Components.LogoLine(consoleWidth);
-        string titleBar = $"░░░░ ITEM PROPERTIES {new string('░', Math.Max(0, consoleWidth - 25))}";
-        string header = Components.LineFilled(consoleWidth, "left", ' ', $"{lib.Name!}/'{item.Name!}'" );
+        string titleBar = $"░░░░ ITEM PROPERTIES {new string('░', Math.Max(0, consoleWidth - 21))}";
+        string header = Components.LineFilled(consoleWidth,
+                "left", ' ', 
+                $"{lib.Name!}/{ ( item.Name!.IsCompound() ? $"\'{item.Name}\'" : item.Name! ) }" );
+
+        string statsBar  = Components.LineSpacedBetween(consoleWidth, $"Item ID: {item.Id}", $"{lib.PropertyDefinitions.Count} properties");
         string bottomBar = new string('░', consoleWidth);
 
         const int padding = 4;
@@ -791,6 +567,7 @@ public class ConsoleRenderer
 
         output.Add(new Components.ColoredLine(""));
         output.Add(new Components.ColoredLine(bottomBar, ConsoleColor.Gray));
+        output.Add(new Components.ColoredLine(statsBar, ConsoleColor.Gray));
 
         return output;
     }
@@ -800,8 +577,9 @@ public class ConsoleRenderer
         var output = new List<Components.ColoredLine>();
 
         string logoBar = Components.LogoLine(consoleWidth);
-        string titleBar = $"░░░░ PROPERTY DEFINITIONS {new string('░', Math.Max(0, consoleWidth - 30))}";
-        string header = Components.LineFilled(consoleWidth, "left", ' ', lib.Name!, $"{lib.PropertyDefinitions.Count} properties");
+        string titleBar = $"░░░░ PROPERTY DEFINITIONS {new string('░', Math.Max(0, consoleWidth - 26))}";
+        string header = Components.LineFilled(consoleWidth, "left", ' ', lib.Name!);
+        string statsBar  = Components.LineFilled(consoleWidth, "right", ' ', $"{lib.PropertyDefinitions.Count} properties");
         string bottomBar = new string('░', consoleWidth);
 
         const int padding = 4;
@@ -819,17 +597,17 @@ public class ConsoleRenderer
             })
             .ToList();
 
-        var headers = new[] { "NAME", "TYPE", "DESCRIPTION" };
-        int columnCount = headers.Length;
+        var tableHeaders = new[] { "NAME", "TYPE", "DESCRIPTION" };
+        int columnCount = tableHeaders.Length;
 
         int[] idealColWidths = new int[columnCount];
         if (rows.Count > 0) {
             for (int i = 0; i < columnCount; i++)
-                idealColWidths[i] = Math.Max(headers[i].Length, rows.Max(r => r[i]?.Length ?? 0));
+                idealColWidths[i] = Math.Max(tableHeaders[i].Length, rows.Max(r => r[i]?.Length ?? 0));
         }
         else {
             for (int i = 0; i < columnCount; i++)
-                idealColWidths[i] = headers[i].Length;
+                idealColWidths[i] = tableHeaders[i].Length;
         }
 
         int totalPadding = (columnCount - 1) * padding;
@@ -866,7 +644,7 @@ public class ConsoleRenderer
         output.Add(new Components.ColoredLine(""));
 
         output.Add(new Components.ColoredLine(string.Join(" │ ",
-            headers.Select((h, i) => Truncate(h, colWidths[i]).PadRight(colWidths[i]))), ConsoleColor.DarkGray));
+            tableHeaders.Select((h, i) => Truncate(h, colWidths[i]).PadRight(colWidths[i]))), ConsoleColor.DarkGray));
 
         output.Add(new Components.ColoredLine(string.Join("-┼-", colWidths.Select(w => new string('-', w))), ConsoleColor.DarkGray));
 
@@ -878,6 +656,7 @@ public class ConsoleRenderer
 
         output.Add(new Components.ColoredLine(""));
         output.Add(new Components.ColoredLine(bottomBar, ConsoleColor.Gray));
+        output.Add(new Components.ColoredLine(statsBar, ConsoleColor.Gray));
 
         return output;
     }
@@ -887,7 +666,8 @@ public class ConsoleRenderer
         var output = new List<Components.ColoredLine>();
 
         string logoBar   = Components.LogoLine(consoleWidth);
-        string titleBar  = $"░░░░ DESKS IN LIBRARY: {libraryName.ToUpperInvariant()} " + new string('░', Math.Max(0, consoleWidth - 28 - libraryName.Length));
+        string titleBar  = $"░░░░ DESKS " + new string('░', Math.Max(0, consoleWidth - 11));
+        string header = Components.LineFilled(consoleWidth, "left", ' ', libraryName); 
         string statsBar  = Components.LineFilled(consoleWidth, "right", ' ', $"{desks.Count} desks");
         string bottomBar = new string('░', consoleWidth);
 
@@ -950,6 +730,8 @@ public class ConsoleRenderer
         output.Add(new Components.ColoredLine(""));
         output.Add(new Components.ColoredLine(titleBar, ConsoleColor.Gray));
         output.Add(new Components.ColoredLine(""));
+        output.Add(new Components.ColoredLine(header, ConsoleColor.DarkGray));
+        output.Add(new Components.ColoredLine(""));
 
         output.Add(new Components.ColoredLine(string.Join(" | ",
             columns.Select((col, i) => TruncateEnd(col.Header, colWidths[i]).PadRight(colWidths[i]))),
@@ -980,8 +762,10 @@ public class ConsoleRenderer
         var output = new List<Components.ColoredLine>();
 
         string logoBar    = Components.LogoLine(consoleWidth);
-        string titleBar   = $"░░░░ DESK VIEW {new string('░', Math.Max(0, consoleWidth - 16))}";
-        string headerLine = Components.LineFilled(consoleWidth, "left", ' ', $"{libName}/{desk.Name}", $"Borrowed Items");
+        string titleBar   = $"░░░░ DESK VIEW {new string('░', Math.Max(0, consoleWidth - 15))}";
+        string headerLine = Components.LineFilled(consoleWidth, "left", ' ', 
+                $"{libName}/{ ( desk.Name!.IsCompound() ? $"\'{desk.Name}\'" : desk.Name)}");
+
         string bottomBar  = new string('░', consoleWidth);
 
         const int padding = 3;
@@ -990,8 +774,8 @@ public class ConsoleRenderer
         string Truncate(string text, int max) =>
             string.IsNullOrEmpty(text) ? "" : text.Length <= max ? text : text[..Math.Max(0, max - 1)] + ellipsis;
 
-        var headers = new[] { "ID", "NAME", "BORROWED AT", "APPETITE", "PROGRESS", "PRIORITY" };
-        int columnCount = headers.Length;
+        var tableHeaders = new[] { "ID", "NAME", "BORROWED AT", "APPETITE", "PROGRESS", "PRIORITY" };
+        int columnCount = tableHeaders.Length;
 
         var rows = new List<string[]>();
         foreach (var item in desk.BorrowedItems)
@@ -1015,14 +799,14 @@ public class ConsoleRenderer
             for (int i = 0; i < columnCount; i++)
             {
                 int maxDataWidth = rows.Max(r => r[i]?.Length ?? 0);
-                idealColWidths[i] = Math.Max(headers[i].Length, maxDataWidth);
+                idealColWidths[i] = Math.Max(tableHeaders[i].Length, maxDataWidth);
             }
         }
         else
         {
             for (int i = 0; i < columnCount; i++)
             {
-                idealColWidths[i] = headers[i].Length;
+                idealColWidths[i] = tableHeaders[i].Length;
             }
         }
 
@@ -1067,24 +851,31 @@ public class ConsoleRenderer
         else
         {
             output.Add(new Components.ColoredLine(string.Join(" | ",
-                headers.Select((h, i) => Truncate(h, colWidths[i]).PadRight(colWidths[i]))), ConsoleColor.DarkGray));
+                tableHeaders.Select((h, i) => Truncate(h, colWidths[i]).PadRight(colWidths[i]))), ConsoleColor.DarkGray));
 
             output.Add(new Components.ColoredLine(string.Join("-|-",
                 colWidths.Select(w => new string('-', w))), ConsoleColor.DarkGray));
 
-            foreach (var row in rows)
+            for (int i = 0; i < rows.Count; i++)
             {
-                output.Add(new Components.ColoredLine(string.Join(" | ",
-                    row.Select((cell, i) => Truncate(cell, colWidths[i]).PadRight(colWidths[i])))));
+                var row = rows[i];
+                bool isCompleted = desk.BorrowedItems[i].Progress.IsCompleted;
+
+                var line = string.Join(" | ",
+                    row.Select((cell, j) => Truncate(cell, colWidths[j]).PadRight(colWidths[j])));
+
+                output.Add(new Components.ColoredLine(line, isCompleted ? ConsoleColor.Green : ConsoleColor.Gray));
             }
+
         }
 
         output.Add(new Components.ColoredLine(""));
         output.Add(new Components.ColoredLine(bottomBar, ConsoleColor.Gray));
 
         string footer = Components.LineSpacedBetween(consoleWidth,
-            $"Items on desk: {desk.BorrowedItems.Count}",
-            $"Desk ID: {desk.Id}");
+            $"Desk ID: {desk.Id}",
+            $"{desk.BorrowedItems.Count} items"
+            );
 
         output.Add(new Components.ColoredLine(footer, ConsoleColor.DarkGray));
 
@@ -1096,7 +887,7 @@ public class ConsoleRenderer
         if (string.IsNullOrEmpty(progress.CurrentValue) && string.IsNullOrEmpty(progress.CompletionValue))
             return "";
 
-        return $"{progress.CurrentValue}/{progress.CompletionValue}{progress.VariableUnit}";
+        return $"{progress.CurrentValue}/{progress.CompletionValue} {progress.Unit}";
     }
 
 }

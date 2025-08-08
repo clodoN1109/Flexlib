@@ -91,24 +91,6 @@ public class JsonLibraryRepository : ILibraryRepository
         return metaFile;
     }
 
-    public Result Save(Library lib)
-    {
-        if ( string.IsNullOrWhiteSpace(lib.Path) )
-        {
-            lib.Path = _dataDirectory;
-        }
-
-        _cache.RemoveAll(l => l.Name?.ToLowerInvariant() == lib.Name?.ToLowerInvariant() && l.Path == lib.Path);
-        _cache.Add(lib);
-        JsonHelpers.WriteJson(_metaFile, _cache);
-
-        UpdateLibFileStructure(lib);
-        UpdateLibMetaFile(lib);
-
-        return UpdateLocalStorage(lib);
-       
-    }
-
     private FlexlibConfig LoadOrCreateConfig()
     {
         string configFilePath = Path.Combine(AppConfigFolder!, "FlexlibConfig.json");
@@ -139,7 +121,27 @@ public class JsonLibraryRepository : ILibraryRepository
         return defaultConfig;
     }
 
-    public Result Save(LibraryItem item, Library lib){
+    public Result Save(Library lib, bool skipLocalStorage = false)
+    {
+        if (string.IsNullOrWhiteSpace(lib.Path))
+        {
+            lib.Path = _dataDirectory;
+        }
+
+        _cache.RemoveAll(l => l.Name?.ToLowerInvariant() == lib.Name?.ToLowerInvariant() && l.Path == lib.Path);
+        _cache.Add(lib);
+        JsonHelpers.WriteJson(_metaFile, _cache);
+
+        UpdateLibFileStructure(lib);
+        UpdateLibMetaFile(lib);
+
+        if (skipLocalStorage)
+            return Result.Success($"Library {lib.Name} metadata updated.");
+
+        return UpdateLocalStorage(lib);
+    }
+    
+    public Result Save(LibraryItem item, Library lib, bool skipLocalStorage = false){
         
         if ( string.IsNullOrWhiteSpace(lib.Path) )
         {
@@ -151,11 +153,11 @@ public class JsonLibraryRepository : ILibraryRepository
         JsonHelpers.WriteJson(_metaFile, _cache);
 
         UpdateLibMetaFile(lib);
-        var result = UpdateLocalStorage(item, lib);
-        if (result.IsSuccess)
-            return Result.Success($"Item {item.Name} was added to library {lib.Name} with ID {item.Id}");
-        else
-            return Result.Warn($"Item {item.Name} was added to library {lib.Name} with ID {item.Id}, but a local copy could not be retrieved from the origin: {item.Origin}");
+
+        if (skipLocalStorage)
+            return Result.Success($"Item {item.Name} metadata updated.");
+
+        return UpdateLocalStorage(item, lib);
 
     }
 

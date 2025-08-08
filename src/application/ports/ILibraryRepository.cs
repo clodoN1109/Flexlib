@@ -6,8 +6,8 @@ namespace Flexlib.Application.Ports;
 
 public interface ILibraryRepository
 {
-    Result Save(Library lib);
-    Result Save(LibraryItem item, Library lib);
+    Result Save(Library lib, bool skipLocalStorage = false);
+    Result Save(LibraryItem item, Library lib, bool skipLocalStorage = false);
     bool Exists(string name);
     Library? GetByName(string name);
     Result RemoveLibraryByName(string name);

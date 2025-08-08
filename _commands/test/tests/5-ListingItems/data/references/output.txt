@@ -1,5 +1,5 @@
 
->::>    flexlib                                                                                                                                1341.8939ad2d0becf6d015bf9461946b11a2d96fd074
+>::>    flexlib                                                                                                                                1542.38e9eba7ffec39abff687f7856b3df257d6dfd78
 
 ░░░░ LIBRARY ITEMS ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
@@ -11,8 +11,9 @@ ID | NAME | author | publisher | theme | year
 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 theme/publisher/author/year                                                                                                                                               0 items 0,00 bytes
 ---――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――┐
-  commands: help  signup  login  logout  new-lib  list-libs  remove-lib  set-layout  get-layout  new-item  rename-item  update-origin  list-items  remove-item  view-item  new-note   │
-            list-notes  edit-note  remove-note  new-prop  rename-prop  list-props  set-prop  unset-prop  remove-prop  fetch-files  rebalance  gui                               │
+  commands: help  signup  login  logout  new-lib  list-libs  remove-lib  set-layout  get-layout  new-item  rename-item  update-origin  list-items  remove-item  view-item  new-desk      │
+            list-desks  view-desk  set-appetite  set-progress  define-progress  set-priority  rename-desk  borrow-item  list-loans  return-item  new-note  list-notes  edit-note         │
+            remove-note  new-prop  rename-prop  list-props  set-prop  unset-prop  remove-prop  fetch-files  rebalance  tui  gui                                                          │
 ---――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――┘
 ---―――┐
     ✓ │

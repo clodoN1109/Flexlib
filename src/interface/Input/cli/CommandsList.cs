@@ -14,6 +14,7 @@ public static class CommandsList
         "list-desks",
         "view-desk",
         "borrow-item",
+        "list-loans",
         "return-item",
         "list-libs",
         "list-items",
@@ -34,5 +35,3 @@ public static class CommandsList
         "help"
     };
 }
-
-

@@ -31,7 +31,7 @@ public static class ReturnItem
 
             lib!.ReturnItem(itemId, userId, deskId);
 
-            repo.Save(lib);
+            repo.Save(lib, true);
 
             return Result.Success($"");
         }

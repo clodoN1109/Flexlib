@@ -32,7 +32,7 @@ public static class NewDesk
         if (result.IsFailure)
             return result;
 
-        return repo.Save(lib);
+        return repo.Save(lib, true);
         
     }
 

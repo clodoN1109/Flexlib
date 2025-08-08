@@ -34,6 +34,11 @@ public class ConsolePresenter : IPresenter
         return _mediaService.TryOpenFile(filePath);
     }
     
+    public void PresentLoanHistory(LoanHistory history, LibraryItem item, string libName)
+    {
+        _emitter.PrintLines(_renderer.FormatLoanHistoryTable(history, item, libName, Console.WindowWidth));
+    }
+    
     public void UserInfo(string info)
     {
         _emitter.PrintLines(_renderer.UserInfo(info).Lines, false);

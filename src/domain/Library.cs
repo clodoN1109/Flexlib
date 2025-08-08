@@ -55,8 +55,8 @@ public class Library
         var borrowedItem = new BorrowedItem(item.Id.ToString(), item.Name ?? "Unknown");
         desk.AddBorrowedItem(borrowedItem);
 
-        var entry = new BorrowHistoryEntry(userId);
-        item.BorrowHistory.Entries.Add(entry);
+        var entry = new LoanHistoryEntry(userId);
+        item.Loans.Entries.Add(entry);
 
         return Result.Success($"Item '{item.Name}' borrowed to desk '{desk.Name}'.");
     }
@@ -67,7 +67,7 @@ public class Library
         if (item == null)
             return Result.Fail($"Item of ID {itemId} not found.");
 
-        var entry = item.BorrowHistory.Entries
+        var entry = item.Loans.Entries
             .LastOrDefault(e => e.UserId == userId && !e.WasReturned);
 
         if (entry == null)

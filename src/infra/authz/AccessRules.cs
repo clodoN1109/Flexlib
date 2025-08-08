@@ -22,7 +22,13 @@ public static class ActionAccessRules
         ["new-desk"]        = AccessLevel.User,
         ["list-desks"]      = AccessLevel.User,
         ["view-desk"]       = AccessLevel.User,
+        ["set-appetite"]    = AccessLevel.User,
+        ["set-progress"]    = AccessLevel.User,
+        ["define-progress"] = AccessLevel.User,
+        ["set-priority"]    = AccessLevel.User,
+        ["rename-desk"]     = AccessLevel.User,
         ["borrow-item"]     = AccessLevel.User,
+        ["list-loans"]      = AccessLevel.User,
         ["return-item"]     = AccessLevel.User,
         ["new-note"]        = AccessLevel.User,
         ["list-notes"]      = AccessLevel.User,
@@ -36,6 +42,7 @@ public static class ActionAccessRules
         ["remove-prop"]     = AccessLevel.User,
         ["fetch-files"]     = AccessLevel.User,
         ["rebalance"]       = AccessLevel.User,
+        ["tui"]             = AccessLevel.Public,
         ["gui"]             = AccessLevel.Public
     };
 
