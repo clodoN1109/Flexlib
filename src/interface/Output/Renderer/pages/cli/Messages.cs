@@ -8,6 +8,7 @@ using Flexlib.Infrastructure.Processing;
 using Flexlib.Interface.Output;
 using Flexlib.Interface.Input;
 using System.Linq;
+using Flexlib.Infrastructure.Environment;
 
 namespace Flexlib.Interface.Output;
 
@@ -22,7 +23,7 @@ public partial class ConsoleRenderer
         if (string.IsNullOrWhiteSpace(message))
             return new Components.WrappedMessage { Lines = lines };
 
-        int maxBoxWidth = Console.WindowWidth - 4;
+        int maxBoxWidth = Env.GetSafeWindowWidth() - 4;
         int innerWidth = Math.Max(10, maxBoxWidth - 6);
 
         var wrappedLines = new List<string>();

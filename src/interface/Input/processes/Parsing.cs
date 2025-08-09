@@ -1,6 +1,7 @@
 using Flexlib.Interface.GUI;
-using Flexlib.Application.Ports;
 using Flexlib.Interface.CLI;
+using Flexlib.Interface.TUI;
+using Flexlib.Application.Ports;
 
 namespace Flexlib.Interface.Input;
 
@@ -55,8 +56,8 @@ public static partial class Input
             "fetch-files"       => new FetchFilesCommand(options),
             "rebalance"         => new RebalanceLocalStorageCommand(options),
             "remove-lib"        => new RemoveLibraryCommand(options),
-            "tui"               => new TUIStartUp(new TUIConfig()),
-            "gui"               => new GUIStartUp(new GUIConfig()),
+            "tui"               => new TUIStartUp(options),
+            "gui"               => new GUIStartUp(options),
             "help"              => new HelpCommand(options),
             _                   => new UnknownInput($"Unknown input: {firstArg}")
         };

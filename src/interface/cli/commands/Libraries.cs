@@ -28,24 +28,24 @@ public class NewLibraryCommand : Command
         return !string.IsNullOrWhiteSpace(Name);
     }
 
-    public override UsageInfo GetUsageInfo()
+    public override CommandUsageInfo GetUsageInfo()
     {
-        return new UsageInfo
+        return new CommandUsageInfo
         {
             Meta = new List<string> {},
             Title = "new-lib",
             Description = "Creates a new library with the selected name and located at the selected path.",
             Group = CommandGroups.Libraries,
             Syntax = "flexlib new-lib <library name> [library path]",
-            Options = new List<CommandOption>
+            Options = new List<Option>
             {
-                new CommandOption{
+                new Option{
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
                 
-                new CommandOption{
+                new Option{
                     Name = "path",
                     OptionDomain = new VariableDomain(),
                     Mandatory = false
@@ -71,18 +71,18 @@ public class RemoveLibraryCommand : Command
         return !string.IsNullOrWhiteSpace(Name);
     }
 
-    public override UsageInfo GetUsageInfo()
+    public override CommandUsageInfo GetUsageInfo()
     {
-        return new UsageInfo
+        return new CommandUsageInfo
         {
             Meta = new List<string> {},
             Title = "remove-lib",
             Description = "Removes the selected library and all its items.",
             Group = CommandGroups.Libraries,
             Syntax = "flexlib remove-lib <library name>",
-            Options = new List<CommandOption>
+            Options = new List<Option>
             {
-                new CommandOption{
+                new Option{
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
                     Mandatory = true
@@ -114,16 +114,16 @@ public class ListLibrariesCommand : Command
         
     }
     
-    public override UsageInfo GetUsageInfo()
+    public override CommandUsageInfo GetUsageInfo()
     {
-        return new UsageInfo
+        return new CommandUsageInfo
         {
             Meta = new List<string> {},
             Title = "list-libs",
             Description = "Lists all accessible existing libraries.",
             Group = CommandGroups.Libraries,
             Syntax = "flexlib list-libs",
-            Options = new List<CommandOption>()
+            Options = new List<Option>()
         };
     }
 }
@@ -152,18 +152,18 @@ public class GetLibraryLayoutCommand : Command
         
     }
     
-    public override UsageInfo GetUsageInfo()
+    public override CommandUsageInfo GetUsageInfo()
     {
-        return new UsageInfo
+        return new CommandUsageInfo
         {
             Meta = new List<string> {},
             Title = "get-layout",
             Description = "Gets the current library layout.",
             Group = CommandGroups.Libraries,
             Syntax = "flexlib get-layout <library name>",
-            Options = new List<CommandOption>
+            Options = new List<Option>
             {
-                new CommandOption{
+                new Option{
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
                     Mandatory = true
@@ -200,24 +200,24 @@ public class SetLibraryLayoutCommand : Command
         
     }
     
-    public override UsageInfo GetUsageInfo()
+    public override CommandUsageInfo GetUsageInfo()
     {
-        return new UsageInfo
+        return new CommandUsageInfo
         {
             Meta = new List<string> {},
             Title = "set-layout",
             Description = "Redefines the selected library layout.",
             Group = CommandGroups.Libraries,
             Syntax = "flexlib set-layout <library name> <layout>",
-            Options = new List<CommandOption>
+            Options = new List<Option>
             {
-                new CommandOption{
+                new Option{
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
                 
-                new CommandOption{
+                new Option{
                     Name = "layout",
                     OptionDomain = new VariableDomain(),
                     Mandatory = true,

@@ -1,6 +1,6 @@
-namespace Flexlib.Interface.CLI;
+namespace Flexlib.Interface.Input;
 
-public static class CommandsList
+public static class ActionsList
 {
     public static List<string> Items { get; } = new List<string> {
         "signup",
@@ -32,6 +32,7 @@ public static class CommandsList
         "rebalance",
         "remove-lib",
         "gui",
+        "tui",
         "help"
     };
 }

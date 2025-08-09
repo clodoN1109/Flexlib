@@ -13,7 +13,7 @@ namespace Flexlib.Interface.CLI;
 
 public abstract class Command : ParsedInput, IAction
 {
-    public abstract UsageInfo GetUsageInfo();
+    public abstract CommandUsageInfo GetUsageInfo();
 
     public abstract string Type { get; }
 

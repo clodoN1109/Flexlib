@@ -29,16 +29,16 @@ public class NewUserCommand : Command
         return false;
     }
 
-    public override UsageInfo GetUsageInfo()
+    public override CommandUsageInfo GetUsageInfo()
     {
-        return new UsageInfo
+        return new CommandUsageInfo
         {
             Meta = new List<string> {},
             Title = "signup",
             Description = "Registers a new user.",
             Group = CommandGroups.Authentication,
             Syntax = "flexlib signup",
-            Options = new List<CommandOption>()
+            Options = new List<Option>()
         };
     }
 }
@@ -63,16 +63,16 @@ public class LoginCommand : Command
         return false;
     }
 
-    public override UsageInfo GetUsageInfo()
+    public override CommandUsageInfo GetUsageInfo()
     {
-        return new UsageInfo
+        return new CommandUsageInfo
         {
             Meta = new List<string> {},
             Title = "login",
             Description = "Login as an existing user.",
             Group = CommandGroups.Authentication,
             Syntax = "flexlib login",
-            Options = new List<CommandOption>()
+            Options = new List<Option>()
         };
     }
 }
@@ -97,16 +97,16 @@ public class LogoutCommand : Command
         return false;
     }
 
-    public override UsageInfo GetUsageInfo()
+    public override CommandUsageInfo GetUsageInfo()
     {
-        return new UsageInfo
+        return new CommandUsageInfo
         {
             Meta = new List<string> {},
             Title = "logout",
             Description = "Logout from an opened session.",
             Group = CommandGroups.Authentication,
             Syntax = "flexlib logout",
-            Options = new List<CommandOption>()
+            Options = new List<Option>()
         };
     }
 }

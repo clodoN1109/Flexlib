@@ -76,7 +76,7 @@ public partial class ConsoleRenderer
 
         string separator = new string('░', consoleWidth);
         string logo = Components.LogoLine(consoleWidth);
-        string title = $"░░░░ {info.Group.Icon} {info.Title.ToUpperInvariant()}" + " ";
+        string title = $"░░░░ {(info is CommandUsageInfo cmdInfo ? cmdInfo.Group.Icon + " " : "")}{info?.Title.ToUpperInvariant()} ";
         string paddedTitle = title + new string('░', Math.Max(0, consoleWidth - title.Length));
 
         lines.Add(new Components.ColoredLine(""));
@@ -85,14 +85,14 @@ public partial class ConsoleRenderer
         lines.Add(new Components.ColoredLine(paddedTitle, ConsoleColor.Gray));
 
         // Metadata
-        if (info.Meta?.Any() == true)
+        if (info?.Meta?.Any() == true)
         {
             lines.Add(new Components.ColoredLine(""));
             lines.Add(new Components.ColoredLine(string.Join("  •  ", info.Meta), ConsoleColor.DarkGray));
         }
 
         // Description
-        if (!string.IsNullOrWhiteSpace(info.Description))
+        if (!string.IsNullOrWhiteSpace(info?.Description))
         {
             lines.Add(new Components.ColoredLine(""));
             var wrapped = Components.WrappedText(info.Description, consoleWidth);
@@ -101,7 +101,7 @@ public partial class ConsoleRenderer
         }
 
         // Usage Syntax
-        if (!string.IsNullOrWhiteSpace(info.Syntax))
+        if (!string.IsNullOrWhiteSpace(info?.Syntax))
         {
             lines.Add(new Components.ColoredLine(""));
             lines.Add(new Components.ColoredLine("usage:", ConsoleColor.Cyan));
@@ -110,7 +110,7 @@ public partial class ConsoleRenderer
         }
 
         // Options
-        if (info.Options?.Any() == true)
+        if (info?.Options?.Any() == true)
         {
             lines.Add(new Components.ColoredLine(""));
             lines.Add(new Components.ColoredLine("options:", ConsoleColor.Cyan));
@@ -138,14 +138,15 @@ public partial class ConsoleRenderer
         }
 
         // Examples
-        if (info.Examples.Count > 0 ) 
+        if (info?.Examples.Count > 0 ) 
         {
             lines.Add(new Components.ColoredLine("examples:", ConsoleColor.Cyan));
         }
-        foreach (var example in info.Examples){
+        foreach (var example in info?.Examples ?? new List<string>())
+        {
             if (!string.IsNullOrWhiteSpace(example))
             {
-                lines.Add(new Components.ColoredLine(""));
+                lines.Add(new Components.ColoredLine("")); // Adds an empty line
                 lines.Add(new Components.ColoredLine("   " + example, ConsoleColor.White));
             }
         }

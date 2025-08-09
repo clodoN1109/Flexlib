@@ -40,28 +40,28 @@ public class NewNoteCommand : NoteCommand
         return Options.Length > 0 && Options.Length <= 3;
     }
 
-    public override UsageInfo GetUsageInfo()
+    public override CommandUsageInfo GetUsageInfo()
     {
-        return new UsageInfo
+        return new CommandUsageInfo
         {
             Meta = new List<string> {},
             Title = "new-note",
             Description = "Creates a new note for the selected library item.",
             Group = CommandGroups.Notes,
             Syntax = "flexlib new-note <item id> [library name] [note]" ,
-            Options = new List<CommandOption>
+            Options = new List<Option>
             {
-                new CommandOption{
+                new Option{
                     Name = "item id",
                     OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
-                new CommandOption{
+                new Option{
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
                     DefaultValue = "Default Library" 
                 },
-                new CommandOption{
+                new Option{
                     Name = "note",
                     OptionDomain = new VariableDomain()
                 }
@@ -88,24 +88,24 @@ public class ListNotesCommand : NoteCommand
         return Options.Length > 0 && Options.Length < 3;
     }
     
-    public override UsageInfo GetUsageInfo()
+    public override CommandUsageInfo GetUsageInfo()
     {
-        return new UsageInfo
+        return new CommandUsageInfo
         {
             Meta = new List<string> {},
             Title = "list-notes",
             Description = "List all notes from a selected library item.",
             Group = CommandGroups.Notes,
             Syntax = "flexlib list-notes <item id> [library name]",
-            Options = new List<CommandOption>
+            Options = new List<Option>
             {
-                new CommandOption{
+                new Option{
                     Name = "item id",
                     OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
 
-                new CommandOption{
+                new Option{
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
                     DefaultValue = "Default Library" 
@@ -137,28 +137,28 @@ public class EditNoteCommand : NoteCommand
         return Options.Length > 1 && Options.Length < 4;
     }
 
-    public override UsageInfo GetUsageInfo()
+    public override CommandUsageInfo GetUsageInfo()
     {
-        return new UsageInfo
+        return new CommandUsageInfo
         {
             Meta = new List<string> {},
             Title = "edit-note",
             Description = "Edit a selected commment.",
             Group = CommandGroups.Notes,
             Syntax = "flexlib edit-note <item id> <note id> [library name]",
-            Options = new List<CommandOption>
+            Options = new List<Option>
             {
-                new CommandOption{
+                new Option{
                     Name = "item id",
                     OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
-                new CommandOption{
+                new Option{
                     Name = "note id",
                     OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
-                new CommandOption{
+                new Option{
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
                     DefaultValue = "Default Library" 
@@ -189,28 +189,28 @@ public class RemoveNoteCommand : NoteCommand
         return Options.Length > 1 && Options.Length < 4;
     }
 
-    public override UsageInfo GetUsageInfo()
+    public override CommandUsageInfo GetUsageInfo()
     {
-        return new UsageInfo
+        return new CommandUsageInfo
         {
             Meta = new List<string> {},
             Title = "remove-note",
             Description = "Remove a note from a selected item.",
             Group = CommandGroups.Notes,
             Syntax = "flexlib remove-note <item id> <note id> [library name]",
-            Options = new List<CommandOption>
+            Options = new List<Option>
             {
-                new CommandOption{
+                new Option{
                     Name = "item id",
                     OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
-                new CommandOption{
+                new Option{
                     Name = "note id",
                     OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
-                new CommandOption{
+                new Option{
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
                     DefaultValue = "Default Library" 

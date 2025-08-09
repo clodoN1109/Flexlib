@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using Flexlib.Infrastructure.Config;
+using Flexlib.Infrastructure.Environment;
 using Flexlib.Interface.Output;
 
 namespace Flexlib.Interface.Output;
@@ -54,7 +56,7 @@ public static class PrettyException
 
     private static void PrintFormatted(Exception ex)
     {
-        var consoleWidth = Console.WindowWidth;
+        var consoleWidth = Env.GetSafeWindowWidth();
         var divider = new string('░', consoleWidth);
         var logBar = $"░░░░ EXCEPTION LOG ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░";
 

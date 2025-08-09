@@ -28,7 +28,7 @@ public static class InputPreProcessing
         {
             Value = final,
             Original = process.OriginalInput,
-            IsValid = final is ParsedInput
+            IsValid = final is ParsedInput 
         };
     }
 }
@@ -37,7 +37,7 @@ public class PreProcessingResult
 {
     public object? Value { get; set; }
     public object? Original { get; set; }
-    public bool? IsValid { get; set; }
+    public bool IsValid { get; set; }
 }
 
 public abstract class ProcessedInput
