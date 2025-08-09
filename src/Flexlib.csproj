@@ -7,15 +7,12 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Terminal.Gui" Version="1.19.0" />
+    </ItemGroup>
+
     <Target Name="EmitBuildTargetInfo" AfterTargets="Build">
-      <WriteLinesToFile
-        File="$(MSBuildProjectDirectory)\..\builds\last\build-target-info.json"
-        Lines="
-        {
-          &quot;TargetFramework&quot;: &quot;$(TargetFramework)&quot;,
-          &quot;RuntimeIdentifier&quot;: &quot;$(RuntimeIdentifier)&quot;
-        }"
-        Overwrite="true" />
+      <WriteLinesToFile File="$(MSBuildProjectDirectory)\..\builds\last\build-target-info.json" Lines="&#xD;&#xA;        {&#xD;&#xA;          &quot;TargetFramework&quot;: &quot;$(TargetFramework)&quot;,&#xD;&#xA;          &quot;RuntimeIdentifier&quot;: &quot;$(RuntimeIdentifier)&quot;&#xD;&#xA;        }" Overwrite="true" />
     </Target>
 
 </Project>

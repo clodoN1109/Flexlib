@@ -27,24 +27,24 @@ public class NewDeskCommand : Command
         return Options.Length == 2;
     }
     
-    public override UsageInfo GetUsageInfo()
+    public override CommandUsageInfo GetUsageInfo()
     {
-        return new UsageInfo
+        return new CommandUsageInfo
         {
             Meta = new List<string> {},
             Title = "new-desk",
             Description = "Creates a new desk to organize borrowed items and track their progress.",
             Group = CommandGroups.Desks,
             Syntax = "flexlib new-desk <desk name> <library name>",
-            Options = new List<CommandOption>
+            Options = new List<Option>
             {
-                new CommandOption{
+                new Option{
                     Name = "desk name",
                     OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
 
-                new CommandOption{
+                new Option{
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
                     Mandatory = true
@@ -72,18 +72,18 @@ public class ListDesksCommand : Command
         return Options.Length == 1;
     }
 
-    public override UsageInfo GetUsageInfo()
+    public override CommandUsageInfo GetUsageInfo()
     {
-        return new UsageInfo
+        return new CommandUsageInfo
         {
             Meta = new List<string> { },
             Title = "list-desks",
             Description = "Lists all desks in the specified library.",
             Group = CommandGroups.Desks,
             Syntax = "flexlib list-desks <library name>",
-            Options = new List<CommandOption>
+            Options = new List<Option>
             {
-                new CommandOption
+                new Option
                 {
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
@@ -115,32 +115,32 @@ public class ViewDeskCommand : Command
         return (Options.Length > 1 && Options.Length < 4);
     }
 
-    public override UsageInfo GetUsageInfo()
+    public override CommandUsageInfo GetUsageInfo()
     {
-        return new UsageInfo
+        return new CommandUsageInfo
         {
             Meta = new List<string> { },
             Title = "view-desk",
             Description = "Displays the items and progress for a specific desk.",
             Group = CommandGroups.Desks,
             Syntax = "flexlib view-desk <desk id> <library name> [sort sequence]",
-            Options = new List<CommandOption>
+            Options = new List<Option>
             {
-                new CommandOption
+                new Option
                 {
                     Name = "desk id",
                     OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
 
-                new CommandOption
+                new Option
                 {
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
                 
-                new CommandOption
+                new Option
                 {
                     Name = "sort sequence",
                     OptionDomain = new VariableDomain("id", "name", "borrowedat", "appetite", "priority", "progress", "completion-value"),
@@ -172,30 +172,30 @@ public class BorrowItemCommand : Command
         return Options.Length == 3;
     }
 
-    public override UsageInfo GetUsageInfo()
+    public override CommandUsageInfo GetUsageInfo()
     {
-        return new UsageInfo
+        return new CommandUsageInfo
         {
             Meta = new List<string> { },
             Title = "borrow-item",
             Description = "Borrows an item to a desk to track its usage or progress.",
             Group = CommandGroups.Desks,
             Syntax = "flexlib borrow-item <item id> <desk id> <library name>",
-            Options = new List<CommandOption>
+            Options = new List<Option>
             {
-                new CommandOption
+                new Option
                 {
                     Name = "item id",
                     OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
-                new CommandOption
+                new Option
                 {
                     Name = "desk id",
                     OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
-                new CommandOption
+                new Option
                 {
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
@@ -225,25 +225,25 @@ public class ListLoansCommand : Command
         return Options.Length == 2;
     }
 
-    public override UsageInfo GetUsageInfo()
+    public override CommandUsageInfo GetUsageInfo()
     {
-        return new UsageInfo
+        return new CommandUsageInfo
         {
             Meta = new List<string> { },
             Title = "list-loans",
             Description = "Lists the loan history for the selected item.",
             Group = CommandGroups.Desks,
             Syntax = "flexlib list-loans <item id> <library name>",
-            Options = new List<CommandOption>
+            Options = new List<Option>
             {
-                new CommandOption
+                new Option
                 {
                     Name = "item id",
                     OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
 
-                new CommandOption
+                new Option
                 {
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
@@ -276,30 +276,30 @@ public class ReturnItemCommand : Command
         return Options.Length == 3;
     }
 
-    public override UsageInfo GetUsageInfo()
+    public override CommandUsageInfo GetUsageInfo()
     {
-        return new UsageInfo
+        return new CommandUsageInfo
         {
             Meta = new List<string> { },
             Title = "return-item",
             Description = "Returns an item from a desk, marking it as no longer borrowed.",
             Group = CommandGroups.Desks,
             Syntax = "flexlib return-item <item id> <desk id> <library name>",
-            Options = new List<CommandOption>
+            Options = new List<Option>
             {
-                new CommandOption
+                new Option
                 {
                     Name = "item id",
                     OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
-                new CommandOption
+                new Option
                 {
                     Name = "desk id",
                     OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
-                new CommandOption
+                new Option
                 {
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
@@ -330,16 +330,16 @@ public class SetAppetiteCommand : Command
 
     public override bool IsValid() => Options.Length == 4;
 
-    public override UsageInfo GetUsageInfo()
+    public override CommandUsageInfo GetUsageInfo()
     {
-        return new UsageInfo
+        return new CommandUsageInfo
         {
             Meta = new List<string>(),
             Title = "set-appetite",
             Description = "Assigns an appetite time to an item.",
             Group = CommandGroups.Items,
             Syntax = "flexlib set-appetite <item id> <desk id> <library name> <date>",
-            Options = new List<CommandOption>
+            Options = new List<Option>
             {
                 new("item id", new VariableDomain(), true),
                 new("desk id", new VariableDomain(), true),
@@ -378,16 +378,16 @@ public class SetProgressCommand : Command
 
     public override bool IsValid() => Options.Length == 4;
 
-    public override UsageInfo GetUsageInfo()
+    public override CommandUsageInfo GetUsageInfo()
     {
-        return new UsageInfo
+        return new CommandUsageInfo
         {
             Meta = new List<string>(),
             Title = "set-progress",
             Description = "Updates the progress value of an item.",
             Group = CommandGroups.Items,
             Syntax = "flexlib set-progress <new value> <item id> <desk id> <library name>",
-            Options = new List<CommandOption>
+            Options = new List<Option>
             {
                 new("new value", new VariableDomain(), true),
                 new("item id", new VariableDomain(), true),
@@ -420,16 +420,16 @@ public class DefineProgressCommand : Command
 
     public override bool IsValid() => Options.Length == 5;
 
-    public override UsageInfo GetUsageInfo()
+    public override CommandUsageInfo GetUsageInfo()
     {
-        return new UsageInfo
+        return new CommandUsageInfo
         {
             Meta = new List<string>(),
             Title = "define-progress",
             Description = "Defines or renames a progress state.",
             Group = CommandGroups.Items,
             Syntax = "flexlib define-progress <unit> <completion value> <item id> <desk id> <library name>",
-            Options = new List<CommandOption>
+            Options = new List<Option>
             {
                 new("unit", new VariableDomain(), true),
                 new("completion value", new VariableDomain(), true),
@@ -461,16 +461,16 @@ public class SetPriorityCommand : Command
 
     public override bool IsValid() => Options.Length == 4 && int.TryParse(NewPriority, out _);
 
-    public override UsageInfo GetUsageInfo()
+    public override CommandUsageInfo GetUsageInfo()
     {
-        return new UsageInfo
+        return new CommandUsageInfo
         {
             Meta = new List<string>(),
             Title = "set-priority",
             Description = "Sets the priority of an item.",
             Group = CommandGroups.Items,
             Syntax = "flexlib set-priority <priority> <item id> <desk id> <library name>",
-            Options = new List<CommandOption>
+            Options = new List<Option>
             {
                 new("priority", new VariableDomain(), true),
                 new("item id",  new VariableDomain(), true),
@@ -499,15 +499,15 @@ public class RenameDeskCommand : Command
 
     public override bool IsValid() => Options.Length == 3;
 
-    public override UsageInfo GetUsageInfo()
+    public override CommandUsageInfo GetUsageInfo()
     {
-        return new UsageInfo
+        return new CommandUsageInfo
         {
             Title = "rename-desk",
             Description = "Renames an existing desk.",
             Group = CommandGroups.Desks,
             Syntax = "flexlib rename-desk <new name> <desk id> <library name>",
-            Options = new List<CommandOption>
+            Options = new List<Option>
             {
                 new("new name", new VariableDomain(), true),
                 new("desk id", new VariableDomain(), true),

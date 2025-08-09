@@ -32,5 +32,21 @@ public static class StringExtensions
     {
         return !string.IsNullOrWhiteSpace(input) && input.Trim().Contains(' ');
     }
+
+    public static List<string> ToListOfStrings(this string input, string divisor = " ")
+    {
+        return input
+            .Split(new[] { divisor }, StringSplitOptions.RemoveEmptyEntries)
+            .Select(s => s.Trim())
+            .ToList();
+    }
+    public static string[] ToArrayOfStrings(this string input, string divisor = " ")
+    {
+        return input
+            .Split(new[] { divisor }, StringSplitOptions.RemoveEmptyEntries)
+            .Select(s => s.Trim())
+            .ToArray();
+    }
+
 }
 

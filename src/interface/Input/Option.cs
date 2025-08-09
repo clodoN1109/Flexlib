@@ -1,8 +1,8 @@
 using Flexlib.Infrastructure.Modelling;
 
-namespace Flexlib.Interface.CLI;
+namespace Flexlib.Interface.Input;
 
-public class CommandOption
+public class Option
 {
     public string Name { get; set; } = "";
     public string Description { get; set; } = "";
@@ -12,14 +12,14 @@ public class CommandOption
     public string DefaultValue { get; set; } = "";
     public bool Reversible { get; set; } = false;
 
-    public CommandOption(string name, VariableDomain domain, bool mandatory = false)
+    public Option(string name, VariableDomain domain, bool mandatory = false)
     {
         Name = name;
         OptionDomain = domain;
         Mandatory = mandatory;
     }
 
-    public CommandOption(){}
+    public Option(){}
 }
 
 

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Text;
+using Flexlib.Infrastructure.Environment;
 
 namespace Flexlib.Interface.Output;
 
@@ -19,7 +20,7 @@ public static partial class Components
 
         private static string Truncate(string text)
         {
-            int width = Console.WindowWidth;
+            int width = Env.GetSafeWindowWidth();
             return text.Length <= width ? text : text[..Math.Max(0, width - 1)] + "…";
         }
     }
