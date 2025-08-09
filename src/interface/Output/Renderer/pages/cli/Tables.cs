@@ -73,7 +73,7 @@ public partial class ConsoleRenderer
         }
 
         output.Add(new Components.ColoredLine(""));
-        output.Add(new Components.ColoredLine(logoBar));
+        // output.Add(new Components.ColoredLine(logoBar));
         output.Add(new Components.ColoredLine(""));
         output.Add(new Components.ColoredLine(titleBar, ConsoleColor.Gray));
         output.Add(new Components.ColoredLine(""));
@@ -183,7 +183,7 @@ public partial class ConsoleRenderer
 
         // Header rendering
         output.Add(new Components.ColoredLine(""));
-        output.Add(new Components.ColoredLine(logoBar));
+        // output.Add(new Components.ColoredLine(logoBar));
         output.Add(new Components.ColoredLine(""));
         output.Add(new Components.ColoredLine(titleBar, ConsoleColor.Gray));
         output.Add(new Components.ColoredLine(""));
@@ -333,7 +333,7 @@ public partial class ConsoleRenderer
         }
 
         output.Add(new Components.ColoredLine(""));
-        output.Add(new Components.ColoredLine(logoBar));
+        // output.Add(new Components.ColoredLine(logoBar));
         output.Add(new Components.ColoredLine(""));
         output.Add(new Components.ColoredLine(titleBar, ConsoleColor.Gray));
         output.Add(new Components.ColoredLine(""));
@@ -441,7 +441,7 @@ public partial class ConsoleRenderer
 
         // Draw table
         output.Add(new Components.ColoredLine(""));
-        output.Add(new Components.ColoredLine(logoBar));
+        // output.Add(new Components.ColoredLine(logoBar));
         output.Add(new Components.ColoredLine(""));
         output.Add(new Components.ColoredLine(titleBar, ConsoleColor.Gray));
         output.Add(new Components.ColoredLine(""));
@@ -542,7 +542,7 @@ public partial class ConsoleRenderer
         }
 
         output.Add(new Components.ColoredLine(""));
-        output.Add(new Components.ColoredLine(logoBar));
+        // output.Add(new Components.ColoredLine(logoBar));
         output.Add(new Components.ColoredLine(""));
         output.Add(new Components.ColoredLine(titleBar, ConsoleColor.Gray));
         output.Add(new Components.ColoredLine(""));
@@ -636,7 +636,7 @@ public partial class ConsoleRenderer
         }
 
         output.Add(new Components.ColoredLine(""));
-        output.Add(new Components.ColoredLine(logoBar));
+        // output.Add(new Components.ColoredLine(logoBar));
         output.Add(new Components.ColoredLine(""));
         output.Add(new Components.ColoredLine(titleBar, ConsoleColor.Gray));
         output.Add(new Components.ColoredLine(""));
@@ -726,7 +726,7 @@ public partial class ConsoleRenderer
 
         // Render
         output.Add(new Components.ColoredLine(""));
-        output.Add(new Components.ColoredLine(logoBar));
+        // output.Add(new Components.ColoredLine(logoBar));
         output.Add(new Components.ColoredLine(""));
         output.Add(new Components.ColoredLine(titleBar, ConsoleColor.Gray));
         output.Add(new Components.ColoredLine(""));
@@ -837,7 +837,7 @@ public partial class ConsoleRenderer
 
         // Render output
         output.Add(new Components.ColoredLine(""));
-        output.Add(new Components.ColoredLine(logoBar));
+        // output.Add(new Components.ColoredLine(logoBar));
         output.Add(new Components.ColoredLine(""));
         output.Add(new Components.ColoredLine(titleBar, ConsoleColor.Gray));
         output.Add(new Components.ColoredLine(""));

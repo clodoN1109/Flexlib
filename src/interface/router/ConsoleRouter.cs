@@ -58,7 +58,7 @@ public static class ConsoleRouter
 
         ConsoleController.Handle(cmd, user);
 
-        _presenter.UserInfo(user?.Id ?? "");
+        // _presenter.UserInfo(user?.Id ?? "");
         
         if (authResult.IsFailureOrWarning)
             _presenter.Result(authResult);

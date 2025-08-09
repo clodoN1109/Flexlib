@@ -29,18 +29,26 @@ public static class Themes
     {
         ["light"] = new Theme
         {
-            Background = Color.White,
-            Foreground = Color.Black,
-            Accent     = Color.Blue,
-            HelpText   = Color.DarkGray,
+            Background = Color.DarkGray,
+            Foreground = Color.Red,
+            Accent     = Color.Black,
+            HelpText   = Color.Magenta,
             Icon       = "🞻" 
         },
         ["dark"] = new Theme
         {
             Background = Color.Black,
-            Foreground = Color.White,
-            Accent     = Color.Cyan,
+            Foreground = Color.DarkGray,
+            Accent     = Color.Gray,
             HelpText   = Color.Gray,
+            Icon       = "☽" 
+        },
+        ["help"] = new Theme
+        {
+            Background = Color.Blue,
+            Foreground = Color.White,
+            Accent     = Color.BrightYellow,
+            HelpText   = Color.DarkGray,
             Icon       = "☽" 
         }
     };

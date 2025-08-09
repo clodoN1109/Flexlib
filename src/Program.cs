@@ -4,6 +4,7 @@ using Flexlib.Interface.Output;
 using Flexlib.Infrastructure.Interop;
 using Flexlib.Infrastructure.Processing;
 using Flexlib.Infrastructure.Config;
+using System.Text;
 
 
 public class Program
@@ -52,6 +53,7 @@ public class Program
 
     static Result Initialize(out Result result)
     {
+        GlobalConfig.SetEncoding(Encoding.UTF8);
         try
         {
 #if DEBUG

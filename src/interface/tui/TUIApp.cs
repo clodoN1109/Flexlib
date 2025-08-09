@@ -5,6 +5,8 @@ using Flexlib.Application.Ports;
 using Flexlib.Infrastructure.Processing;
 using Flexlib.Infrastructure.Interop;
 using System.Diagnostics;
+using System.Text;
+using System.Runtime.CompilerServices;
 
 namespace Flexlib.Interface.TUI;
 
@@ -13,11 +15,15 @@ public class TUIApp : ITUIApp
 {
     private readonly TUIConfig _config;
     private readonly Theme _theme;
+    private readonly Theme _helpTheme;
+    
+    private bool IsHelpActive { get; set; } = false;
 
     public TUIApp(TUIConfig config)
     {
         _config = config;
         _theme = Themes.Get(config.Theme);
+        _helpTheme = Themes.Get("help");
     }
 
     public void Run(IUser user)
@@ -32,13 +38,8 @@ public class TUIApp : ITUIApp
         var top = Terminal.Gui.Application.Top;
 
         // Create a shared color scheme based on _theme
-        var scheme = new ColorScheme
-        {
-            Normal = new Terminal.Gui.Attribute(_theme.Foreground, _theme.Background),
-            Focus = new Terminal.Gui.Attribute(_theme.Accent, _theme.Background),
-            HotNormal = new Terminal.Gui.Attribute(_theme.Accent, _theme.Background),
-            HotFocus = new Terminal.Gui.Attribute(_theme.Background, _theme.Accent)
-        };
+        var scheme = _theme.ToColorScheme();
+        var helpScheme = _helpTheme.ToColorScheme();
 
         string margin = "     ";
 
@@ -53,8 +54,8 @@ public class TUIApp : ITUIApp
         };
         top.Add(win);
 
-        string logo = $"{margin}>::> flexlib";  // Removed leading spaces to avoid confusion
-        var leftLabel = new Label(logo)
+        string logo = $"{margin}>::>  flexlib";  // Removed leading spaces to avoid confusion
+        var lefTopLabel = new Label(logo)
         {
             X = 0,
             Y = 0,
@@ -64,9 +65,10 @@ public class TUIApp : ITUIApp
             VerticalTextAlignment = VerticalTextAlignment.Middle,
             ColorScheme = scheme
         };
+        lefTopLabel.CanFocus = false;
 
         string meta = $"{_theme.Icon}       v{(Env.IsDebug() ? Env.BuildId : Env.Version)}{margin}";  // Minimal spaces for cleaner alignment
-        var rightLabel = new Label(meta)  // pass text here!
+        var rightTopLabel = new Label(meta)  // pass text here!
         {
             X = Pos.AnchorEnd(meta.Length),
             Y = 0,
@@ -76,32 +78,23 @@ public class TUIApp : ITUIApp
             VerticalTextAlignment = VerticalTextAlignment.Middle,
             ColorScheme = scheme
         };
+        rightTopLabel.CanFocus = false;
 
-        win.Add(leftLabel, rightLabel);
+        win.Add(lefTopLabel, rightTopLabel);
 
         var outputPane = new TextView()
         {
             X = margin.Length,
-            Y = Pos.Bottom(rightLabel),
-            Width = Dim.Fill(),
+            Y = Pos.Bottom(rightTopLabel),
+            Width = Dim.Fill() - margin.Length,
             Height = Dim.Percent(60),
-            ReadOnly = true,
+            ReadOnly = false,
             ColorScheme = scheme
         };
+        outputPane.CanFocus = false;
         win.Add(outputPane);
 
-        var helpPane = new TextView()
-        {
-            X = margin.Length,
-            Y = Pos.Bottom(outputPane),
-            Width = Dim.Fill(),
-            Height = Dim.Percent(30),
-            ReadOnly = true,
-            ColorScheme = scheme
-        };
-        win.Add(helpPane);
-
-        var footerPane = new Label($"{user.Id}")
+        var footerPane = new Label()
         {
             X = margin.Length,
             Y = Pos.AnchorEnd(3),
@@ -111,6 +104,7 @@ public class TUIApp : ITUIApp
             VerticalTextAlignment = VerticalTextAlignment.Middle,
             ColorScheme = scheme
         };
+        footerPane.CanFocus = false;
         win.Add(footerPane);
 
         var promptLabel = new Label(">")
@@ -121,51 +115,130 @@ public class TUIApp : ITUIApp
             Height = 1,
             ColorScheme = scheme
         };
+        promptLabel.CanFocus = false;
 
         var promptPane = new TextField("")
         {
             X = Pos.Right(promptLabel),
             Y = Pos.Top(footerPane) - 1,
-            Width = Dim.Fill() - 2,
+            Width = Dim.Fill() - user.Id.Length,
             Height = 1,
             ColorScheme = scheme
         };
 
-        win.Add(promptLabel, promptPane);
+        // Creation
+        var helpFrame = new FrameView()
+        {
+            X = margin.Length,
+            Y = Pos.Top(promptPane),
+            Width = Dim.Fill() - margin.Length,
+            Height = 0,
+            ColorScheme = helpScheme,
+            CanFocus = false
+        };
 
+        var helpPane = new TextView()
+        {
+            X = 0,
+            Y = 0,
+            Width = Dim.Fill(),
+            Height = Dim.Fill(),
+            ReadOnly = true,
+            ColorScheme = helpScheme
+        };
+        helpPane.Enter += (s) => helpPane.ReadOnly = true;
 
+        helpFrame.Add(helpPane);
+        win.Add(helpFrame);
+
+        var authLabel = new Label($"{user.Id}")
+        {
+            X = Pos.AnchorEnd(user.Id.Length) - margin.Length,
+            Y = Pos.Top(footerPane) - 1,
+            Width = 2,
+            Height = 1,
+            ColorScheme = scheme
+        };
+    
         promptPane.KeyPress += (args) =>
         {
             if (args.KeyEvent.Key == Key.Enter)
             {
-                string input = promptPane.Text.ToString() ?? "";
-                ProcessCommand(input, outputPane, helpPane);
+                string input = promptPane.Text?.ToString() ?? "";
+
+                ProcessCommand(input, outputPane, helpFrame, helpPane, promptLabel, promptPane);
+
                 promptPane.Text = "";
                 args.Handled = true;
             }
+
+            if (args.KeyEvent.Key == Key.Esc)
+            {
+                DeactivateHelpFrame(helpFrame, promptLabel);
+
+                promptPane.Text = "";
+                args.Handled = true;
+
+                promptPane.SetFocus();
+            }
         };
 
+        win.Add(promptLabel, promptPane, authLabel);
+        
         promptPane.SetFocus();
 
         return top;
     }
 
-    private void ProcessCommand(string input, TextView outputPane, TextView helpPane)
+    private void ProcessCommand(string input, TextView outputPane, FrameView helpFrame, TextView helpPane, Label promptLabel, TextField promptPane)
     {
-        if (string.IsNullOrWhiteSpace(input)) 
+        if (string.IsNullOrWhiteSpace(input))
             return;
 
         var args = input.ToArrayOfStrings();
 
         string outputStream = RunFlexlib(args, outputPane);
 
-        if (args[0].Equals("help", StringComparison.OrdinalIgnoreCase))
+        if (args[0].Equals("help", StringComparison.OrdinalIgnoreCase) ||
+            (args.Length > 1 && args[1].Equals("help", StringComparison.OrdinalIgnoreCase)))
         {
-            helpPane.Text = outputStream;
+            ActivateHelpFrame(helpFrame, helpPane, promptPane, promptLabel, outputStream);
             return;
         }
 
+        DeactivateHelpFrame(helpFrame, promptLabel);
         outputPane.Text = outputStream;
+    }
+    private void ActivateHelpFrame(FrameView helpFrame, TextView helpPane, TextField promptPane, Label promptLabel, string outputStream)
+    {
+        int rows = outputStream.RowCount();
+
+        // Clamp rows to max 15
+        int visibleRows = Math.Min(rows, 15);
+
+        helpPane.Text = outputStream; // Set text on the TextView
+        helpFrame.Height = visibleRows + 2; // Border + padding
+        helpFrame.Y = Pos.Top(promptPane) - (visibleRows + 2);
+
+        helpFrame.CanFocus = true;
+        Terminal.Gui.Application.Refresh();
+
+        promptLabel.Text = "˄";
+
+        IsHelpActive = true;
+        helpPane.SetFocus();
+    }
+
+
+    private void DeactivateHelpFrame(FrameView helpFrame, Label promptLabel)
+    {
+        helpFrame.Height = 0;
+        helpFrame.CanFocus = false;
+        Terminal.Gui.Application.Refresh();
+
+        promptLabel.Text = ">";
+
+        IsHelpActive = false;
     }
 
     private string RunFlexlib(string[] args, TextView outputPane)

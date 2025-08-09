@@ -6,6 +6,7 @@ using Flexlib.Infrastructure.Persistence;
 using Flexlib.Infrastructure.Interop;
 using Flexlib.Application.Ports; 
 using Flexlib.Interface.TUI;
+using System.Text;
 
 namespace Flexlib.Interface.TUI;
     
@@ -24,13 +25,15 @@ public class TUILauncher
     {
         if (_auth.Authenticate(out IUser user, out Result authResult).IsNotLoggedIn)
             return Result.Fail("Authentication failed");
-        User = user;    
-        
+        User = user;
+
+        GlobalConfig.SetEncoding(Encoding.UTF8);
+        // Terminal.Gui.Application.UseSystemConsole = true;
+
         _app = tuiApp;
         IsReady = true;
-        return Result.Success("TUI launcher is ready.");
+        return Result.Success("TUI launcher is ready with UTF-8 support.");
     }
-
     public Result Launch()
     {
         if (!IsReady || _app == null)

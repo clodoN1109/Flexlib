@@ -79,8 +79,8 @@ public partial class ConsoleRenderer
         string title = $"░░░░ {(info is CommandUsageInfo cmdInfo ? cmdInfo.Group.Icon + " " : "")}{info?.Title.ToUpperInvariant()} ";
         string paddedTitle = title + new string('░', Math.Max(0, consoleWidth - title.Length));
 
-        lines.Add(new Components.ColoredLine(""));
-        lines.Add(new Components.ColoredLine(logo));
+        // lines.Add(new Components.ColoredLine(""));
+        // lines.Add(new Components.ColoredLine(logo));
         lines.Add(new Components.ColoredLine(""));
         lines.Add(new Components.ColoredLine(paddedTitle, ConsoleColor.Gray));
 
@@ -127,6 +127,14 @@ public partial class ConsoleRenderer
                     : "";
 
                 var label = $"    {name}{domain}{defaultVal}";
+                if (label.Length > consoleWidth)
+                {
+                    var domainParts = domain.SplitInParts("|", consoleWidth/3, consoleWidth/2);
+                    domain = string.Join("\n\t\t", domainParts);
+                    label = $"    {name}{domain}{defaultVal}";
+                }
+                
+
                 lines.Add(new Components.ColoredLine(label, opt.Mandatory ? ConsoleColor.Yellow : ConsoleColor.DarkGray, false));
 
                 var wrappedDesc = Components.WrappedText(opt.Description, consoleWidth - 6);
