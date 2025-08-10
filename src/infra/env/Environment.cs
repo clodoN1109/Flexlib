@@ -39,7 +39,17 @@ public static class Env
         return GlobalConfig.ConsoleWidth ?? 80;
     }
       
-    
+    public static int GetSafeWindowHeight()
+    {
+        try
+        {
+            int h = Console.WindowHeight;
+            if (h > 0) return h;
+        }
+        catch (IOException) { }
+        return 25; // or a config value, or something sensible
+    }
+
 }
 
 

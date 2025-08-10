@@ -41,10 +41,8 @@ public class TUILauncher
 
         if (User == null || User.IsNotLoggedIn)
             return Result.Warn("TUI instance closed.");
-        
-        _app.Run(User);
 
-        Console.Clear();
+        _app.Run(User);
 
         return Result.Warn("TUI instance closed.");
     }
