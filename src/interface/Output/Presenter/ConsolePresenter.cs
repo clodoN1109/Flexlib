@@ -1,18 +1,16 @@
 using Flexlib.Application.Ports; 
 using Flexlib.Domain;
-using Flexlib.Interface.CLI;
 using Flexlib.Interface.Input;
 using Flexlib.Infrastructure.Interop;
 using Flexlib.Services.Media;
-using Flexlib.Infrastructure.Config;
 using Flexlib.Infrastructure.Environment;
 
 namespace Flexlib.Interface.Output;
 
 public class ConsolePresenter : IPresenter
 {
-
     private readonly int WindowWidth = Env.GetSafeWindowWidth();
+    private readonly int WindowHeight = Env.GetSafeWindowHeight();
 
     private readonly ConsoleRenderer _renderer = new();
     private readonly ConsoleEmitter _emitter = new();
@@ -79,7 +77,7 @@ public class ConsolePresenter : IPresenter
 
     public void RegistrationPrompt(out RegistrationPromptScreen screen)
     {
-        screen = _renderer.RegistrationPromptRender(WindowWidth);
+        screen = _renderer.RegistrationPromptRender(WindowWidth, WindowHeight);
 
         _emitter.PrintLines(screen.Lines);
 

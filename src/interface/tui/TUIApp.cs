@@ -28,9 +28,19 @@ public class TUIApp : ITUIApp
 
     public void Run(IUser user)
     {
-        Terminal.Gui.Application.Init();
-        var tui = RenderTUI(user);
-        Terminal.Gui.Application.Run();
+        try
+        {
+            Terminal.Gui.Application.Init();
+            var tui = RenderTUI(user);
+            Terminal.Gui.Application.Run();    
+        }
+        finally
+        {
+            Terminal.Gui.Application.Shutdown();
+            Console.ResetColor();
+            Console.CursorVisible = true;
+            Console.Clear();
+        }     
     }
 
     private Terminal.Gui.Toplevel RenderTUI(IUser user)
@@ -199,6 +209,12 @@ public class TUIApp : ITUIApp
 
         string outputStream = RunFlexlib(args, outputPane);
 
+        if (args[0].Equals("exit", StringComparison.OrdinalIgnoreCase))
+        {
+            ExitTUI();
+            return;
+        }
+
         if (args[0].Equals("help", StringComparison.OrdinalIgnoreCase) ||
             (args.Length > 1 && args[1].Equals("help", StringComparison.OrdinalIgnoreCase)))
         {
@@ -270,6 +286,9 @@ public class TUIApp : ITUIApp
         return string.IsNullOrEmpty(stderr) ? stdout : stdout + Environment.NewLine + stderr;
     }
 
-
+    private void ExitTUI()
+    {
+        Terminal.Gui.Application.RequestStop();
+    }
 }
 

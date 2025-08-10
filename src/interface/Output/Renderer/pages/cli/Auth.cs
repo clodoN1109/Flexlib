@@ -70,7 +70,7 @@ public partial class ConsoleRenderer
         };
     }
 
-    public RegistrationPromptScreen RegistrationPromptRender(int consoleWidth)
+    public RegistrationPromptScreen RegistrationPromptRender(int consoleWidth, int consoleHeight)
     {
         var lines = new List<Components.ColoredLine>();
         string title = "🟦 Welcome to Flexlib";
@@ -117,7 +117,6 @@ public partial class ConsoleRenderer
         boxLines.Add(new($"{padX}└{horizontal}┘", ConsoleColor.DarkGray));
 
         // Center vertically
-        int consoleHeight = Console.WindowHeight;
         int verticalPad = Math.Max(0, (consoleHeight - boxLines.Count) / 2);
 
         for (int i = 0; i < verticalPad; i++)
