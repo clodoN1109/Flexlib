@@ -10,7 +10,7 @@ switch ($Mode.ToLower()) {
 
         $releasesPath = Resolve-Path "$HOME/Projects/Incubator/Flexlib/Ops/Delivery/releases/"
         $versionFolder = Join-Path $releasesPath $Version
-        $zipFile = Join-Path $versionFolder "Flexlib-$Version.zip"
+        $zipFile = Join-Path $versionFolder "Flexlib-win-x64-$Version.zip"
 
         if (-not (Test-Path $zipFile)) {
             Write-Host "`n❌ Zip file not found: $zipFile" -ForegroundColor Red
@@ -23,7 +23,7 @@ switch ($Mode.ToLower()) {
         try {
             Expand-Archive -Path $zipFile -DestinationPath $tempDir -Force
 
-            $flexlibExePath = Join-Path $tempDir "Flexlib.exe"
+            $flexlibExePath = Join-Path $tempDir "\win-x64\Flexlib.exe"
 
             if (-not (Test-Path $flexlibExePath)) {
                 throw "❌ Flexlib.exe not found in extracted release: $flexlibExePath"
