@@ -1,7 +1,6 @@
 using Flexlib.Interface.GUI;
 using Flexlib.Interface.CLI;
 using Flexlib.Interface.TUI;
-using Flexlib.Application.Ports;
 
 namespace Flexlib.Interface.Input;
 
@@ -11,13 +10,14 @@ public static partial class Input
     public static ParsedInput Parse(Normalized input)
     {
         var args = input.Args;
+
+        string? firstArg = args.Length > 0 ? args[0] : null;
+        string[] options = [.. args.Skip(1)];
+
         if (args.Length == 0)
-            return new HelpCommand();
+            return new TUIStartUp(options);
 
-        string firstArg = args[0];
-        string[] options = args.Skip(1).ToArray();
-
-        return firstArg.ToLower() switch
+        return firstArg?.ToLower() switch
         {
             "signup"            => new NewUserCommand(options),
             "login"             => new LoginCommand(options),

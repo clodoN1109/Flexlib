@@ -127,7 +127,7 @@ public partial class ConsoleRenderer
                     : "";
 
                 var label = $"    {name}{domain}{defaultVal}";
-                if (label.Length > consoleWidth)
+                if (label.Length > consoleWidth/1.5)
                 {
                     var domainParts = domain.SplitInParts("|", consoleWidth/3, consoleWidth/2);
                     domain = string.Join("\n\t\t", domainParts);
