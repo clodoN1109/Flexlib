@@ -28,8 +28,7 @@ public class TUILauncher
         User = user;
 
         GlobalConfig.SetEncoding(Encoding.UTF8);
-        // Terminal.Gui.Application.UseSystemConsole = true;
-
+        
         _app = tuiApp;
         IsReady = true;
         return Result.Success("TUI launcher is ready with UTF-8 support.");

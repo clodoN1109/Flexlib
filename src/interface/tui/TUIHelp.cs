@@ -1,0 +1,60 @@
+using System.Text;
+
+namespace Flexlib.Interface.TUI;
+public static class TUIHelp
+{
+    public static string PromptUSage()
+    {
+        var commandGroups = new Dictionary<string, string[]>
+        {
+            ["Library Management"] = new[]
+            {
+                "list-libs", "new-lib", "remove-lib", "set-layout", "get-layout", "rebalance"
+            },
+            ["Item Management"] = new[]
+            {
+                "list-items", "new-item", "remove-item", "view-item", "set-prop"
+            },
+            ["Desk Management"] = new[]
+            {
+                "list-desks", "new-desk", "view-desk"
+            },
+            ["Borrowing & Loans"] = new[]
+            {
+                "borrow-item", "return-item", "list-loans"
+            },
+            ["Notes"] = new[]
+            {
+                "list-notes", "new-note", "edit-note", "remove-note"
+            },
+            ["Properties"] = new[]
+            {
+                "list-props", "new-prop", "remove-prop"
+            },
+            ["Miscellaneous"] = new[]
+            {
+                "fetch-files", "help"
+            },
+            ["TUI"] = new[]
+            {
+                "dark", "light"
+            }
+        };
+
+        var sb = new StringBuilder();
+
+        sb.AppendLine("<command> [option ...]\n");
+        sb.AppendLine("commands:\n");
+
+        foreach (var group in commandGroups)
+        {
+            sb.AppendLine($"  {group.Key}:");
+            sb.AppendLine($"    {string.Join(" | ", group.Value)}");
+            sb.AppendLine();
+        }
+
+        string helpText = sb.ToString().TrimEnd();
+
+        return helpText;
+    }
+}

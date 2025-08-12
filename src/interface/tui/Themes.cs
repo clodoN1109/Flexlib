@@ -9,7 +9,6 @@ public class Theme(string name)
     public Color Background { get; set; }
     public Color Foreground { get; set; }
     public Color Accent { get; set; }
-    public Color HelpText { get; set; }
     public string Icon { get; set; } = "";
 
     public ColorScheme ToColorScheme()
@@ -33,7 +32,6 @@ public static class Themes
             Background = Color.DarkGray,
             Foreground = Color.Red,
             Accent = Color.Black,
-            HelpText = Color.Magenta,
             Icon = "☀"
         },
         ["dark"] = new Theme("dark")
@@ -41,24 +39,35 @@ public static class Themes
             Background = Color.Black,
             Foreground = Color.DarkGray,
             Accent = Color.Gray,
-            HelpText = Color.Gray,
             Icon = "☽"
         },
         ["dark-help"] = new Theme("dark-help")
         {
             Background = Color.Black,
-            Foreground = Color.Red,
-            Accent = Color.BrightYellow,
-            HelpText = Color.Red,
+            Foreground = Color.DarkGray,
+            Accent = Color.DarkGray,
             Icon = "☽"
         },
         ["light-help"] = new Theme("light-help")
         {
-            Background = Color.Blue,
+            Background = Color.DarkGray,
             Foreground = Color.Red,
-            Accent     = Color.BrightYellow,
-            HelpText   = Color.Red,
-            Icon       = "☀" 
+            Accent = Color.Black,
+            Icon = "☀"
+        },
+        ["selected-dark-frame"] = new Theme("selected-dark-frame")
+        {
+            Background = Color.Black,
+            Foreground = Color.Cyan,
+            Accent = Color.Cyan,
+            Icon = "☽"
+        },
+        ["selected-light-frame"] = new Theme("selected-light-frame")
+        {
+            Background  = Color.Red,
+            Foreground  = Color.DarkGray,
+            Accent      = Color.DarkGray,
+            Icon        = "☽"
         }
 
     };
