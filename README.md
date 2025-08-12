@@ -42,12 +42,13 @@ Instead of relying on rigid directory hierarchies, Flexlib treats your library a
 
 ## ✨ Features
 
-| Feature                             | Status        |
-|-------------------------------------|---------------|
+| Feature                             | Status         |
+|-------------------------------------|----------------|
 | Property-based classification       | ✅ Implemented |
 | Dynamic layout restructuring        | ✅ Implemented |
 | Content-based associations          | ✅ Implemented |
-| Lightweight CLI                     | ✅ Implemented |
+| CLI                                 | ✅ Implemented |
+| TUI                                 | ✅ Implemented |
 | GUI interface                       | 🚧 In Progress |
 | Cross-platform support (Linux/macOS)| 🚧 Planned     |
 
