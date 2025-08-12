@@ -19,18 +19,19 @@ public static class ConsoleRouter
     private static readonly Authenticator _auth = new Authenticator(_userRepo, _reader);
 
     public static void Route(Command cmd)
-    {        
-        if (!cmd.IsValid())
-        {
-            _presenter.Message("Invalid command usage. For details, run: <command name> help.");
-            return;
-        }
-        
+    {                
         if (cmd.IsSpecificHelp())
         {
             _presenter.ExplainUsage(cmd.GetUsageInfo());
             return;
         }
+        
+        if (!cmd.IsValid())
+        {
+            _presenter.Message("Invalid command usage. For details, run: <command name> help.");
+            return;
+        }
+
         switch (cmd)
         {         
             case HelpCommand helpCmd:
@@ -58,8 +59,6 @@ public static class ConsoleRouter
 
         ConsoleController.Handle(cmd, user);
 
-        // _presenter.UserInfo(user?.Id ?? "");
-        
         if (authResult.IsFailureOrWarning)
             _presenter.Result(authResult);
     }

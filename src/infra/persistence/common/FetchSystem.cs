@@ -19,7 +19,7 @@ public static class FetchSystem
             case AddressType.IPAddress:
             case AddressType.Unknown:
             default:
-                return Result.Fail($"No method defined to interact with the requested source.");
+                return Result.Warn($"No method defined to interact with the requested source.");
         }
     }
 

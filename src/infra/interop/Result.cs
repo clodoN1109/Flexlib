@@ -23,6 +23,6 @@ public class Result
     }
 
     public static Result Success(string message) => new(true, false, message, null, null);
-    public static Result Warn(string message) => new(false, true, null, null, message);
+    public static Result Warn(string warning, string success = "") => new(true, true, success, null, warning);
     public static Result Fail(string message) => new(false, false, null, message, null);
 }

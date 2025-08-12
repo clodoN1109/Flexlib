@@ -72,11 +72,11 @@ public partial class ConsoleRenderer
     {
         var all = new List<Components.ColoredLine>();
 
-        if (result.IsSuccess)
-            all.AddRange(Success(result.SuccessMessage ?? "").Lines);
+        if (result.IsSuccess && !string.IsNullOrEmpty(result.SuccessMessage))
+            all.AddRange(Success(result.SuccessMessage).Lines);
 
-        if (result.IsWarning)
-            all.AddRange(Warning(result.WarningMessage ?? "").Lines);
+        if (result.IsWarning && !string.IsNullOrEmpty(result.WarningMessage))
+            all.AddRange(Warning(result.WarningMessage).Lines);
 
         if (!string.IsNullOrWhiteSpace(result.ErrorMessage))
             all.AddRange(Failure(result.ErrorMessage).Lines);

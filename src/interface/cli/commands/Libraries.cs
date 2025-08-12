@@ -19,13 +19,14 @@ public class NewLibraryCommand : Command
 
         Name = options.Length > 0 ? options[0] : "";
         Path = options.Length > 1 ? options[1] : "";
+        Options = options;
     }
 
     public override string Type => "new-lib";
 
     public override bool IsValid()
     {
-        return !string.IsNullOrWhiteSpace(Name);
+        return Options.Length > 0 & Options.Length < 2;
     }
 
     public override CommandUsageInfo GetUsageInfo()
@@ -58,17 +59,20 @@ public class NewLibraryCommand : Command
 public class RemoveLibraryCommand : Command
 {
     public string Name { get; }
+    public string Help { get; }
 
     public RemoveLibraryCommand(string[] options)
     {
         Name = options.Length > 0 ? options[0] : "";
+        Help = options.Length > 1 ? options[1] : "";
+        Options = options;
     }
 
     public override string Type => "remove-lib";
 
     public override bool IsValid()
     {
-        return !string.IsNullOrWhiteSpace(Name);
+        return Options.Length == 1;
     }
 
     public override CommandUsageInfo GetUsageInfo()

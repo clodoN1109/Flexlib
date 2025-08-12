@@ -60,6 +60,9 @@ public static class Router
             }
 
         if (result != null && result.IsFailure)
+        {
+            Console.Clear();
             _emitter.Emit(result.Message);
+        }
     }
 }

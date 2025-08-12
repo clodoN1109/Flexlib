@@ -29,7 +29,6 @@ public static class ConsoleController
 
         var result = Execute(cmd, authUser);
         
-        // _presenter.AvailableActions( Authorization.GetAllAuthorizedActions(authUser) );
         _presenter.Result(result);
                  
     }
