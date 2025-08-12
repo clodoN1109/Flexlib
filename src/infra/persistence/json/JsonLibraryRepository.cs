@@ -141,24 +141,32 @@ public class JsonLibraryRepository : ILibraryRepository
         return UpdateLocalStorage(lib);
     }
     
-    public Result Save(LibraryItem item, Library lib, bool skipLocalStorage = false){
-        
-        if ( string.IsNullOrWhiteSpace(lib.Path) )
+    public Result Save(LibraryItem item, Library lib, bool skipLocalStorage = false)
+    {
+        if (string.IsNullOrWhiteSpace(lib.Path))
         {
             lib.Path = _dataDirectory;
         }
-        
-        _cache.FirstOrDefault(l => l.Name?.ToLowerInvariant() == lib.Name?.ToLowerInvariant() && l.Path == lib.Path)?.Items.RemoveAll(i => i.Id == item.Id);
-        _cache.FirstOrDefault(l => l.Name?.ToLowerInvariant() == lib.Name?.ToLowerInvariant() && l.Path == lib.Path)?.Items.Add(item);
-        JsonHelpers.WriteJson(_metaFile, _cache);
 
+        var targetLib = _cache.FirstOrDefault(l => 
+            l.Name?.ToLowerInvariant() == lib.Name?.ToLowerInvariant() && 
+            l.Path == lib.Path);
+
+        targetLib?.Items.RemoveAll(i => i.Id == item.Id);
+        targetLib?.Items.Add(item);
+
+        JsonHelpers.WriteJson(_metaFile, _cache);
         UpdateLibMetaFile(lib);
 
         if (skipLocalStorage)
-            return Result.Success($"Item {item.Name} metadata updated.");
+            return Result.Success($"Item \"{item.Name}\" metadata updated.");
 
-        return UpdateLocalStorage(item, lib);
+        var storageResult = UpdateLocalStorage(item, lib);
 
+        if (storageResult.IsFailure)
+            return Result.Fail($"The item \"{item.Name}\" was added to the library \"{lib.Name}\", but its content could not be fetched from the informed origin.");
+
+        return Result.Success($"The item \"{item.Name}\" was saved successfully.");
     }
 
     public Result RemoveLibraryByName(string name)
@@ -364,7 +372,7 @@ public class JsonLibraryRepository : ILibraryRepository
             File.Delete(tempPath);
         }
 
-        return Result.Success($"Local copy of item '{item.Name}' updated successfully.");
+        return Result.Success($"Local copy of item '{item.Name}' updated successfully. {fetchResult}");
     }
 
     public Result RenameItem(LibraryItem item, string newName, Library lib)

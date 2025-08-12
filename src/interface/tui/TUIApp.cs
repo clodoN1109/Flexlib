@@ -121,6 +121,11 @@ public partial class TUIApp : ITUIApp
                 outputPane.Text = "Please log out before logging in or signing up as a new user.";
                 return;
 
+            case "remove-item":
+            case "remove-lib":
+                outputPane.Text = "For now, please use the CLI for that operation.";
+                return;
+
             case "gui":
             case "tui":
                 outputPane.Text = "Cannot create a nested interface. \nUse the CLI commands or available shortcuts instead.";

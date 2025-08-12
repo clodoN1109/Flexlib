@@ -67,7 +67,7 @@ public class Authenticator
             }
         }
          
-        result = Result.Success("");
+        result = Result.Success("User authenticated.");
         return user;
     }
 

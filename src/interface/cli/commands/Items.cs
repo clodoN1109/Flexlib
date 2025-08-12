@@ -18,14 +18,15 @@ public class NewItemCommand : Command
     {
         ItemOrigin = options.Length > 0 ? options[0] : "";
         ItemName = options.Length > 1 ? options[1] : Infer.ItemNameFromOrigin(ItemOrigin);
-        LibraryName = options.Length > 2 ? options[2] : "Default Library";
+        LibraryName = options.Length > 2 ? options[2] : "";
+        Options = options;
     }
 
     public override string Type => "new-item";
 
     public override bool IsValid()
     {
-        return !string.IsNullOrWhiteSpace(LibraryName) && !string.IsNullOrWhiteSpace(ItemOrigin);
+        return Options.Length == 3;
     }
     
     public override CommandUsageInfo GetUsageInfo()
@@ -182,14 +183,15 @@ public class RemoveItemCommand : Command
     public RemoveItemCommand(string[] options)
     {
         ItemId =  options.Length > 0 ? options[0] : "";
-        LibraryName = options.Length > 1 ? options[1] : "Default Library";
+        LibraryName = options.Length > 1 ? options[1] : "";
+        Options = options;
     }
 
     public override string Type => "remove-item";
 
     public override bool IsValid()
     {
-        return !TypeTests.IsNull(ItemId) && ItemId is string s && ( s != "" ) && !string.IsNullOrWhiteSpace(LibraryName);
+        return Options.Length == 2;
     }
     
     public override CommandUsageInfo GetUsageInfo()
