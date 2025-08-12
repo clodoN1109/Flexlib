@@ -72,13 +72,13 @@ Make sure the following tools are installed:
 ### 🔹 Option 1 — Use Prebuilt Release
 
 1. Go to the [Releases](https://github.com/your-username/flexlib/releases) page.
-2. Download the latest `.zip` or `.exe`.
+2. Download the latest `.zip`.
 3. Extract the contents into any folder.
 4. (Optional) Add that folder to your system `PATH`.
 5. Run Flexlib:
 
     ```powershell
-    flexlib --help
+    flexlib help
     ```
 
 ---
