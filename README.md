@@ -1,6 +1,7 @@
 # Flexlib
 
-![Windows](https://img.shields.io/badge/OS-Windows-blue?logo=windows)
+![OS](https://img.shields.io/badge/OS-Windows%20%7C%20Linux-blue?logo=windows&logoColor=white&style=flat-square)
+
 
 > **A lightweight system for building flexible and interconnected libraries with just a few keystrokes.**
 
