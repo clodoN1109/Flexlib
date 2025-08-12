@@ -9,6 +9,7 @@ using System.Text;
 using System.Runtime.CompilerServices;
 using System.Linq.Expressions;
 using Flexlib.Infrastructure.Modelling;
+using Flexlib.Interface.Input;
 
 namespace Flexlib.Interface.TUI;
 
@@ -165,6 +166,10 @@ public partial class TUIApp : ITUIApp
                 break;
 
             default:
+                if (!ActionsList.Items.Contains(command)) {
+                    outputPane.Text = $"Unknown command {command}.";
+                    return;
+                }
                 string outputStream = RunFlexlib(args);
                 if (args.Length > 1 && args[1].Equals("help", StringComparison.OrdinalIgnoreCase))
                 {
