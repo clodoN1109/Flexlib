@@ -22,7 +22,7 @@ public static class ConsoleRouter
     {        
         if (!cmd.IsValid())
         {
-            _presenter.ExplainUsage(cmd.GetUsageInfo());
+            _presenter.Message("Invalid command usage. For details, run: <command name> help.");
             return;
         }
         

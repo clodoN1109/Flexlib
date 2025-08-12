@@ -43,8 +43,6 @@ public static class Router
                     break; 
                 }
 
-                _emitter.Emit("\nLaunching Flexlib TUI.\n");
-
                 var launcher = new TUILauncher();
                 var config = new TUIConfig(tui.Theme, tui.Language);
                 ITUIApp app = new TUIApp(config);

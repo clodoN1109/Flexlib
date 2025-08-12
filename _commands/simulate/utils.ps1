@@ -40,14 +40,14 @@ function Safe-Remove {
     )
 
     if ([string]::IsNullOrWhiteSpace($TargetPath)) {
-        Write-Warning "`nTarget path is empty. Skipping removal."
+        Write-Warning "`nTarget path is empty. Skipping removal.`n"
         return
     }
 
     $resolvedPath = Resolve-Path -Path $TargetPath -ErrorAction SilentlyContinue
 
     if (-not $resolvedPath) {
-        Write-Warning "`nPath '$TargetPath' does not exist. Skipping."
+        Write-Warning "`nPath '$TargetPath' does not exist. Skipping.`n"
         return
     }
 
@@ -55,7 +55,7 @@ function Safe-Remove {
     $root = [System.IO.Path]::GetPathRoot($fullPath)
 
     if ($fullPath -eq $root) {
-        Write-Warning "❌ Refusing to delete system root '$root'. Skipping."
+        Write-Warning "`n❌ Refusing to delete system root '$root'. Skipping.`n"
         return
     }
 
@@ -69,9 +69,9 @@ function Safe-Remove {
 
     try {
         Remove-Item -Path $fullPath -Recurse -Force -ErrorAction Stop
-        Write-Host "✅ Removed '$fullPath'" -ForegroundColor Green
+        Write-Host "`n✅ Removed '$fullPath'`n" -ForegroundColor Green
     } catch {
-        Write-Host "❌ Failed to remove '$fullPath': $_" -ForegroundColor Red
+        Write-Host "`n❌ Failed to remove '$fullPath': $_`n" -ForegroundColor Red
     }
 }
 

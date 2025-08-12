@@ -13,7 +13,14 @@ public static class Env
     {
         return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
     }
-
+    public static string? GetExecutingAssemblyFullName()
+    {
+        return Path.Combine(GetExecutingAssemblyLocation() ?? "", "Flexlib.exe") ;
+    }
+    public static string? GetApplicationPath()
+    {
+        return Path.Combine(AppContext.BaseDirectory, "Flexlib.exe");
+    }
     public static string Version => BuildInfo.SemanticVersion ?? "";
 
     public static string BuildId => BuildInfo.BuildId ?? "";
