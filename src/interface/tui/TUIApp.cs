@@ -132,8 +132,6 @@ public partial class TUIApp : ITUIApp
                 return;
         }
 
-        string outputStream = RunFlexlib(args);
-
         switch (command)
         {
             case "logout":
@@ -167,6 +165,7 @@ public partial class TUIApp : ITUIApp
                 break;
 
             default:
+                string outputStream = RunFlexlib(args);
                 if (args.Length > 1 && args[1].Equals("help", StringComparison.OrdinalIgnoreCase))
                 {
                     ActivateHelpFrame(outputStream);
