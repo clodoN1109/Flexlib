@@ -9,6 +9,8 @@ using Flexlib.Application.UseCases;
 using Flexlib.Application.Common;
 using Flexlib.Interface.CLI;
 using Flexlib.Infrastructure.Persistence;
+using Flexlib.Domain;
+using Flexlib.Infrastructure.Interop;
 
 namespace Flexlib.Interface.TUI;
 
@@ -36,6 +38,10 @@ public partial class TUIApp : ITUIApp
     private Theme selectedFrameTheme;
     private bool IsHelpActive { get; set; } = false;
     private static readonly ILibraryRepository _libRepo = new JsonLibraryRepository();
+    private static LibraryItem? _selectedItem { get; set; }
+    private static Library? _selectedLibrary { get; set; }
+    private static Result? _result { get; set; }
+
 
     private IUser? _user { get; set; }
 
@@ -126,11 +132,6 @@ public partial class TUIApp : ITUIApp
                 outputPane.Text = "Please log out before logging in or signing up as a new user.";
                 return;
 
-            case "remove-item":
-            case "remove-lib":
-                outputPane.Text = "For now, please use the CLI for that operation.";
-                return;
-
             case "gui":
             case "tui":
                 outputPane.Text = "Cannot create a nested interface. \nUse the CLI commands or available shortcuts instead.";
@@ -182,7 +183,9 @@ public partial class TUIApp : ITUIApp
             ActivateHelpFrame(outputStream);
             return;
         }
-            
+        DeactivateHelpFrame();
+
+        string promptMessage;
         switch (cmd)
         {
             case EditNoteCommand c:
@@ -191,10 +194,10 @@ public partial class TUIApp : ITUIApp
                 var payload = SelectItemNote.Execute(c.ItemId, c.NoteId, c.LibName, _libRepo).Payload;
 
                 if ((payload is Domain.Note currentNote) && !string.IsNullOrWhiteSpace(currentNote.Text))
-                        
+
                     newNote = ReadText(selectedFrameTheme.ToColorScheme(),
                                         $"{c.LibName}/{c.ItemId} Note Id {c.NoteId}",
-                                        currentNote.Text                                        
+                                        currentNote.Text
                                         );
 
                 EditNote.Execute(c.ItemId, c.NoteId, c.LibName, newNote, _libRepo);
@@ -205,13 +208,31 @@ public partial class TUIApp : ITUIApp
                 NewNote.Execute(c.ItemId, c.LibName, note, _user!, _libRepo);
                 break;
 
+            case RemoveItemCommand c:
+                _selectedLibrary = _libRepo.GetByName(c.LibraryName)!;
+                _selectedItem = _selectedLibrary.GetItemById(c.ItemId);
+                promptMessage = $"\nAre you sure you want to delete the item '{_selectedItem?.Name ?? ""}' from library '{_selectedLibrary?.Name ?? ""}'?\n\n";
+                if (! ConfirmationPrompt(selectedFrameTheme.ToColorScheme(), promptMessage))
+                    break;
+                _result = RemoveItem.Execute(c.ItemId, c.LibraryName, _libRepo);
+                RenderMessage(selectedFrameTheme.ToColorScheme(), _result.Message);
+                break;
+
+            case RemoveLibraryCommand c:
+                _selectedLibrary = _libRepo.GetByName(c.Name)!;
+                promptMessage = $"\nAre you sure you want to delete the library '{c.Name}' at path:\n\n  {_selectedLibrary.Path} ?\n";
+                if (! ConfirmationPrompt(selectedFrameTheme.ToColorScheme(), promptMessage))
+                    break;
+                _result = RemoveLibrary.Execute(c.Name, _libRepo);
+                RenderMessage(selectedFrameTheme.ToColorScheme(), _result.Message);
+                break;
+
             default:
                 string outputStream = RunFlexlib(args);
                 DeactivateHelpFrame();
                 outputPane.Text = outputStream;
                 break;
         }
-
 
     }
 

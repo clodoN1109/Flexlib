@@ -57,7 +57,7 @@ public static class ConsoleRouter
             return;
         }
 
-        ConsoleController.Handle(cmd, user);
+        CLIController.Handle(cmd, user);
 
         if (authResult.IsFailureOrWarning)
             _presenter.Result(authResult);
