@@ -106,6 +106,29 @@ public partial class TUIApp : ITUIApp
         promptPane.Enter += (_) => promptLabel.Text = ">";
         promptPane.Leave += (_) => promptLabel.Text = "˄";
 
+        promptPane.KeyPress += (args) =>
+        {
+            if (args.KeyEvent.Key == Key.Enter)
+            {
+                string input = promptPane.Text?.ToString() ?? "";
+
+                ProcessCommand(input);
+
+                promptPane.Text = "";
+                args.Handled = true;
+            }
+
+            if (args.KeyEvent.Key == Key.Esc)
+            {
+                DeactivateHelpFrame();
+
+                promptPane.Text = "";
+                args.Handled = true;
+
+                promptPane.SetFocus();
+            }
+        };
+
         // Key handling for history navigation
         promptPane.KeyPress += (e) =>
         {
@@ -132,7 +155,8 @@ public partial class TUIApp : ITUIApp
                 }
                 e.Handled = true;
             }
-            if (e.KeyEvent.Key == Key.CursorUp || e.KeyEvent.Key == Key.CursorDown) {
+            if (e.KeyEvent.Key == Key.CursorUp || e.KeyEvent.Key == Key.CursorDown)
+            {
                 promptPane.CursorPosition = promptPane.Text.Length;
             }
         };
@@ -271,7 +295,7 @@ public partial class TUIApp : ITUIApp
 
     private void RenderAuthLabel(ColorScheme scheme, IUser user)
     {
-    authLabel = new Label($"{user.Id}")
+        authLabel = new Label($"{user.Id}")
         {
             X = Pos.AnchorEnd(user.Id.Length) - margin.Length,
             Y = Pos.Top(footerPane) - 1,
@@ -280,29 +304,70 @@ public partial class TUIApp : ITUIApp
             ColorScheme = scheme
         };
 
-        promptPane.KeyPress += (args) =>
-        {
-            if (args.KeyEvent.Key == Key.Enter)
-            {
-                string input = promptPane.Text?.ToString() ?? "";
-
-                ProcessCommand(input);
-
-                promptPane.Text = "";
-                args.Handled = true;
-            }
-
-            if (args.KeyEvent.Key == Key.Esc)
-            {
-                DeactivateHelpFrame();
-
-                promptPane.Text = "";
-                args.Handled = true;
-
-                promptPane.SetFocus();
-            }
-        };
         win.Add(authLabel);
 
     }
+    private string ReadText(ColorScheme scheme, string prompt = "Enter text:", string initialText = "")
+    {
+        string? result = null;
+
+        // Dialog box
+        int dialogWidth = 80;
+        int dialogHeight = 15;
+
+        var dialog = new Window($"📓 {prompt}")
+        {
+            X = margin.Length - 2,
+            Y = Pos.Top(promptLabel) - dialogHeight,
+            Width = dialogWidth,
+            Height = dialogHeight,
+            ColorScheme = scheme
+        };
+
+        // Bottom hint (1 line reserved)
+        var controlInfo = new Label("Ctrl+X (Save) | ESC (Cancel)")
+        {
+            X = 1,
+            Y = Pos.AnchorEnd(1),          // stick to last content row
+            Width = Dim.Fill() - 2,        // leave a 1-col margin on each side
+            Height = 1,
+            ColorScheme = scheme,
+            CanFocus = false
+        };
+
+        // Multiline editor fills everything above the hint line
+        var textView = new TextView
+        {
+            X = 1,
+            Y = 1,
+            Width = Dim.Fill() - 2,
+            Height = Dim.Fill() - 2,       // 1 for top margin + 1 for controlInfo
+            ColorScheme = scheme,
+            Text = initialText,
+            WordWrap = true,
+            CanFocus = true
+        };
+
+        textView.KeyPress += args =>
+        {
+            if (args.KeyEvent.Key == Key.Esc)
+            {
+                result = initialText;                 // canceled
+                Terminal.Gui.Application.RequestStop();
+                args.Handled = true;
+            }
+            else if (args.KeyEvent.Key == (Key.CtrlMask | Key.X)) // confirm
+            {
+                result = textView.Text.ToString();
+                Terminal.Gui.Application.RequestStop();
+                args.Handled = true;
+            }
+        };
+
+        dialog.Add(textView, controlInfo);
+        Terminal.Gui.Application.Run(dialog);
+
+        return result ?? string.Empty;
+    }
+
 }

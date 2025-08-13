@@ -29,8 +29,8 @@ public static class Themes
     {
         ["light"] = new Theme("light")
         {
-            Background = Color.DarkGray,
-            Foreground = Color.Red,
+            Background = Color.Gray,
+            Foreground = Color.BrightRed,
             Accent = Color.Black,
             Icon = "☀"
         },

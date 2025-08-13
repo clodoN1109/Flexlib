@@ -1,8 +1,8 @@
 using Flexlib.Infrastructure.Interop;
 using Flexlib.Application.Ports;
 using Flexlib.Application.UseCases;
+using Flexlib.Application.Common;
 using Flexlib.Infrastructure.Persistence;
-using Flexlib.Infrastructure.Authentication;
 using Flexlib.Infrastructure.Authorization;
 using Flexlib.Interface.Input;
 using Flexlib.Interface.CLI;
@@ -139,7 +139,16 @@ public static class ConsoleController
                 return ListNotes.Execute(c.ItemId, c.LibName, _libRepo, _presenter);
 
             case EditNoteCommand c:
-                return EditNote.Execute(c.ItemId, c.NoteId, c.LibName, _reader, _libRepo);
+                string? newNote = "";
+                var payload = SelectItemNote.Execute(c.ItemId, c.NoteId, c.LibName, _libRepo).Payload;
+
+                if ((payload is Domain.Note currentNote) && !string.IsNullOrWhiteSpace(currentNote.Text))
+                    newNote = _reader.ReadText(currentNote.Text);
+
+                if (string.IsNullOrWhiteSpace(newNote))
+                    return Result.Fail("Failed to get any text input.");
+
+                return EditNote.Execute(c.ItemId, c.NoteId, c.LibName, newNote, _libRepo);
 
             case RemoveNoteCommand c:
                 return RemoveNote.Execute(c.ItemId, c.NoteId, c.LibName, _libRepo);

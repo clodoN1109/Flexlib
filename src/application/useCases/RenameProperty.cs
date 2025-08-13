@@ -75,8 +75,6 @@ public static class RenameProperty
 
     private static Result IsOperationAllowed(ParsedArgs args)
     {
-        if (args.LibName == "Default Library" && AssureDefaultLibrary.Execute(args.Repo).IsFailure)
-            return Result.Fail($"Default Library not found.");
 
         if (string.IsNullOrWhiteSpace(args.PropName))
             return Result.Fail("Original property name must be provided.");

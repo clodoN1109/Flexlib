@@ -3,13 +3,12 @@ using Flexlib.Infrastructure.Config;
 using Flexlib.Infrastructure.Environment;
 using Flexlib.Application.Ports;
 using Flexlib.Infrastructure.Processing;
-using Flexlib.Infrastructure.Interop;
 using System.Diagnostics;
-using System.Text;
-using System.Runtime.CompilerServices;
-using System.Linq.Expressions;
-using Flexlib.Infrastructure.Modelling;
 using Flexlib.Interface.Input;
+using Flexlib.Application.UseCases;
+using Flexlib.Application.Common;
+using Flexlib.Interface.CLI;
+using Flexlib.Infrastructure.Persistence;
 
 namespace Flexlib.Interface.TUI;
 
@@ -35,8 +34,11 @@ public partial class TUIApp : ITUIApp
     private Theme theme;
     private Theme helpTheme;
     private Theme selectedFrameTheme;
-
     private bool IsHelpActive { get; set; } = false;
+    private static readonly ILibraryRepository _libRepo = new JsonLibraryRepository();
+
+    private IUser? _user { get; set; }
+
     public TUIApp(TUIConfig config)
     {
         _config = config;
@@ -47,6 +49,8 @@ public partial class TUIApp : ITUIApp
 
     public void Run(IUser user)
     {
+        _user = user;
+
         try
         {
             Terminal.Gui.Application.Init();
@@ -113,9 +117,9 @@ public partial class TUIApp : ITUIApp
         AddToCommandHistory(input);
 
         var args = input.ToArrayOfStrings();
-        string command = args[0].ToLowerInvariant();
+        string commandName = args[0].ToLowerInvariant();
 
-        switch (command)
+        switch (commandName)
         {
             case "login":
             case "signup":
@@ -131,10 +135,7 @@ public partial class TUIApp : ITUIApp
             case "tui":
                 outputPane.Text = "Cannot create a nested interface. \nUse the CLI commands or available shortcuts instead.";
                 return;
-        }
 
-        switch (command)
-        {
             case "logout":
             case "exit":
                 ExitTUI();
@@ -149,37 +150,69 @@ public partial class TUIApp : ITUIApp
                 outputPane.Text = "";
                 helpPane.Text = "";
                 DeactivateHelpFrame();
-                break;
+                return;
 
             case "dark":
                 theme = Themes.Get("dark");
                 helpTheme = Themes.Get("dark-help");
                 selectedFrameTheme = Themes.Get("selected-dark-frame");
                 UpdateThemes();
-                break;
+                return;
 
             case "light":
                 theme = Themes.Get("light");
                 helpTheme = Themes.Get("light-help");
                 selectedFrameTheme = Themes.Get("selected-light-frame");
                 UpdateThemes();
+                return;
+
+        }
+
+        InputPreProcessing.Execute(input.ToArrayOfStrings(), out PreProcessingResult processed);
+
+        if (!processed.IsValid || processed.Value is not Input.Command cmd || !Input.Command.IsKnownCommandName(commandName))
+        {
+            outputPane.Text = $"Invalid command call '{input}'.";
+            return;
+        }
+
+        if (cmd.IsSpecificHelp())
+        {
+            string outputStream = RunFlexlib(args);
+            ActivateHelpFrame(outputStream);
+            return;
+        }
+            
+        switch (cmd)
+        {
+            case EditNoteCommand c:
+
+                string? newNote = "";
+                var payload = SelectItemNote.Execute(c.ItemId, c.NoteId, c.LibName, _libRepo).Payload;
+
+                if ((payload is Domain.Note currentNote) && !string.IsNullOrWhiteSpace(currentNote.Text))
+                        
+                    newNote = ReadText(selectedFrameTheme.ToColorScheme(),
+                                        $"{c.LibName}/{c.ItemId} Note Id {c.NoteId}",
+                                        currentNote.Text                                        
+                                        );
+
+                EditNote.Execute(c.ItemId, c.NoteId, c.LibName, newNote, _libRepo);
+                break;
+
+            case NewNoteCommand c:
+                var note = ReadText(selectedFrameTheme.ToColorScheme(), $"{c.LibName}/{c.ItemId}");
+                NewNote.Execute(c.ItemId, c.LibName, note, _user!, _libRepo);
                 break;
 
             default:
-                if (!ActionsList.Items.Contains(command)) {
-                    outputPane.Text = $"Unknown command {command}.";
-                    return;
-                }
                 string outputStream = RunFlexlib(args);
-                if (args.Length > 1 && args[1].Equals("help", StringComparison.OrdinalIgnoreCase))
-                {
-                    ActivateHelpFrame(outputStream);
-                    return;
-                }
                 DeactivateHelpFrame();
                 outputPane.Text = outputStream;
                 break;
         }
+
+
     }
 
     private void UpdateThemes()
@@ -286,12 +319,22 @@ public partial class TUIApp : ITUIApp
 
     private void AddToCommandHistory(string command)
     {
-        if (!string.IsNullOrWhiteSpace(command) &&
-            (commandHistory.Count == 0 || commandHistory[^1] != command))
+        if (!string.IsNullOrWhiteSpace(command))
         {
-            commandHistory.Add(command);
+            command = command.TrimEnd();
+            if (command.EndsWith("help", StringComparison.OrdinalIgnoreCase))
+            {
+                command = command.Substring(0, command.Length - 4).TrimEnd();
+            }
+
+            if (!string.IsNullOrWhiteSpace(command) && (commandHistory.Count == 0 || commandHistory[^1] != command))
+            {
+                commandHistory.Add(command + " ");
+            }
         }
+
         historyIndex = commandHistory.Count;
     }
+
 }
 

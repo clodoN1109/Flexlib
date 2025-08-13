@@ -26,7 +26,7 @@ public class NewLibraryCommand : Command
 
     public override bool IsValid()
     {
-        return Options.Length > 0 & Options.Length < 2;
+        return Options.Length > 0 & Options.Length < 3;
     }
 
     public override CommandUsageInfo GetUsageInfo()
@@ -139,7 +139,7 @@ public class GetLibraryLayoutCommand : Command
     public GetLibraryLayoutCommand(string[] options)
     {
         Options = options;
-        LibraryName = options.Length > 0 ? options[0] : "Default Library";
+        LibraryName = options.Length > 0 ? options[0] : "";
     }
 
     public override string Type => "get-layout";
@@ -186,7 +186,7 @@ public class SetLibraryLayoutCommand : Command
     public SetLibraryLayoutCommand(string[] options)
     {
         Options = options;
-        LibraryName = options.Length > 0 ? options[0] : "Default Library";
+        LibraryName = options.Length > 0 ? options[0] : "";
         LayoutString = options.Length > 1 ? options[1] : "";
     }
 

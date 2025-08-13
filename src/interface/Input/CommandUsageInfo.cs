@@ -1,6 +1,4 @@
-using Flexlib.Interface.Input;
-
-namespace Flexlib.Interface.CLI;
+namespace Flexlib.Interface.Input;
 
 public class CommandUsageInfo : UsageInfo
 {

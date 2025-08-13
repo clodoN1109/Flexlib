@@ -1,46 +1,43 @@
 using Flexlib.Application.Ports;
 using Flexlib.Application.Common;
 using Flexlib.Infrastructure.Interop;
-using Flexlib.Domain;
-using System.Text;
+
 
 namespace Flexlib.Application.UseCases;
 
-public static class RenameItem
+public static class EditNote
 {
-    public static Result Execute(object itemId, string newName, string libName, ILibraryRepository repo)
+    public static Result Execute(object itemId, string noteId, string libName, string note, ILibraryRepository repo)
     {
-        var parsedArgs = new ParsedArgs(itemId, newName, libName, repo); 
+        var parsedArgs = new ParsedArgs(itemId, noteId, libName, note, repo); 
 
         var validation = IsOperationAllowed(parsedArgs);
 
         return validation.IsSuccess
-            ? _RenameItem(parsedArgs)
+            ? _EditNote(parsedArgs)
             : validation;
     }
 
-    private static Result _RenameItem(ParsedArgs parsedArgs)
+    private static Result _EditNote(ParsedArgs parsedArgs)
     {
-        var selectedLibrary = parsedArgs.Repo.GetByName(parsedArgs.LibName);
-        if (selectedLibrary is null)
-            return Result.Fail($"Library '{parsedArgs.LibName}' not found.");
-
+        var selectedLibrary = parsedArgs.Repo.GetByName(parsedArgs.LibName)!;
+        
         var selectedItem = selectedLibrary.GetItemById(parsedArgs.ItemId);
-        if (selectedItem is null)
-            return Result.Fail($"Item '{parsedArgs.ItemId}' not found in library '{parsedArgs.LibName}'.");
 
-        if (string.IsNullOrWhiteSpace(parsedArgs.NewName))
-            return Result.Fail("New item name must be provided.");
+        var selectedNote = selectedItem!.Notes.FirstOrDefault(c => c.Id.ToLowerInvariant() == parsedArgs.NoteId.ToLowerInvariant());
 
-        return parsedArgs.Repo.RenameItem(selectedItem, parsedArgs.NewName, selectedLibrary);
+        var currentText = selectedNote!.Text; 
 
+        selectedNote.Text = (parsedArgs.Note ?? "").Trim();
+
+        parsedArgs.Repo.Save(selectedLibrary);
+
+        return Result.Success("");
     }
 
     private static Result IsOperationAllowed(ParsedArgs parsedArgs)
     {
-        
 
-        
         if (string.IsNullOrWhiteSpace(parsedArgs.LibName))
             return Result.Fail("Library name must be informed.");
 
@@ -48,29 +45,32 @@ public static class RenameItem
         if (selectedLibrary == null)
             return Result.Fail($"Library '{parsedArgs.LibName}' not found.");
 
-        if (parsedArgs.ItemId == null)
-            return Result.Fail($"Item ID must be informed.");
-
         var selectedItem = selectedLibrary.GetItemById(parsedArgs.ItemId);
+        
         if (selectedItem == null)
             return Result.Fail($"Library '{parsedArgs.LibName}' has no item with ID '{parsedArgs.ItemId}'.");
         
+        if (!selectedItem.Notes.Any(c => c.Id == parsedArgs.NoteId))
+            return Result.Fail($"Note with id {parsedArgs.NoteId} not found.");
+
         return Result.Success("Operation allowed.");
     }
 
     public class ParsedArgs
     {
         public object ItemId { get; }
-        public string NewName { get; }
+        public string NoteId { get; }
         public string LibName { get; }
+        public string Note { get; }
         public ILibraryRepository Repo { get; }
 
-        public ParsedArgs(object itemId, string newName, string libName, ILibraryRepository repo)
+        public ParsedArgs(object itemId, string noteId, string libName, string note, ILibraryRepository repo)
         {
-            ItemId = itemId;
             LibName = libName;
-            NewName = newName;
-            Repo = repo;    
+            NoteId = noteId;
+            ItemId = itemId;
+            Note = note;
+            Repo = repo;
         }
     }
 }

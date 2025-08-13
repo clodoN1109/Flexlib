@@ -42,8 +42,7 @@ public static class UpdateItemOrigin
     private static Result IsOperationAllowed(ParsedArgs parsedArgs)
     {
         
-        if (parsedArgs.LibName.ToLowerInvariant() == "Default Library".ToLowerInvariant() && AssureDefaultLibrary.Execute(parsedArgs.Repo).IsFailure)
-            return Result.Fail($"Default Library not found.");
+
         
         if (string.IsNullOrWhiteSpace(parsedArgs.LibName))
             return Result.Fail("Library name must be informed.");

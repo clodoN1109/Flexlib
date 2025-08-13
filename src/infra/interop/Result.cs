@@ -5,6 +5,7 @@ public class Result
     public string? SuccessMessage { get; }
     public string? WarningMessage { get; }
     public string? ErrorMessage { get; }
+    public object? Payload { get; }
 
     public bool IsSuccess { get; }
     public bool IsWarning { get; }
@@ -13,16 +14,28 @@ public class Result
 
     public string Message => SuccessMessage ?? WarningMessage ?? ErrorMessage ?? "";
 
-    private Result(bool isSuccess, bool isWarning, string? successMessage, string? errorMessage, string? warningMessage)
+    private Result(
+        bool isSuccess,
+        bool isWarning,
+        string? successMessage,
+        string? errorMessage,
+        string? warningMessage,
+        object? payload = null)
     {
         IsSuccess = isSuccess;
         IsWarning = isWarning;
         SuccessMessage = successMessage;
         ErrorMessage = errorMessage;
         WarningMessage = warningMessage;
+        Payload = payload; // ← This was missing
     }
 
-    public static Result Success(string message) => new(true, false, message, null, null);
-    public static Result Warn(string warning, string success = "") => new(true, true, success, null, warning);
-    public static Result Fail(string message) => new(false, false, null, message, null);
+    public static Result Success(string message, object? payload = null) =>
+        new(true, false, message, null, null, payload);
+
+    public static Result Warn(string warning, string success = "", object? payload = null) =>
+        new(true, true, success, null, warning, payload);
+
+    public static Result Fail(string message, object? payload = null) =>
+        new(false, false, null, message, null, payload);
 }

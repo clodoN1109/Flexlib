@@ -29,7 +29,7 @@ public class NewNoteCommand : NoteCommand
 
     public NewNoteCommand(string[] options) : base(options) 
     {
-        LibName = options.Length > 1 ? options[1] : "Default Library";
+        LibName = options.Length > 1 ? options[1] : "";
         Note = options.Length > 2 ? options[2] : "";
     }
     
@@ -48,7 +48,7 @@ public class NewNoteCommand : NoteCommand
             Title = "new-note",
             Description = "Creates a new note for the selected library item.",
             Group = CommandGroups.Notes,
-            Syntax = "flexlib new-note <item id> [library name] [note]" ,
+            Syntax = "flexlib new-note <item id> <library name> [note]" ,
             Options = new List<Option>
             {
                 new Option{
@@ -59,7 +59,7 @@ public class NewNoteCommand : NoteCommand
                 new Option{
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
-                    DefaultValue = "Default Library" 
+                    Mandatory = true
                 },
                 new Option{
                     Name = "note",
@@ -78,7 +78,7 @@ public class ListNotesCommand : NoteCommand
     
     public ListNotesCommand(string[] options) : base(options) 
     {
-        LibName = options.Length > 1 ? options[1] : "Default Library";
+        LibName = options.Length > 1 ? options[1] : "";
     }
 
     public override string Type => "list-notes";
@@ -96,7 +96,7 @@ public class ListNotesCommand : NoteCommand
             Title = "list-notes",
             Description = "List all notes from a selected library item.",
             Group = CommandGroups.Notes,
-            Syntax = "flexlib list-notes <item id> [library name]",
+            Syntax = "flexlib list-notes <item id> <library name>",
             Options = new List<Option>
             {
                 new Option{
@@ -108,7 +108,7 @@ public class ListNotesCommand : NoteCommand
                 new Option{
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
-                    DefaultValue = "Default Library" 
+                    Mandatory = true
                 }
 
             }
@@ -126,7 +126,7 @@ public class EditNoteCommand : NoteCommand
     public EditNoteCommand(string[] options) : base(options) { 
         
         NoteId = options.Length > 1 ? options[1] : "";
-        LibName = options.Length > 2 ? options[2] : "Default Library"; 
+        LibName = options.Length > 2 ? options[2] : ""; 
    
     }
     
@@ -145,7 +145,7 @@ public class EditNoteCommand : NoteCommand
             Title = "edit-note",
             Description = "Edit a selected commment.",
             Group = CommandGroups.Notes,
-            Syntax = "flexlib edit-note <item id> <note id> [library name]",
+            Syntax = "flexlib edit-note <item id> <note id> <library name>",
             Options = new List<Option>
             {
                 new Option{
@@ -161,7 +161,7 @@ public class EditNoteCommand : NoteCommand
                 new Option{
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
-                    DefaultValue = "Default Library" 
+                    Mandatory = true
                 }
 
             }
@@ -178,7 +178,7 @@ public class RemoveNoteCommand : NoteCommand
     public RemoveNoteCommand(string[] options) : base(options) { 
         
         NoteId = options.Length > 1 ? options[1] : "";
-        LibName = options.Length > 2 ? options[2] : "Default Library"; 
+        LibName = options.Length > 2 ? options[2] : ""; 
    
     }
     
@@ -197,7 +197,7 @@ public class RemoveNoteCommand : NoteCommand
             Title = "remove-note",
             Description = "Remove a note from a selected item.",
             Group = CommandGroups.Notes,
-            Syntax = "flexlib remove-note <item id> <note id> [library name]",
+            Syntax = "flexlib remove-note <item id> <note id> <library name>",
             Options = new List<Option>
             {
                 new Option{
@@ -213,7 +213,7 @@ public class RemoveNoteCommand : NoteCommand
                 new Option{
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
-                    DefaultValue = "Default Library" 
+                    Mandatory = true
                 }
 
             }
