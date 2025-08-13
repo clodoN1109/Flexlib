@@ -37,7 +37,7 @@ public class NewItemCommand : Command
             Title = "new-item",
             Description = "Creates a new item in the selected library.",
             Group = CommandGroups.Items,
-            Syntax = "flexlib new-item <item origin> [item name] [library name]",
+            Syntax = "flexlib new-item <item origin> <item name> <library name>",
             Options = new List<Option>
             {
                 new Option{
@@ -50,14 +50,13 @@ public class NewItemCommand : Command
                 new Option{
                     Name = "item name",
                     OptionDomain = new VariableDomain(),
-                    Mandatory = false
+                    Mandatory = true
                 },
                 
                 new Option{
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
-                    Mandatory = false,
-                    DefaultValue = "Default Library" 
+                    Mandatory = true
 
                 },
             }
@@ -202,7 +201,7 @@ public class RemoveItemCommand : Command
             Title = "remove-item",
             Description = "Removes the selected item from the selected library.",
             Group = CommandGroups.Items,
-            Syntax = "flexlib remove-item <item id> [library name]",
+            Syntax = "flexlib remove-item <item id> <library name>",
             Options = new List<Option>
             {
                 new Option{
@@ -214,8 +213,7 @@ public class RemoveItemCommand : Command
                 new Option{
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
-                    Mandatory = false,
-                    DefaultValue = "Default Library"
+                    Mandatory = true
                 },
 
             }
@@ -233,7 +231,7 @@ public class ViewItemCommand : Command
     {
         Options = options;
         ItemId =  options.Length > 0 ? options[0] : "";
-        LibraryName = options.Length > 1 ? options[1] : "Default Library";
+        LibraryName = options.Length > 1 ? options[1] : "";
         Application = options.Length > 2 ? options[1] : "Default App";
     }
 
@@ -252,7 +250,7 @@ public class ViewItemCommand : Command
             Title = "view-item",
             Description = "Opens for visualization the selected item from the selected library.",
             Group = CommandGroups.Items,
-            Syntax = "flexlib view-item <item id> [library name] [preferred application]",
+            Syntax = "flexlib view-item <item id> <library name> [preferred application]",
             Options = new List<Option>
             {
                 new Option{
@@ -264,8 +262,7 @@ public class ViewItemCommand : Command
                 new Option{
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
-                    Mandatory = false,
-                    DefaultValue = "Default Library"
+                    Mandatory = true
                 },
                 
                 new Option{
@@ -290,7 +287,7 @@ public class ListItemsCommand : Command
     public ListItemsCommand(string[] options)
     {
         Options = options;
-        LibraryName = options.Length > 0 ? options[0] : "Default Library";
+        LibraryName = options.Length > 0 ? options[0] : "";
         FilterSequence = options.Length > 1 ? options[1] : "";
         ItemName = options.Length > 2 ? options[2] : "";
         SortSequence = options.Length > 3 ? options[3] : "";

@@ -1,36 +1,39 @@
 using Flexlib.Infrastructure.Interop;
 using Flexlib.Application.Ports;
 using Flexlib.Application.UseCases;
+using Flexlib.Application.Common;
 using Flexlib.Infrastructure.Persistence;
-using Flexlib.Infrastructure.Authentication;
 using Flexlib.Infrastructure.Authorization;
 using Flexlib.Interface.Input;
 using Flexlib.Interface.CLI;
 using Flexlib.Interface.Output;
+using Flexlib.Domain;
 
 namespace Flexlib.Interface.Controllers;
 
 
-public static class ConsoleController
+public static class CLIController
 {
 
     private static readonly ILibraryRepository _libRepo = new JsonLibraryRepository();
     private static readonly IPresenter _presenter = new ConsolePresenter();
     private static readonly IReader _reader = new Reader();
 
-
+    private static LibraryItem? _selectedItem { get; set; }
+    private static Library? _selectedLibrary { get; set; }
+    private static string? _input { get; set; } 
     public static void Handle(Command cmd, IUser authUser)
     {
         if (Authorization.IsNotAuthorized(cmd, authUser))
         {
-            _presenter.Result(Result.Fail($"User {authUser.Name} is not authorized to perform action {cmd.Type}.") );
+            _presenter.Result(Result.Fail($"User {authUser.Name} is not authorized to perform action {cmd.Type}."));
             return;
         }
 
         var result = Execute(cmd, authUser);
-        
+
         _presenter.Result(result);
-                 
+
     }
 
     private static Result Execute(Command cmd, IUser authUser)
@@ -45,6 +48,13 @@ public static class ConsoleController
                 return NewItem.Execute(c.LibraryName, c.ItemOrigin, c.ItemName, _libRepo);
 
             case RemoveItemCommand c:
+                _selectedLibrary = _libRepo.GetByName(c.LibraryName)!;
+                _selectedItem = _selectedLibrary.GetItemById(c.ItemId);
+                Console.WriteLine($"\nAre you sure you want to delete the item '{_selectedItem?.Name ?? ""}' from library '{_selectedLibrary?.Name ?? ""}'?\n\n");
+                Console.Write("(y/N) > ");
+                _input = Console.ReadLine();
+                if (!string.Equals(_input, "y", StringComparison.OrdinalIgnoreCase))
+                    return Result.Fail("Deletion cancelled.");
                 return RemoveItem.Execute(c.ItemId, c.LibraryName, _libRepo);
             
             case RenameItemCommand c:
@@ -139,12 +149,31 @@ public static class ConsoleController
                 return ListNotes.Execute(c.ItemId, c.LibName, _libRepo, _presenter);
 
             case EditNoteCommand c:
-                return EditNote.Execute(c.ItemId, c.NoteId, c.LibName, _reader, _libRepo);
+                string? newNote = "";
+                var payload = SelectItemNote.Execute(c.ItemId, c.NoteId, c.LibName, _libRepo).Payload;
+
+                if ((payload is Domain.Note currentNote) && !string.IsNullOrWhiteSpace(currentNote.Text))
+                    newNote = _reader.ReadText(currentNote.Text);
+
+                if (string.IsNullOrWhiteSpace(newNote))
+                    return Result.Fail("Failed to get any text input.");
+
+                return EditNote.Execute(c.ItemId, c.NoteId, c.LibName, newNote, _libRepo);
 
             case RemoveNoteCommand c:
                 return RemoveNote.Execute(c.ItemId, c.NoteId, c.LibName, _libRepo);
 
             case RemoveLibraryCommand c:
+
+                _selectedLibrary = _libRepo.GetByName(c.Name)!;
+                Console.WriteLine($"\nAre you sure you want to delete the library '{c.Name}' at path:\n\n  {_selectedLibrary.Path} ?\n");
+                Console.Write("(y/N) > ");
+                _input = Console.ReadLine();
+
+                if (!string.Equals(_input, "y", StringComparison.OrdinalIgnoreCase))
+                {
+                    return Result.Fail("Deletion cancelled by user.");
+                }
                 return RemoveLibrary.Execute(c.Name, _libRepo);
 
             default:

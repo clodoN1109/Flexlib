@@ -16,7 +16,7 @@ public class FetchFilesCommand : Command
     public FetchFilesCommand(string[] options)
     {
         Options = options;
-        LibraryName = options.Length > 0 ? options[0] : "Default Library";
+        LibraryName = options.Length > 0 ? options[0] : "";
     }
     
     public override string Type => "fetch-files";
@@ -34,14 +34,13 @@ public class FetchFilesCommand : Command
             Title = "fetch-files",
             Description = "Fetches the selected library's files from the defined origins of items and saves them to the local system.",
             Group = CommandGroups.Storage,
-            Syntax = "flexlib fetch-files [library name]",
+            Syntax = "flexlib fetch-files <library name>",
             Options = new List<Option>
             {
                 new Option{
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
-                    Mandatory = false,
-                    DefaultValue = "Default Library"
+                    Mandatory = true,
                 }
             }
         };
@@ -74,14 +73,13 @@ public class RebalanceLocalStorageCommand : Command
             Title = "rebalance",
             Description = "Rebalances the local storage subfolders of the selected libraries to conform to the current configuration.",
             Group = CommandGroups.Storage,
-            Syntax = "flexlib rebalance [library name]",
+            Syntax = "flexlib rebalance <library name>",
             Options = new List<Option>
             {
                 new Option{
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
-                    Mandatory = false,
-                    DefaultValue = ""
+                    Mandatory = true,
                 }
             }
         };

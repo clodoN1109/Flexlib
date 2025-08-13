@@ -19,7 +19,7 @@ public class NewPropertyCommand : Command
     {
         Options = options;
         PropName = options.Length > 0 ? options[0] : "";
-        LibName = options.Length > 1 ? options[1] : "Default Library";
+        LibName = options.Length > 1 ? options[1] : "";
         PropType = options.Length > 2 ? options[2] : "string";
     }
     
@@ -38,7 +38,7 @@ public class NewPropertyCommand : Command
             Title = "new-prop",
             Description = "Defines a new property for the selected library and all its items.",
             Group = CommandGroups.Properties,
-            Syntax = "flexlib new-prop <property name> [library name] [property type]",
+            Syntax = "flexlib new-prop <property name> <library name> [property type]",
             Options = new List<Option>
             {
                 new Option{
@@ -50,7 +50,7 @@ public class NewPropertyCommand : Command
                 new Option{
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
-                    DefaultValue = "Default Library" 
+                    Mandatory = true 
                 },
                 
                 new Option{
@@ -74,7 +74,7 @@ public class ListPropertiesCommand : Command
     public ListPropertiesCommand(string[] options)
     {
         Options = options;
-        LibName = options.Length > 0 ? options[0] : "Default Library";
+        LibName = options.Length > 0 ? options[0] : "";
         ItemId = options.Length > 1 ? options[1] : "";
     }
 
@@ -93,13 +93,13 @@ public class ListPropertiesCommand : Command
             Title = "list properties",
             Description = "List all defined properties for the selected library or item.",
             Group = CommandGroups.Properties,
-            Syntax = "flexlib list-props [library name] [item id]",
+            Syntax = "flexlib list-props <library name> [item id]",
             Options = new List<Option>
             {
                 new Option{
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
-                    DefaultValue = "Default Library" 
+                    Mandatory = true 
                 },
                 
                 new Option{
@@ -125,7 +125,7 @@ public class SetPropertyCommand : Command
         PropName = options.Length > 0 ? options[0] : "";
         NewValue = options.Length > 1 ? options[1] : "";
         ItemId = options.Length > 2 ? options[2] : "";
-        LibName = options.Length > 3 ? options[3] : "Default Library";
+        LibName = options.Length > 3 ? options[3] : "";
     }
     
     public override string Type => "set-prop";
@@ -143,7 +143,7 @@ public class SetPropertyCommand : Command
             Title = "set-prop",
             Description = "Defines a new property for the selected library and all its items.",
             Group = CommandGroups.Properties,
-            Syntax = "flexlib set-prop <property name> <new value> <item id> [library name]",
+            Syntax = "flexlib set-prop <property name> <new value> <item id> <library name>",
             Options = new List<Option>
             {
                 new Option{
@@ -167,7 +167,7 @@ public class SetPropertyCommand : Command
                 new Option{
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
-                    DefaultValue = "Default Library" 
+                    Mandatory = true 
                 }
 
 
@@ -191,7 +191,7 @@ public class RenamePropertyCommand : Command
         LibName     = options.Length > 2 ? options[2]  : "";
     }
     
-    public override string Type => "new-prop";
+    public override string Type => "rename-prop";
 
     public override bool IsValid()
     {
@@ -203,10 +203,10 @@ public class RenamePropertyCommand : Command
         return new CommandUsageInfo
         {
             Meta = new List<string> {},
-            Title = "new-prop",
+            Title = "rename-prop",
             Description = "Rename a property for the selected library and all its items.",
             Group = CommandGroups.Properties,
-            Syntax = "flexlib set-prop <property name> <new name> <library name>",
+            Syntax = "flexlib rename-prop <property name> <new name> <library name>",
             Options = new List<Option>
             {
                 new Option{
@@ -308,7 +308,7 @@ public class RemovePropertyCommand : Command
     {
         Options = options;
         PropName = options.Length > 0 ? options[0] : "";
-        LibName = options.Length > 1 ? options[1] : "Default Library";
+        LibName = options.Length > 1 ? options[1] : "";
     }
     
     public override string Type => "remove-prop";
@@ -326,7 +326,7 @@ public class RemovePropertyCommand : Command
             Title = "remove-prop",
             Description = "Removes a property definition from a selected library and the corresponding values for all the library's items.",
             Group = CommandGroups.Properties,
-            Syntax = "flexlib remove-prop <property name> [library name]",
+            Syntax = "flexlib remove-prop <property name> <library name>",
             Options = new List<Option>
             {
                 new Option{
@@ -338,7 +338,7 @@ public class RemovePropertyCommand : Command
                 new Option{
                     Name = "library name",
                     OptionDomain = new VariableDomain(),
-                    DefaultValue = "Default Library" 
+                    Mandatory = true 
                 }
 
             }

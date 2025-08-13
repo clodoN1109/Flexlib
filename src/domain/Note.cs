@@ -57,7 +57,7 @@ public class Note
                 string item = match.Groups["item"].Value;
                 string lib = match.Groups["lib"].Success && !string.IsNullOrWhiteSpace(match.Groups["lib"].Value)
                     ? match.Groups["lib"].Value
-                    : "Default Library";
+                    : "";
 
                 references.Add(new LibraryItemReference
                 {

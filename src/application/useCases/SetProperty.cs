@@ -62,9 +62,6 @@ public static class SetProperty
 
     private static Result IsOperationAllowed(ParsedArgs args)
     {
-        
-        if (args.LibName == "Default Library" && AssureDefaultLibrary.Execute(args.Repo).IsFailure)
-            return Result.Fail($"Default Library not found.");
 
         if (string.IsNullOrWhiteSpace(args.PropName.ToLowerInvariant()))
             return Result.Fail("Property name must be provided.");

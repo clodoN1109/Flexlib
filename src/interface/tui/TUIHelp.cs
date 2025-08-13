@@ -17,7 +17,7 @@ public static class TUIHelp
             },
             ["Desk Management"] = new[]
             {
-                "list-desks", "new-desk", "view-desk"
+                "list-desks", "new-desk", "view-desk", "set-appetite", "define-progress", "set-progress"
             },
             ["Borrowing & Loans"] = new[]
             {
@@ -29,7 +29,7 @@ public static class TUIHelp
             },
             ["Properties"] = new[]
             {
-                "list-props", "new-prop", "remove-prop"
+                "list-props", "new-prop", "remove-prop", "rename-prop"
             },
             ["Miscellaneous"] = new[]
             {

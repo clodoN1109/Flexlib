@@ -180,15 +180,6 @@ public class JsonLibraryRepository : ILibraryRepository
 
         string libraryPath = Path.Combine(selectedLibrary.Path ?? "", selectedLibrary.Name);
 
-        Console.WriteLine($"\nAre you sure you want to delete the library '{name}' at path:\n\n  {libraryPath} ?\n");
-        Console.Write("(y/N) > ");
-        string? input = Console.ReadLine();
-
-        if (!string.Equals(input, "y", StringComparison.OrdinalIgnoreCase))
-        {
-            return Result.Fail("Deletion cancelled by user.");
-        }
-
         if (string.IsNullOrWhiteSpace(libraryPath) || !Directory.Exists(libraryPath))
         {
             return Result.Fail($"Path '{libraryPath}' does not exist.");
@@ -249,12 +240,6 @@ public class JsonLibraryRepository : ILibraryRepository
                 break;
             }
         }
-
-        Console.WriteLine($"\nAre you sure you want to delete the item '{item.Name}' from library '{lib.Name}'?\n\n");
-        Console.Write("(y/N) > ");
-        string? input = Console.ReadLine();
-        if (!string.Equals(input, "y", StringComparison.OrdinalIgnoreCase))
-            return Result.Fail("Deletion cancelled.");
 
         try
         {

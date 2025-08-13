@@ -24,9 +24,6 @@ public static class RemoveProperty
     private static Result IsOperationAllowed(ParsedArgs args)
     {
         
-        if (args.LibName.ToLowerInvariant() == "Default Library".ToLowerInvariant() && AssureDefaultLibrary.Execute(args.Repo).IsFailure)
-            return Result.Fail($"Default Library not found.");
-
         if (string.IsNullOrWhiteSpace(args.PropName))
             return Result.Fail("Property name must be provided.");
 
