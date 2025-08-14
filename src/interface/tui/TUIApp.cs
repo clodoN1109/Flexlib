@@ -33,9 +33,6 @@ public partial class TUIApp : ITUIApp
     private string margin = "     ";
 
     private readonly TUIConfig _config;
-    private Theme theme;
-    private Theme helpTheme;
-    private Theme selectedFrameTheme;
     private bool IsHelpActive { get; set; } = false;
     private static readonly ILibraryRepository _libRepo = new JsonLibraryRepository();
     private static LibraryItem? _selectedItem { get; set; }
@@ -48,9 +45,12 @@ public partial class TUIApp : ITUIApp
     public TUIApp(TUIConfig config)
     {
         _config = config;
-        theme = Themes.Get(_config.Theme);
-        helpTheme = config.Theme == "dark" ? Themes.Get("dark-help") : Themes.Get("light-help");
-        selectedFrameTheme = config.Theme == "dark" ? Themes.Get("selected-dark-frame") : Themes.Get("selected-light-frame");
+        _generalTheme = Themes.Get(_config.Theme);
+        _helpTheme = config.Theme == "dark" ? Themes.Get("dark-help") : Themes.Get("light-help");
+        _selectedFrameTheme = config.Theme == "dark" ? Themes.Get("selected-dark-frame") : Themes.Get("selected-light-frame");
+        _errorFrameTheme = config.Theme == "dark" ? Themes.Get("error-dark-frame") : Themes.Get("error-light-frame");
+        _warningFrameTheme = config.Theme == "dark" ? Themes.Get("warning-dark-frame") : Themes.Get("warning-light-frame");
+        _successFrameTheme = config.Theme == "dark" ? Themes.Get("success-dark-frame") : Themes.Get("success-light-frame");
     }
 
     public void Run(IUser user)
@@ -74,8 +74,8 @@ public partial class TUIApp : ITUIApp
     {
         var top = Terminal.Gui.Application.Top;
 
-        var scheme = theme.ToColorScheme();
-        var helpScheme = helpTheme.ToColorScheme();
+        var scheme = _generalTheme.ToColorScheme();
+        var helpScheme = _helpTheme.ToColorScheme();
 
         RenderWindow(top, scheme);
         RenderTitleBar(scheme);
@@ -154,17 +154,13 @@ public partial class TUIApp : ITUIApp
                 return;
 
             case "dark":
-                theme = Themes.Get("dark");
-                helpTheme = Themes.Get("dark-help");
-                selectedFrameTheme = Themes.Get("selected-dark-frame");
-                UpdateThemes();
+                UpdateThemes("dark");
+                UpdateSchemes();
                 return;
 
             case "light":
-                theme = Themes.Get("light");
-                helpTheme = Themes.Get("light-help");
-                selectedFrameTheme = Themes.Get("selected-light-frame");
-                UpdateThemes();
+                UpdateThemes("light");
+                UpdateSchemes();
                 return;
 
         }
@@ -188,6 +184,11 @@ public partial class TUIApp : ITUIApp
         string promptMessage;
         switch (cmd)
         {
+            case GetItemOriginCommand c:
+                _result = GetItemOrigin.Execute(c.ItemId, c.LibraryName, _libRepo);
+                RenderResult(_result);
+                break;
+
             case EditNoteCommand c:
 
                 string? newNote = "";
@@ -195,7 +196,7 @@ public partial class TUIApp : ITUIApp
 
                 if ((payload is Domain.Note currentNote) && !string.IsNullOrWhiteSpace(currentNote.Text))
 
-                    newNote = ReadText(selectedFrameTheme.ToColorScheme(),
+                    newNote = ReadText(_selectedFrameTheme.ToColorScheme(),
                                         $"{c.LibName}/{c.ItemId} Note Id {c.NoteId}",
                                         currentNote.Text
                                         );
@@ -204,27 +205,41 @@ public partial class TUIApp : ITUIApp
                 break;
 
             case NewNoteCommand c:
-                var note = ReadText(selectedFrameTheme.ToColorScheme(), $"{c.LibName}/{c.ItemId}");
+                var note = ReadText(_selectedFrameTheme.ToColorScheme(), $"{c.LibName}/{c.ItemId}");
                 NewNote.Execute(c.ItemId, c.LibName, note, _user!, _libRepo);
                 break;
 
             case RemoveItemCommand c:
                 _selectedLibrary = _libRepo.GetByName(c.LibraryName)!;
                 _selectedItem = _selectedLibrary.GetItemById(c.ItemId);
+                if (_selectedItem == null)
+                {
+                    _result = Result.Fail($"Item with ID {c.ItemId} not found in library {c.LibraryName}.");
+                    RenderResult(_result);
+                    break;
+                }
+
                 promptMessage = $"\nAre you sure you want to delete the item '{_selectedItem?.Name ?? ""}' from library '{_selectedLibrary?.Name ?? ""}'?\n\n";
-                if (! ConfirmationPrompt(selectedFrameTheme.ToColorScheme(), promptMessage))
+                if (! ConfirmationPrompt(_selectedFrameTheme.ToColorScheme(), promptMessage))
                     break;
                 _result = RemoveItem.Execute(c.ItemId, c.LibraryName, _libRepo);
-                RenderMessage(selectedFrameTheme.ToColorScheme(), _result.Message);
+                RenderResult(_result);
                 break;
 
             case RemoveLibraryCommand c:
                 _selectedLibrary = _libRepo.GetByName(c.Name)!;
+                if (_selectedLibrary == null)
+                {
+                    _result = Result.Fail($"Library named {c.Name} not found.");
+                    RenderResult(_result);
+                    break;
+                }
+
                 promptMessage = $"\nAre you sure you want to delete the library '{c.Name}' at path:\n\n  {_selectedLibrary.Path} ?\n";
-                if (! ConfirmationPrompt(selectedFrameTheme.ToColorScheme(), promptMessage))
+                if (! ConfirmationPrompt(_selectedFrameTheme.ToColorScheme(), promptMessage))
                     break;
                 _result = RemoveLibrary.Execute(c.Name, _libRepo);
-                RenderMessage(selectedFrameTheme.ToColorScheme(), _result.Message);
+                RenderResult(_result);
                 break;
 
             default:
@@ -234,39 +249,6 @@ public partial class TUIApp : ITUIApp
                 break;
         }
 
-    }
-
-    private void UpdateThemes()
-    {
-        win.ColorScheme = theme.ToColorScheme();
-        leftTopLabel.ColorScheme = theme.ToColorScheme();
-        rightTopLabel.ColorScheme = theme.ToColorScheme();
-        outputFrame.ColorScheme = theme.ToColorScheme();
-        outputPane.ColorScheme = theme.ToColorScheme();
-        helpFrame.ColorScheme = helpTheme.ToColorScheme();
-        helpPane.ColorScheme = helpTheme.ToColorScheme();
-        promptPane.ColorScheme = theme.ToColorScheme();
-        promptLabel.ColorScheme = theme.ToColorScheme();
-        footerPane.ColorScheme = theme.ToColorScheme();
-        authLabel.ColorScheme = theme.ToColorScheme();
-
-        outputPane.DrawContent += (_) =>
-        {
-            outputScrollBar.Size = outputPane.Lines;
-            outputScrollBar.ColorScheme = theme.ToColorScheme();
-            outputScrollBar.Position = outputPane.TopRow;
-            outputScrollBar.Refresh();
-        };
-        helpPane.DrawContent += (_) =>
-        {
-            helpScrollBar.Size = helpPane.Lines;
-            helpScrollBar.ColorScheme = helpTheme.ToColorScheme();
-            helpScrollBar.Position = helpPane.TopRow;
-            helpScrollBar.Refresh();
-        };
-
-        string meta = $"{theme.Icon}       v{(Env.IsDebug() ? Env.BuildId : Env.Version)}{margin}";  // Minimal spaces for cleaner alignment
-        rightTopLabel.Text = meta;
     }
 
     private void ActivateHelpFrame(string outputStream)

@@ -81,10 +81,6 @@ foreach ($RuntimeId in $RuntimeIds) {
     }
 }
 
-$history = GetBuildHistory
-Write-Fill "BUILD STATS" -ForegroundColor Cyan
-PlotHistoryGraph $history
-
 $ResultRequestedByAnotherScript = ($MyInvocation.ScriptName -ne "")
 
 if ($ResultRequestedByAnotherScript) {
