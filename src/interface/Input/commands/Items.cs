@@ -121,16 +121,16 @@ public class RenameItemCommand : Command
 
 public class UpdateItemOriginCommand : Command
 {
-    public string LibraryName   { get; }
-    public object ItemId        { get; }
-    public string NewOrigin     { get; }
+    public string LibraryName { get; }
+    public object ItemId { get; }
+    public string NewOrigin { get; }
 
     public UpdateItemOriginCommand(string[] options)
     {
-        ItemId      =   options.Length > 0 ? options[0]   :  "";
-        NewOrigin   =   options.Length > 1 ? options[1]   :  "";
-        LibraryName =   options.Length > 2 ? options[2]   :  "";
-        Options     =   options;
+        ItemId = options.Length > 0 ? options[0] : "";
+        NewOrigin = options.Length > 1 ? options[1] : "";
+        LibraryName = options.Length > 2 ? options[2] : "";
+        Options = options;
     }
 
     public override string Type => "update-origin";
@@ -139,12 +139,12 @@ public class UpdateItemOriginCommand : Command
     {
         return Options.Length == 3;
     }
-    
+
     public override CommandUsageInfo GetUsageInfo()
     {
         return new CommandUsageInfo
         {
-            Meta = new List<string> {},
+            Meta = new List<string> { },
             Title = "update-origin",
             Description = "Updates the origin of the selected item.",
             Group = CommandGroups.Items,
@@ -156,7 +156,7 @@ public class UpdateItemOriginCommand : Command
                     OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
-                
+
                 new Option{
                     Name = "new origin",
                     OptionDomain = new VariableDomain(),
@@ -174,19 +174,19 @@ public class UpdateItemOriginCommand : Command
     }
 }
 
-public class RemoveItemCommand : Command
+public class GetItemOriginCommand : Command
 {
-    public string LibraryName { get; }
-    public object ItemId { get; }
+    public string LibraryName   { get; }
+    public object ItemId        { get; }
 
-    public RemoveItemCommand(string[] options)
+    public GetItemOriginCommand(string[] options)
     {
-        ItemId =  options.Length > 0 ? options[0] : "";
-        LibraryName = options.Length > 1 ? options[1] : "";
-        Options = options;
+        ItemId      =   options.Length > 0 ? options[0]   :  "";
+        LibraryName =   options.Length > 1 ? options[1]   :  "";
+        Options     =   options;
     }
 
-    public override string Type => "remove-item";
+    public override string Type => "get-origin";
 
     public override bool IsValid()
     {
@@ -198,6 +198,54 @@ public class RemoveItemCommand : Command
         return new CommandUsageInfo
         {
             Meta = new List<string> {},
+            Title = "get-origin",
+            Description = "Get the current origin for the selected item.",
+            Group = CommandGroups.Items,
+            Syntax = "flexlib get-origin <item id> <library name>",
+            Options = new List<Option>
+            {
+                new Option{
+                    Name = "item id",
+                    OptionDomain = new VariableDomain(),
+                    Mandatory = true
+                },
+                
+                new Option{
+                    Name = "library name",
+                    OptionDomain = new VariableDomain(),
+                    Mandatory = true
+                },
+
+            }
+        };
+    }
+}
+
+
+public class RemoveItemCommand : Command
+{
+    public string LibraryName { get; }
+    public object ItemId { get; }
+
+    public RemoveItemCommand(string[] options)
+    {
+        ItemId = options.Length > 0 ? options[0] : "";
+        LibraryName = options.Length > 1 ? options[1] : "";
+        Options = options;
+    }
+
+    public override string Type => "remove-item";
+
+    public override bool IsValid()
+    {
+        return Options.Length == 2;
+    }
+
+    public override CommandUsageInfo GetUsageInfo()
+    {
+        return new CommandUsageInfo
+        {
+            Meta = new List<string> { },
             Title = "remove-item",
             Description = "Removes the selected item from the selected library.",
             Group = CommandGroups.Items,
@@ -209,7 +257,7 @@ public class RemoveItemCommand : Command
                     OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
-                
+
                 new Option{
                     Name = "library name",
                     OptionDomain = new VariableDomain(),

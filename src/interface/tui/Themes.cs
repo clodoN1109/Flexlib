@@ -27,6 +27,13 @@ public static class Themes
 {
     public static readonly Dictionary<string, Theme> All = new(StringComparer.OrdinalIgnoreCase)
     {
+        ["basic"] = new Theme("basic")
+        {
+            Background = Color.Gray,
+            Foreground = Color.White,
+            Accent = Color.BrightYellow,
+            Icon = "-"
+        },
         ["light"] = new Theme("light")
         {
             Background = Color.Gray,
@@ -64,11 +71,54 @@ public static class Themes
         },
         ["selected-light-frame"] = new Theme("selected-light-frame")
         {
-            Background  = Color.Red,
-            Foreground  = Color.DarkGray,
-            Accent      = Color.DarkGray,
-            Icon        = "☽"
-        }
+            Background = Color.Red,
+            Foreground = Color.DarkGray,
+            Accent = Color.DarkGray,
+            Icon = "☀"
+        },
+        ["success-dark-frame"] = new Theme("success-dark-frame")
+        {
+            Background = Color.Black,
+            Foreground = Color.BrightGreen,
+            Accent = Color.Green,
+            Icon = "☽"
+        },
+        ["error-dark-frame"] = new Theme("error-dark-frame")
+        {
+            Background = Color.Black,
+            Foreground = Color.BrightRed,
+            Accent = Color.Red,
+            Icon = "☽"
+        },
+        ["warning-dark-frame"] = new Theme("warning-dark-frame")
+        {
+            Background = Color.Black,
+            Foreground = Color.BrightYellow,
+            Accent = Color.Red,
+            Icon = "☽"
+        },
+        ["success-light-frame"] = new Theme("success-light-frame")
+        {
+            Background = Color.DarkGray,
+            Foreground = Color.BrightGreen,
+            Accent = Color.Red,
+            Icon = "☀"
+        },
+        ["error-light-frame"] = new Theme("error-light-frame")
+        {
+            Background = Color.DarkGray,
+            Foreground = Color.BrightRed,
+            Accent = Color.Red,
+            Icon = "☀"
+        },
+        ["warning-light-frame"] = new Theme("warning-light-frame")
+        {
+            Background = Color.DarkGray,
+            Foreground = Color.BrightYellow,
+            Accent = Color.Red,
+            Icon = "☀"
+        },
+
 
     };
 

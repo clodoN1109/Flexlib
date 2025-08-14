@@ -26,6 +26,7 @@ public static partial class Input
             "new-item"          => new NewItemCommand(options),
             "rename-item"       => new RenameItemCommand(options),
             "update-origin"     => new UpdateItemOriginCommand(options),
+            "get-origin"        => new GetItemOriginCommand(options),
             "remove-item"       => new RemoveItemCommand(options),
             "view-item"         => new ViewItemCommand(options),
             "new-desk"          => new NewDeskCommand(options),

@@ -13,6 +13,14 @@ namespace Flexlib.Interface.TUI;
 
 public partial class TUIApp : ITUIApp
 {
+    private static Theme _generalTheme = Themes.Get("basic");
+    private static Theme _helpTheme = Themes.Get("basic");
+    private static Theme _selectedFrameTheme = Themes.Get("basic");
+    private static Theme _errorFrameTheme = Themes.Get("basic");
+    private static Theme _warningFrameTheme = Themes.Get("basic");
+    private static Theme _successFrameTheme = Themes.Get("basic");
+
+
     private void RenderWindow(Toplevel top, ColorScheme scheme)
     {
         win = new Window()
@@ -42,7 +50,7 @@ public partial class TUIApp : ITUIApp
         };
         leftTopLabel.CanFocus = false;
 
-        string meta = $"{theme.Icon}       v{(Env.IsDebug() ? Env.BuildId : Env.Version)}{margin}";  // Minimal spaces for cleaner alignment
+        string meta = $"{_generalTheme.Icon}       v{(Env.IsDebug() ? Env.BuildId : Env.Version)}{margin}";  // Minimal spaces for cleaner alignment
         rightTopLabel = new Label(meta)  // pass text here!
         {
             X = Pos.AnchorEnd(meta.Length),
@@ -97,7 +105,7 @@ public partial class TUIApp : ITUIApp
         {
             X = Pos.Right(promptLabel),
             Y = Pos.Top(footerPane) - 1,
-            Width = Dim.Fill() - user.Id.Length,
+            Width = Dim.Fill() - user.Id.Length - 10,
             Height = 1,
             ColorScheme = scheme
         };
@@ -193,14 +201,14 @@ public partial class TUIApp : ITUIApp
         outputPane.Enter += (_) =>
         {
             outputPane.ReadOnly = true;
-            outputFrame.ColorScheme = selectedFrameTheme.ToColorScheme();
-            outputPane.ColorScheme = selectedFrameTheme.ToColorScheme();
+            outputFrame.ColorScheme = _selectedFrameTheme.ToColorScheme();
+            outputPane.ColorScheme = _selectedFrameTheme.ToColorScheme();
         };
         outputPane.Leave += (_) =>
         {
             outputPane.ReadOnly = false;
-            outputFrame.ColorScheme = theme.ToColorScheme();
-            outputPane.ColorScheme = theme.ToColorScheme();
+            outputFrame.ColorScheme = _generalTheme.ToColorScheme();
+            outputPane.ColorScheme = _generalTheme.ToColorScheme();
         };
         BindScrollToArrowKeys(outputPane);
         win.Add(outputFrame);
@@ -230,7 +238,7 @@ public partial class TUIApp : ITUIApp
     private void RenderHelpPane(ColorScheme helpScheme)
     {
         // --- Help Frame & Help Pane ---
-        helpFrame = new FrameView()
+        helpFrame = new FrameView("? TUI Help")
         {
             X = margin.Length - 2,
             Y = Pos.Top(promptPane),
@@ -245,10 +253,10 @@ public partial class TUIApp : ITUIApp
         int scrollbarMargin = 1; // space between text and scrollbar
         helpPane = new TextView()
         {
-            X = 1,
-            Y = 0,
+            X = 2,
+            Y = 1,
             Width = Dim.Fill() - (2 + scrollbarMargin), // space for frame border + margin + scrollbar
-            Height = Dim.Fill(),
+            Height = Dim.Fill() - 1,
             ReadOnly = true,
             ColorScheme = helpScheme,
             DesiredCursorVisibility = CursorVisibility.Invisible,
@@ -258,14 +266,14 @@ public partial class TUIApp : ITUIApp
         helpPane.Enter += (_) =>
         {
             helpPane.ReadOnly = true;
-            helpFrame.ColorScheme = selectedFrameTheme.ToColorScheme();
-            helpPane.ColorScheme = selectedFrameTheme.ToColorScheme();
+            helpFrame.ColorScheme = _selectedFrameTheme.ToColorScheme();
+            helpPane.ColorScheme = _selectedFrameTheme.ToColorScheme();
         };
         helpPane.Leave += (_) =>
         {
             helpPane.ReadOnly = false;
-            helpFrame.ColorScheme = theme.ToColorScheme();
-            helpPane.ColorScheme = theme.ToColorScheme();
+            helpFrame.ColorScheme = _generalTheme.ToColorScheme();
+            helpPane.ColorScheme = _generalTheme.ToColorScheme();
         };
 
         helpFrame.Add(helpPane);
@@ -369,16 +377,15 @@ public partial class TUIApp : ITUIApp
 
         return result ?? string.Empty;
     }
-
     private bool ConfirmationPrompt(ColorScheme scheme, string prompt)
     {
         bool result = false;
 
-        // Dialog box
         int dialogWidth = 80;
         int dialogHeight = 15;
+        int scrollbarMargin = 1;
 
-        var dialog = new Window($"⚠  Confirmation Prompt")
+        var dialog = new Window($"⚠  Confirmation")
         {
             X = margin.Length - 2,
             Y = Pos.Top(promptLabel) - dialogHeight,
@@ -387,23 +394,13 @@ public partial class TUIApp : ITUIApp
             ColorScheme = scheme
         };
 
-        // Bottom hint (1 line reserved)
-        var controlInfo = new Label("Ctrl+X (Confirm) | ESC (Cancel)")
-        {
-            X = 1,
-            Y = Pos.AnchorEnd(1),          // stick to last content row
-            Width = Dim.Fill() - 2,        // leave a 1-col margin on each side
-            Height = 1,
-            ColorScheme = scheme,
-            CanFocus = false
-        };
-
+        // TextView first (so ScrollBarView has a SuperView)
         var textView = new TextView
         {
             X = 1,
             Y = 1,
-            Width = Dim.Fill() - 2,
-            Height = Dim.Fill() - 2,       // 1 for top margin + 1 for controlInfo
+            Width = Dim.Fill() - (scrollbarMargin + 2), // space for scrollbar
+            Height = Dim.Fill() - 2, // space for bottom label
             ColorScheme = scheme,
             Text = prompt,
             WordWrap = true,
@@ -411,7 +408,31 @@ public partial class TUIApp : ITUIApp
             ReadOnly = true,
             DesiredCursorVisibility = CursorVisibility.Invisible
         };
+        dialog.Add(textView);
 
+        // ScrollBarView
+        var scrollBar = new ScrollBarView(textView, true)
+        {
+            X = Pos.Right(textView) + scrollbarMargin
+        };
+
+        scrollBar.ChangedPosition += () =>
+        {
+            textView.TopRow = scrollBar.Position;
+            textView.SetNeedsDisplay();
+        };
+
+        textView.DrawContent += (_) =>
+        {
+            scrollBar.Size = textView.Lines;
+            scrollBar.Position = textView.TopRow;
+            scrollBar.ColorScheme = scheme;
+            scrollBar.Refresh();
+        };
+
+        BindScrollToArrowKeys(textView);
+
+        // Key handling
         textView.KeyPress += args =>
         {
             if (args.KeyEvent.Key == Key.Esc)
@@ -428,20 +449,38 @@ public partial class TUIApp : ITUIApp
             }
         };
 
-        dialog.Add(textView, controlInfo);
+        // Bottom hint
+        var controlInfo = new Label("Ctrl+X (Confirm) • ESC (Cancel)")
+        {
+            X = 1,
+            Y = Pos.AnchorEnd(1),
+            Width = Dim.Fill() - 2,
+            Height = 1,
+            ColorScheme = scheme,
+            CanFocus = false
+        };
+
+        dialog.Add(scrollBar, controlInfo);
         Terminal.Gui.Application.Run(dialog);
 
         return result;
     }
 
-    private void RenderMessage(ColorScheme scheme, string prompt)
+    private void RenderResult(Result result)
     {
+        ColorScheme scheme = _generalTheme.ToColorScheme();
+        if (result.IsSuccess)
+            scheme = _successFrameTheme.ToColorScheme();
+        if (result.IsFailure)
+            scheme = _errorFrameTheme.ToColorScheme();
+        if (result.IsWarning)
+            scheme = _warningFrameTheme.ToColorScheme();
 
-        // Dialog box
         int dialogWidth = 80;
         int dialogHeight = 15;
+        int scrollbarMargin = 1;
 
-        var dialog = new Window($"ℹ  Action Result")
+        var dialog = new Window($"ℹ  Response")
         {
             X = margin.Length - 2,
             Y = Pos.Top(promptLabel) - dialogHeight,
@@ -450,30 +489,44 @@ public partial class TUIApp : ITUIApp
             ColorScheme = scheme
         };
 
-        // Bottom hint (1 line reserved)
-        var controlInfo = new Label("Enter (close)")
-        {
-            X = 1,
-            Y = Pos.AnchorEnd(1),          // stick to last content row
-            Width = Dim.Fill() - 2,        // leave a 1-col margin on each side
-            Height = 1,
-            ColorScheme = scheme,
-            CanFocus = false
-        };
-
-        var textView = new TextView
+        // TextView directly on the Window
+        var textView = new TextView()
         {
             X = 1,
             Y = 1,
-            Width = Dim.Fill() - 2,
-            Height = Dim.Fill() - 2,       // 1 for top margin + 1 for controlInfo
-            ColorScheme = scheme,
-            Text = prompt,
-            WordWrap = true,
-            CanFocus = true,
+            Width = Dim.Fill() - (scrollbarMargin + 2),
+            Height = Dim.Fill() - 2,
             ReadOnly = true,
+            WordWrap = true,
+            Text = result.Message ?? string.Empty,
+            ColorScheme = scheme,
             DesiredCursorVisibility = CursorVisibility.Invisible
         };
+
+        // Add TextView first so ScrollBarView has a SuperView
+        dialog.Add(textView);
+
+        // Now create ScrollBarView
+        var scrollBar = new ScrollBarView(textView, true)
+        {
+            X = Pos.Right(textView) + scrollbarMargin
+        };
+
+        scrollBar.ChangedPosition += () =>
+        {
+            textView.TopRow = scrollBar.Position;
+            textView.SetNeedsDisplay();
+        };
+
+        textView.DrawContent += (_) =>
+        {
+            scrollBar.Size = textView.Lines;
+            scrollBar.Position = textView.TopRow;
+            scrollBar.ColorScheme = scheme;
+            scrollBar.Refresh();
+        };
+
+        BindScrollToArrowKeys(textView);
 
         textView.KeyPress += args =>
         {
@@ -484,9 +537,61 @@ public partial class TUIApp : ITUIApp
             }
         };
 
-        dialog.Add(textView, controlInfo);
-        Terminal.Gui.Application.Run(dialog);
+        // Bottom hint
+        var controlInfo = new Label("Enter (Close)")
+        {
+            X = 1,
+            Y = Pos.AnchorEnd(1),
+            Width = Dim.Fill() - 2,
+            Height = 1,
+            ColorScheme = scheme
+        };
 
+        dialog.Add(scrollBar, controlInfo);
+        Terminal.Gui.Application.Run(dialog);
     }
+
+    private void UpdateThemes(string theme)
+    {
+        _generalTheme = Themes.Get($"{theme}");
+        _helpTheme = Themes.Get($"{theme}-help");
+        _selectedFrameTheme = Themes.Get($"selected-{theme}-frame");
+        _errorFrameTheme = Themes.Get($"error-{theme}-frame");
+        _warningFrameTheme = Themes.Get($"warning-{theme}-frame");
+        _successFrameTheme = Themes.Get($"success-{theme}-frame");
+    }
+    private void UpdateSchemes()
+    {
+        win.ColorScheme = _generalTheme.ToColorScheme();
+        leftTopLabel.ColorScheme = _generalTheme.ToColorScheme();
+        rightTopLabel.ColorScheme = _generalTheme.ToColorScheme();
+        outputFrame.ColorScheme = _generalTheme.ToColorScheme();
+        outputPane.ColorScheme = _generalTheme.ToColorScheme();
+        helpFrame.ColorScheme = _helpTheme.ToColorScheme();
+        helpPane.ColorScheme = _helpTheme.ToColorScheme();
+        promptPane.ColorScheme = _generalTheme.ToColorScheme();
+        promptLabel.ColorScheme = _generalTheme.ToColorScheme();
+        footerPane.ColorScheme = _generalTheme.ToColorScheme();
+        authLabel.ColorScheme = _generalTheme.ToColorScheme();
+
+        outputPane.DrawContent += (_) =>
+        {
+            outputScrollBar.Size = outputPane.Lines;
+            outputScrollBar.ColorScheme = _generalTheme.ToColorScheme();
+            outputScrollBar.Position = outputPane.TopRow;
+            outputScrollBar.Refresh();
+        };
+        helpPane.DrawContent += (_) =>
+        {
+            helpScrollBar.Size = helpPane.Lines;
+            helpScrollBar.ColorScheme = _helpTheme.ToColorScheme();
+            helpScrollBar.Position = helpPane.TopRow;
+            helpScrollBar.Refresh();
+        };
+
+        string meta = $"{_generalTheme.Icon}       v{(Env.IsDebug() ? Env.BuildId : Env.Version)}{margin}";  // Minimal spaces for cleaner alignment
+        rightTopLabel.Text = meta;
+    }
+
 
 }

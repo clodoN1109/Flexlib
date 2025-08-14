@@ -22,6 +22,7 @@ public static class CLIController
     private static LibraryItem? _selectedItem { get; set; }
     private static Library? _selectedLibrary { get; set; }
     private static string? _input { get; set; } 
+    private static object? _payload { get; set; } 
     public static void Handle(Command cmd, IUser authUser)
     {
         if (Authorization.IsNotAuthorized(cmd, authUser))
@@ -62,6 +63,16 @@ public static class CLIController
             
             case UpdateItemOriginCommand c:
                 return UpdateItemOrigin.Execute(c.ItemId, c.NewOrigin, c.LibraryName, _libRepo);
+
+            case GetItemOriginCommand c:
+                _payload = GetItemOrigin.Execute(c.ItemId, c.LibraryName, _libRepo).Payload;
+                if (_payload is not string currentOrigin)
+                    return Result.Fail($"Could not retrive the origin of the item with ID {c.ItemId}.");
+
+                if (currentOrigin.Length == 0)
+                    return Result.Fail($"The item has no defined origin.");
+
+                return Result.Success($"The current origin for item of ID {c.ItemId} is {currentOrigin}.");
             
             case ViewItemCommand c:
                 return ViewItem.Execute(c.ItemId, c.LibraryName, c.Application, _libRepo, _presenter);
@@ -150,9 +161,9 @@ public static class CLIController
 
             case EditNoteCommand c:
                 string? newNote = "";
-                var payload = SelectItemNote.Execute(c.ItemId, c.NoteId, c.LibName, _libRepo).Payload;
+                _payload = SelectItemNote.Execute(c.ItemId, c.NoteId, c.LibName, _libRepo).Payload;
 
-                if ((payload is Domain.Note currentNote) && !string.IsNullOrWhiteSpace(currentNote.Text))
+                if ((_payload is Domain.Note currentNote) && !string.IsNullOrWhiteSpace(currentNote.Text))
                     newNote = _reader.ReadText(currentNote.Text);
 
                 if (string.IsNullOrWhiteSpace(newNote))

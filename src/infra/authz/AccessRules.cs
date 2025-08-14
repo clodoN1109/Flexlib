@@ -16,6 +16,7 @@ public static class ActionAccessRules
         ["new-item"]        = AccessLevel.User,
         ["rename-item"]     = AccessLevel.User,
         ["update-origin"]   = AccessLevel.User,
+        ["get-origin"]      = AccessLevel.User,
         ["list-items"]      = AccessLevel.User,
         ["remove-item"]     = AccessLevel.User,
         ["view-item"]       = AccessLevel.User,

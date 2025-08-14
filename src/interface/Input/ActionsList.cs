@@ -10,6 +10,8 @@ public static class ActionsList
         "new-item",
         "remove-item",
         "view-item",
+        "update-origin",
+        "get-origin",
         "new-desk",
         "list-desks",
         "view-desk",

@@ -13,7 +13,7 @@ public static class TUIHelp
             },
             ["Item Management"] = new[]
             {
-                "list-items", "new-item", "remove-item", "view-item", "set-prop"
+                "list-items", "new-item", "remove-item", "view-item", "set-prop", "update-origin", "get-origin"
             },
             ["Desk Management"] = new[]
             {
@@ -33,11 +33,11 @@ public static class TUIHelp
             },
             ["Miscellaneous"] = new[]
             {
-                "fetch-files", "help"
+                "fetch-files"
             },
             ["TUI"] = new[]
             {
-                "dark", "light"
+                "dark", "light", "clear", "help"
             }
         };
 
