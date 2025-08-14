@@ -68,7 +68,7 @@ public static class RenameProperty
 
         lib.RenderLayout();
 
-        args.Repo.Save(lib);
+        args.Repo.Save(lib, true);
 
         return Result.Success($"Property '{oldKey}' renamed to '{newKey}' in library '{args.LibName}'.");
     }

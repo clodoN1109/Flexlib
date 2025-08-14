@@ -35,7 +35,7 @@ public static class BorrowItem
             if (result.IsFailure)
                 return result;
 
-            repo.Save(library);
+            repo.Save(library, true);
 
             return Result.Success("Item borrowed successfully.");
         }

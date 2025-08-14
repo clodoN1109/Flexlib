@@ -30,7 +30,7 @@ public static class NewLibrary
             path = repo.GetDataDirectory();
 
         var lib = new Library(name, path);
-        repo.Save(lib);
+        repo.Save(lib, true);
         
         return Result.Success($"Library {name} created in {path}.");
     }
