@@ -38,7 +38,7 @@ public static class UnsetProperty
         if (args.TargetValue == "*")
         {
             selectedItem.PropertyValues[propertyKey] = null;
-            args.Repo.Save(lib);
+            args.Repo.Save(lib, true);
             return Result.Success($"All entries removed from property {propertyKey} for item {selectedItem.Name} in library {lib.Name}.");
         }
 
@@ -78,7 +78,7 @@ public static class UnsetProperty
             selectedItem.PropertyValues[propertyKey] = null;
         }
 
-        args.Repo.Save(lib);
+        args.Repo.Save(lib, true);
 
         return Result.Success($"Value '{args.TargetValue}' removed from property '{propertyKey}' in item '{args.ItemId}' of library '{args.LibName}'.");
     }

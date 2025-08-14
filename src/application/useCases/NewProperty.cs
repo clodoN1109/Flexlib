@@ -42,7 +42,7 @@ public static class NewProperty
             return Result.Fail($"Library '{parsedArgs.LibName}' not found.");
 
         lib.NewPropertyDefinition(parsedArgs.PropName, parsedArgs.PropType);
-        parsedArgs.Repo.Save(lib);
+        parsedArgs.Repo.Save(lib, true);
 
         return Result.Success($"Property '{parsedArgs.PropName}' added to library '{lib.Name}'.");
     }
@@ -52,7 +52,7 @@ public static class NewProperty
         foreach (var lib in parsedArgs.Repo.GetAll().ToList())
         {
             lib.NewPropertyDefinition(parsedArgs.PropName, parsedArgs.PropType);
-            parsedArgs.Repo.Save(lib);
+            parsedArgs.Repo.Save(lib, true);
         }
 
         return Result.Success($"Property '{parsedArgs.PropName}' added to all libraries.");

@@ -54,7 +54,7 @@ public static class SetProperty
             selectedItem.PropertyValues[args.PropName.ToLowerInvariant()] = args.NewValue;
         }
 
-        args.Repo.Save(lib);
+        args.Repo.Save(selectedItem, lib, true);
 
         return Result.Success( $"Property '{args.PropName.ToLowerInvariant()}' updated in item '{args.ItemId}' of library '{args.LibName}'.");
     }
