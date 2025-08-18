@@ -32,9 +32,9 @@ public partial class ConsoleRenderer
         var rows = history.Entries
             .Select(entry => new[]
             {
-                entry.BorrowedAt.ToString("yyyy-MM-dd"),
+                entry.BorrowedAt.ToLocalTime().ToString("MM-dd-yyyy"),
                 entry.WasReturned && entry.ReturnedAt.HasValue
-                    ? entry.ReturnedAt.Value.ToString("yyyy-MM-dd")
+                    ? entry.ReturnedAt.Value.ToLocalTime().ToString("MM-dd-yyyy")
                     : "—",
                 entry.UserId ?? "—",
             })
@@ -119,13 +119,13 @@ public partial class ConsoleRenderer
     }
 
 
-    public List<Components.ColoredLine> FormatNoteTable(List<Note> notes, string itemName, string libName, int consoleWidth)
+    public List<Components.ColoredLine> FormatNoteTable(List<Note> notes, string itemName, int itemId, string libName, int consoleWidth)
     {
         var output = new List<Components.ColoredLine>();
 
         string logoBar   = Components.LogoLine(consoleWidth);
         string titleBar  = "░░░░ NOTES " + new string('░', Math.Max(0, consoleWidth - 14));
-        string header    = Components.LineFilled(consoleWidth, "left", ' ', $"{libName}/{itemName}");
+        string header    = Components.LineFilled(consoleWidth, "left", ' ', $"{libName}/{(itemName.IsCompound() ? $"\'{itemName}\'" : itemName)} (ID {itemId})");
         string statsBar  = Components.LineFilled(consoleWidth, "right", ' ', $"{notes.Count} notes");
         string bottomBar = new string('░', consoleWidth);
 
@@ -785,8 +785,8 @@ public partial class ConsoleRenderer
             {
                 item.Id ?? "",
                 item.Name ?? "",
-                item.BorrowedAt?.ToString("yyyy-MM-dd HH:mm") ?? "",
-                item.Appetite?.ToString("yyyy-MM-dd HH:mm") ?? "",
+                item.BorrowedAt?.ToLocalTime().ToString("MM-dd-yyyy HH:mm") ?? "",
+                item.Appetite?.ToLocalTime().ToString("MM-dd-yyyy HH:mm") ?? "",
                 progress,
                 item.Priority.ToString()
             });

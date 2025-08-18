@@ -31,7 +31,7 @@ public static class NewNote
 
         selectedItem.NewNote(note);
 
-        parsedArgs.Repo.Save(selectedLibrary);
+        parsedArgs.Repo.Save(selectedLibrary, true);
          
         return Result.Success($"Note of ID {id} was added to the item {selectedItem.Name} at library {selectedLibrary.Name}");
 

@@ -6,5 +6,5 @@ public interface IReader
 {
     string? ReadText(string initialText);
     string? ReadText();
-    string? ReadPassword(string promptMessage);
+    string? ReadPassword();
 }

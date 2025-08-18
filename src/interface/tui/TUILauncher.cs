@@ -16,7 +16,7 @@ public class TUILauncher
     private static readonly IReader _reader = new Reader();
 
     private IUser? User { get; set; }
-    private static readonly Authenticator _auth = new Authenticator(_userRepo, _reader);
+    private static readonly Authenticator _auth = new Authenticator(_userRepo);
 
     private ITUIApp? _app; 
     private bool IsReady { get; set; }

@@ -49,7 +49,7 @@ public static class RemoveProperty
         var result = selectedLibrary.RemovePropertyByName(args.PropName);
        
         if (result.IsSuccess)
-            args.Repo.Save(selectedLibrary);
+            args.Repo.Save(selectedLibrary, true);
 
         return result;
     }

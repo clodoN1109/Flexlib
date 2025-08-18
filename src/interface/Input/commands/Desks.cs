@@ -459,7 +459,7 @@ public class SetPriorityCommand : Command
 
     public override string Type => "set-priority";
 
-    public override bool IsValid() => Options.Length == 4 && int.TryParse(NewPriority, out _);
+    public override bool IsValid() => (Options.Length == 4 && int.TryParse(NewPriority, out _));
 
     public override CommandUsageInfo GetUsageInfo()
     {

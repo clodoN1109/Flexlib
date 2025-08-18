@@ -30,9 +30,9 @@ public static class EditNote
 
         selectedNote.Text = (parsedArgs.Note ?? "").Trim();
 
-        parsedArgs.Repo.Save(selectedLibrary);
+        parsedArgs.Repo.Save(selectedLibrary, true);
 
-        return Result.Success("");
+        return Result.Success($"Note successfully edited.");
     }
 
     private static Result IsOperationAllowed(ParsedArgs parsedArgs)

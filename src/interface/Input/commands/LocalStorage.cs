@@ -23,7 +23,7 @@ public class FetchFilesCommand : Command
 
     public override bool IsValid()
     {
-        return (Options.Length <= 1);
+        return Options.Length <= 1;
     }
     
     public override CommandUsageInfo GetUsageInfo()
@@ -62,7 +62,7 @@ public class RebalanceLocalStorageCommand : Command
 
     public override bool IsValid()
     {
-        return (Options.Length <= 1);
+        return Options.Length < 2;
     }
     
     public override CommandUsageInfo GetUsageInfo()

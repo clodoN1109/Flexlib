@@ -26,7 +26,7 @@ public static class ListNotes
         
         var selectedItem = selectedLibrary.GetItemById(parsedArgs.ItemId);
 
-        parsedArgs.Presenter.ListNotes(selectedItem!.Notes, selectedItem!.Name ?? "", selectedLibrary!.Name ?? "");
+        parsedArgs.Presenter.ListNotes(selectedItem!.Notes, selectedItem!.Name ?? "", selectedItem!.Id, selectedLibrary!.Name ?? "");
 
         return Result.Success($"");
 

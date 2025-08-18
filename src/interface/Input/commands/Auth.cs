@@ -9,10 +9,10 @@ using System.Collections.Generic;
 namespace Flexlib.Interface.CLI;
 
 
-public class NewUserCommand : Command
+public class SignUpCommand : Command
 {
 
-    public NewUserCommand(string[] options)
+    public SignUpCommand(string[] options)
     {
         Options = options;
     }
@@ -21,7 +21,7 @@ public class NewUserCommand : Command
 
     public override bool IsValid()
     {
-        if (Options.Length < 2)
+        if (Options.Length < 1)
         {
             return true;
         }
@@ -55,7 +55,7 @@ public class LoginCommand : Command
 
     public override bool IsValid()
     {
-        if (Options.Length < 2)
+        if (Options.Length < 1)
         {
             return true;
         }
@@ -89,7 +89,7 @@ public class LogoutCommand : Command
 
     public override bool IsValid()
     {
-        if (Options.Length < 2)
+        if (Options.Length < 1)
         {
             return true;
         }

@@ -26,7 +26,7 @@ public class NewLibraryCommand : Command
 
     public override bool IsValid()
     {
-        return Options.Length > 0 & Options.Length < 3;
+        return (Options.Length > 0 & Options.Length < 3);
     }
 
     public override CommandUsageInfo GetUsageInfo()
@@ -147,7 +147,7 @@ public class GetLibraryLayoutCommand : Command
     public override bool IsValid()
     {
 
-        if ((Options.Length > 0) && (Options.Length < 2))
+        if (((Options.Length > 0) && (Options.Length < 2)))
         {
             return true;
         }

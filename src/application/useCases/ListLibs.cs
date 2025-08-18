@@ -10,9 +10,9 @@ namespace Flexlib.Application.UseCases;
 
 public static class ListLibs
 {
-    public static Result Execute(ILibraryRepository repo, IPresenter presenter)
+    public static Result Execute(ILibraryRepository repo)
     {
-        var parsedArgs = new ParsedArgs(repo, presenter); 
+        var parsedArgs = new ParsedArgs(repo); 
 
         var validation = IsOperationAllowed(parsedArgs);
 
@@ -21,13 +21,10 @@ public static class ListLibs
             : validation;
     }
 
-
     private static Result _ListLibs(ParsedArgs parsedArgs)
     {
         var selectedLibs = parsedArgs.Repo.GetAll();
-
-            parsedArgs.Presenter.ListLibs(selectedLibs.ToList());
-            return Result.Success("");
+        return Result.Success("", selectedLibs);
     }
 
     private static Result IsOperationAllowed(ParsedArgs parsedArgs)
@@ -38,12 +35,9 @@ public static class ListLibs
     public class ParsedArgs
     {
         public ILibraryRepository Repo { get; }
-        public IPresenter Presenter { get; }
-
-        public ParsedArgs(ILibraryRepository repo, IPresenter presenter)
+        public ParsedArgs(ILibraryRepository repo)
         {
-            Repo = repo;    
-            Presenter = presenter;
+            Repo = repo;
         }
     }
 }

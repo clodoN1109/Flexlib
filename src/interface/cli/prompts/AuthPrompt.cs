@@ -20,7 +20,7 @@ public static class AuthPrompt
 
         Console.SetCursorPosition(screen.PasswordPosition.X, screen.PasswordPosition.Y);
 
-        string password = _reader.ReadPassword("") ?? "";
+        string password = _reader.ReadPassword() ?? "";
 
         return new UntrustedAccessInfo(id, password);
     }
@@ -39,7 +39,7 @@ public static class AuthPrompt
 
         Console.SetCursorPosition(screen.PasswordPosition.X, screen.PasswordPosition.Y);
 
-        string password = _reader.ReadPassword("") ?? "";
+        string password = _reader.ReadPassword() ?? "";
 
         return new UntrustedAccessInfo(id, password, name);
     }

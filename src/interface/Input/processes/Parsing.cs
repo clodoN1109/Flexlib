@@ -19,7 +19,7 @@ public static partial class Input
 
         return firstArg?.ToLower() switch
         {
-            "signup"            => new NewUserCommand(options),
+            "signup"            => new SignUpCommand(options),
             "login"             => new LoginCommand(options),
             "logout"            => new LogoutCommand(options),
             "new-lib"           => new NewLibraryCommand(options),

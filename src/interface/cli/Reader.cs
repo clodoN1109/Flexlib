@@ -51,9 +51,8 @@ public class Reader : IReader
 
     public string? ReadText() => ReadText("");
 
-    public string? ReadPassword(string promptMessage)
+    public string? ReadPassword()
     {
-        Console.Write(promptMessage);
         var password = new Stack<char>();
         ConsoleKeyInfo key;
 
