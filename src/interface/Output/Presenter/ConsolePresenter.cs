@@ -89,9 +89,9 @@ public class ConsolePresenter : IPresenter
         _emitter.PrintLines(_renderer.Error(message).Lines);
     }
 
-    public void ListNotes(List<Note> notes, string? itemName, string? libName)
+    public void ListNotes(List<Note> notes, string? itemName, int itemId, string? libName)
     {
-        var lines = _renderer.FormatNoteTable(notes, itemName ?? " ", libName ?? " ", WindowWidth);
+        var lines = _renderer.FormatNoteTable(notes, itemName ?? " ", itemId, libName ?? " ", WindowWidth);
         _emitter.PrintLines(lines);
     }
 

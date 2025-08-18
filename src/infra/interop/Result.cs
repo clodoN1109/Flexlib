@@ -11,8 +11,12 @@ public class Result
     public bool IsWarning { get; }
     public bool IsFailure => !IsSuccess;
     public bool IsFailureOrWarning => IsFailure || IsWarning;
-
-    public string Message => SuccessMessage ?? WarningMessage ?? ErrorMessage ?? "";
+    public string Message => string.Join("\n\n", new List<string> 
+    {
+        SuccessMessage ?? "",
+        WarningMessage ?? "",
+        ErrorMessage ?? ""
+    });
 
     private Result(
         bool isSuccess,

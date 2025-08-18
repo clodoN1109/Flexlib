@@ -111,8 +111,16 @@ public partial class TUIApp : ITUIApp
         };
 
         // Change prompt symbol on focus/blur
-        promptPane.Enter += (_) => promptLabel.Text = ">";
-        promptPane.Leave += (_) => promptLabel.Text = "˄";
+        promptPane.Enter += (_) =>
+        {
+            promptLabel.Text = ">";
+            promptLabel.ColorScheme = _selectedFrameTheme.ToColorScheme();
+        };
+        promptPane.Leave += (_) =>
+        {
+            promptLabel.Text = "˄";
+            promptLabel.ColorScheme = _generalTheme.ToColorScheme();
+        };
 
         promptPane.KeyPress += (args) =>
         {
@@ -145,7 +153,7 @@ public partial class TUIApp : ITUIApp
                 if (commandHistory.Count > 0 && historyIndex > 0)
                 {
                     historyIndex--;
-                    promptPane.Text = commandHistory[historyIndex];
+                    promptPane.Text = commandHistory[historyIndex] + " ";
                 }
                 e.Handled = true;
             }
@@ -154,7 +162,7 @@ public partial class TUIApp : ITUIApp
                 if (commandHistory.Count > 0 && historyIndex < commandHistory.Count - 1)
                 {
                     historyIndex++;
-                    promptPane.Text = commandHistory[historyIndex];
+                    promptPane.Text = commandHistory[historyIndex] + " ";
                 }
                 else
                 {
@@ -315,18 +323,33 @@ public partial class TUIApp : ITUIApp
         win.Add(authLabel);
 
     }
-    private string ReadText(ColorScheme scheme, string prompt = "Enter text:", string initialText = "")
+    public delegate Result? RenderTextDelegate(ColorScheme scheme,
+                                                    string prompt,
+                                                string initialText,
+                                                string margin,
+                                                Pos xPosition,
+                                                Pos yPosition,
+                                                int height
+                                                );
+    private static Result? RenderTUITextReader(ColorScheme scheme,
+                                                string prompt,
+                                                string initialText,
+                                                string margin,
+                                                Pos xPosition,
+                                                Pos yPosition,
+                                                int height
+                                                )
     {
-        string? result = null;
+        Result? result = null;
 
         // Dialog box
         int dialogWidth = 80;
-        int dialogHeight = 15;
-
+        int dialogHeight = height;
+        int scrollbarMargin = 1;
         var dialog = new Window($"📓 {prompt}")
         {
-            X = margin.Length - 2,
-            Y = Pos.Top(promptLabel) - dialogHeight,
+            X = xPosition,
+            Y = yPosition,
             Width = dialogWidth,
             Height = dialogHeight,
             ColorScheme = scheme
@@ -336,8 +359,8 @@ public partial class TUIApp : ITUIApp
         var controlInfo = new Label("Ctrl+X (Save) | ESC (Cancel)")
         {
             X = 1,
-            Y = Pos.AnchorEnd(1),          // stick to last content row
-            Width = Dim.Fill() - 2,        // leave a 1-col margin on each side
+            Y = Pos.AnchorEnd(1),
+            Width = Dim.Fill() - 2,
             Height = 1,
             ColorScheme = scheme,
             CanFocus = false
@@ -348,35 +371,64 @@ public partial class TUIApp : ITUIApp
         {
             X = 1,
             Y = 1,
-            Width = Dim.Fill() - 2,
-            Height = Dim.Fill() - 2,       // 1 for top margin + 1 for controlInfo
+            Width = Dim.Fill() - (scrollbarMargin + 2),   // leave space for scrollbar
+            Height = Dim.Fill() - 2,
             ColorScheme = scheme,
             Text = initialText,
             WordWrap = true,
             CanFocus = true
         };
 
+        // Add TextView first so ScrollBarView has a SuperView
+        dialog.Add(textView);
+
+        // Create ScrollBarView
+        var scrollBar = new ScrollBarView(textView, true)
+        {
+            X = Pos.Right(textView) + scrollbarMargin
+        };
+
+        // Sync scroll with TextView
+        scrollBar.ChangedPosition += () =>
+        {
+            textView.TopRow = scrollBar.Position;
+            textView.SetNeedsDisplay();
+        };
+
+        textView.DrawContent += (_) =>
+        {
+            scrollBar.Size = textView.Lines;
+            scrollBar.Position = textView.TopRow;
+            scrollBar.ColorScheme = scheme;
+            scrollBar.Refresh();
+        };
+
+        // Allow keyboard navigation
+        BindScrollToArrowKeys(textView);
+
+        // Key handling for confirm/cancel
         textView.KeyPress += args =>
         {
             if (args.KeyEvent.Key == Key.Esc)
             {
-                result = initialText;                 // canceled
+                result = Result.Fail("Operation cancelled."); // canceled
                 Terminal.Gui.Application.RequestStop();
                 args.Handled = true;
             }
             else if (args.KeyEvent.Key == (Key.CtrlMask | Key.X)) // confirm
             {
-                result = textView.Text.ToString();
+                result = Result.Success("Text successfully read.", textView.Text.ToString());
                 Terminal.Gui.Application.RequestStop();
                 args.Handled = true;
             }
         };
 
-        dialog.Add(textView, controlInfo);
+        dialog.Add(scrollBar, controlInfo);
         Terminal.Gui.Application.Run(dialog);
 
-        return result ?? string.Empty;
+        return result;
     }
+
     private bool ConfirmationPrompt(ColorScheme scheme, string prompt)
     {
         bool result = false;
@@ -502,7 +554,7 @@ public partial class TUIApp : ITUIApp
             ColorScheme = scheme,
             DesiredCursorVisibility = CursorVisibility.Invisible
         };
-
+        textView.Text = result.Message ?? string.Empty;
         // Add TextView first so ScrollBarView has a SuperView
         dialog.Add(textView);
 
@@ -593,5 +645,31 @@ public partial class TUIApp : ITUIApp
         rightTopLabel.Text = meta;
     }
 
+    public class TUIReader : IReader
+    {
+        private readonly RenderTextDelegate _renderer;
+
+        public TUIReader(RenderTextDelegate renderer)
+        {
+            _renderer = renderer;
+        }
+
+        public string? ReadText(string text)
+        {
+            var result = _renderer(_generalTheme.ToColorScheme(),
+             "Authentication",
+            text,
+            "     ",
+            0,
+            0,
+            15
+            );
+            return result?.Payload as string;
+        }
+
+        public string? ReadText() => ReadText("");
+
+        public string? ReadPassword() => "";
+    }
 
 }

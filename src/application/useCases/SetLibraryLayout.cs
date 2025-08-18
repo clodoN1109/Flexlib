@@ -30,7 +30,7 @@ public static class SetLibraryLayout
 
         if (result.IsSuccess) 
         {
-            parsedArgs.Repo.Save(selectedLibrary);
+            parsedArgs.Repo.Save(selectedLibrary, true);
         }
 
         return result;

@@ -16,7 +16,7 @@ public static class ConsoleRouter
     private static readonly IUserRepository _userRepo = new JsonUserRepository();
     private static readonly IPresenter _presenter = new ConsolePresenter();
     private static readonly IReader _reader = new Reader();
-    private static readonly Authenticator _auth = new Authenticator(_userRepo, _reader);
+    private static readonly Authenticator _auth = new Authenticator(_userRepo);
 
     public static void Route(Command cmd)
     {                
@@ -38,7 +38,7 @@ public static class ConsoleRouter
                 _presenter.ExplainUsage(helpCmd.GetUsageInfo());
                 return;
             
-            case NewUserCommand newUserCmd:
+            case SignUpCommand newUserCmd:
                 _presenter.AuthStatus( _auth.RegisterUser().Message ?? "") ;
                 return;
                

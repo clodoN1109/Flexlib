@@ -24,4 +24,10 @@ public static partial class Components
             return text.Length <= width ? text : text[..Math.Max(0, width - 1)] + "…";
         }
     }
+
+    public static string ToMultiRowString(this List<ColoredLine> lines)
+    {
+        return string.Join(Environment.NewLine, lines.Select(l => l.Text));
+    }
 }
+

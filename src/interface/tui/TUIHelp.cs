@@ -13,11 +13,11 @@ public static class TUIHelp
             },
             ["Item Management"] = new[]
             {
-                "list-items", "new-item", "remove-item", "view-item", "set-prop", "update-origin", "get-origin"
+                "list-items", "new-item", "rename-item", "remove-item", "view-item", "set-prop", "update-origin", "get-origin"
             },
             ["Desk Management"] = new[]
             {
-                "list-desks", "new-desk", "view-desk", "set-appetite", "define-progress", "set-progress"
+                "list-desks", "new-desk", "view-desk", "set-appetite", "set-priority", "define-progress", "set-progress"
             },
             ["Borrowing & Loans"] = new[]
             {
@@ -37,8 +37,13 @@ public static class TUIHelp
             },
             ["TUI"] = new[]
             {
-                "dark", "light", "clear", "help"
+                "exit", "dark", "light", "clear", "cls", "help"
+            },
+            ["Authentication"] = new[]
+            {
+                "login", "signup", "logout"
             }
+
         };
 
         var sb = new StringBuilder();

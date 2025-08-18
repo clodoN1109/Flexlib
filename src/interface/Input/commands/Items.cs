@@ -287,7 +287,7 @@ public class ViewItemCommand : Command
 
     public override bool IsValid()
     {
-        return Options.Length > 0 && Options.Length < 4;
+        return (Options.Length > 0 && Options.Length < 4);
     }
     
     public override CommandUsageInfo GetUsageInfo()
@@ -346,7 +346,7 @@ public class ListItemsCommand : Command
     public override bool IsValid()
     {
 
-        if ((Options.Length > 0) && (Options.Length < 5))
+        if (( (Options.Length > 0) && (Options.Length < 5) ))
         {
             return true;
         }

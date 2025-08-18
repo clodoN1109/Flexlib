@@ -28,16 +28,13 @@ public static class RemoveNote
 
         selectedItem!.RemoveNote(parsedArgs.NoteId);
 
-        parsedArgs.Repo.Save(selectedLibrary);
+        parsedArgs.Repo.Save(selectedLibrary, true);
 
-        return Result.Success("");
+        return Result.Success($"Note successfully of ID {parsedArgs.NoteId} deleted from item {selectedItem.Name}({selectedItem.Id}) at library {selectedLibrary.Name}.");
     }
 
     private static Result IsOperationAllowed(ParsedArgs parsedArgs)
     {
-
-
-        
         if (string.IsNullOrWhiteSpace(parsedArgs.LibName))
             return Result.Fail("Library name must be informed.");
 

@@ -11,6 +11,9 @@ using Flexlib.Interface.CLI;
 using Flexlib.Infrastructure.Persistence;
 using Flexlib.Domain;
 using Flexlib.Infrastructure.Interop;
+using Flexlib.Interface.Output;
+using Flexlib.Infrastructure.Authentication;
+using System.Collections;
 
 namespace Flexlib.Interface.TUI;
 
@@ -35,9 +38,16 @@ public partial class TUIApp : ITUIApp
     private readonly TUIConfig _config;
     private bool IsHelpActive { get; set; } = false;
     private static readonly ILibraryRepository _libRepo = new JsonLibraryRepository();
+    private static readonly IUserRepository _userRepo = new JsonUserRepository();
+    private static readonly IReader _reader = new TUIReader(RenderTUITextReader);
+    private static readonly Authenticator _auth = new Authenticator(_userRepo);
     private static LibraryItem? _selectedItem { get; set; }
     private static Library? _selectedLibrary { get; set; }
     private static Result? _result { get; set; }
+    private static int _dialogHeight = 15;
+    private static string? _finalAction;
+
+    private static string? itemName;
 
 
     private IUser? _user { get; set; }
@@ -61,12 +71,32 @@ public partial class TUIApp : ITUIApp
         {
             Terminal.Gui.Application.Init();
             var tui = RenderTUI(user);
+
+            outputPane.GetCurrentWidth(out int currentOutputPaneWidth);
+            var libraryList = ListLibs.Execute(_libRepo);
+            if (libraryList.Payload is List<Library> libs)
+            {
+                outputPane.Text = new ConsoleRenderer().FormatLibraryTable(libs, Env.GetSafeWindowWidth()).ToMultiRowString();
+            }
+
             Terminal.Gui.Application.Run();
         }
         finally
         {
             Terminal.Gui.Application.Shutdown();
             TideUpTerminal();
+
+            switch (_finalAction){
+                case "login":
+                    _auth.Logout();
+                    RestartTUI(["tui"]);                            
+                    break;
+                case "signup":
+                    _auth.Logout();
+                    _auth.RegisterUser();
+                    RestartTUI(["tui"]);      
+                    break;
+            }
         }
     }
 
@@ -125,19 +155,14 @@ public partial class TUIApp : ITUIApp
         var args = input.ToArrayOfStrings();
         string commandName = args[0].ToLowerInvariant();
 
+        //Special TUI commands
         switch (commandName)
         {
-            case "login":
-            case "signup":
-                outputPane.Text = "Please log out before logging in or signing up as a new user.";
-                return;
-
             case "gui":
             case "tui":
                 outputPane.Text = "Cannot create a nested interface. \nUse the CLI commands or available shortcuts instead.";
                 return;
 
-            case "logout":
             case "exit":
                 ExitTUI();
                 return;
@@ -164,13 +189,13 @@ public partial class TUIApp : ITUIApp
                 return;
 
         }
-
+        
+        // CLI commands
         InputPreProcessing.Execute(input.ToArrayOfStrings(), out PreProcessingResult processed);
 
         if (!processed.IsValid || processed.Value is not Input.Command cmd || !Input.Command.IsKnownCommandName(commandName))
         {
-            outputPane.Text = $"Invalid command call '{input}'.";
-            return;
+            RenderResult(Result.Fail($"Invalid command '{input}'. \n\nFor the list of available commands, use 'help'."));            return;
         }
 
         if (cmd.IsSpecificHelp())
@@ -179,11 +204,33 @@ public partial class TUIApp : ITUIApp
             ActivateHelpFrame(outputStream);
             return;
         }
+
+        if (!cmd.IsValid())
+        {
+            RenderResult(Result.Fail("Invalid command usage. For details, run: <command name> help."));
+            return;
+        }
+        
         DeactivateHelpFrame();
 
         string promptMessage;
         switch (cmd)
         {
+            case LoginCommand:
+                _finalAction = "login";
+                ExitTUI();
+                return;
+
+            case SignUpCommand:
+                _finalAction = "signup";
+                ExitTUI();
+                return;
+
+            case LogoutCommand:
+                _auth.Logout();
+                ExitTUI();
+                return;
+
             case GetItemOriginCommand c:
                 _result = GetItemOrigin.Execute(c.ItemId, c.LibraryName, _libRepo);
                 RenderResult(_result);
@@ -191,22 +238,61 @@ public partial class TUIApp : ITUIApp
 
             case EditNoteCommand c:
 
-                string? newNote = "";
-                var payload = SelectItemNote.Execute(c.ItemId, c.NoteId, c.LibName, _libRepo).Payload;
+                _result = SelectItemNote.Execute(c.ItemId, c.NoteId, c.LibName, _libRepo);
 
-                if ((payload is Domain.Note currentNote) && !string.IsNullOrWhiteSpace(currentNote.Text))
-
-                    newNote = ReadText(_selectedFrameTheme.ToColorScheme(),
-                                        $"{c.LibName}/{c.ItemId} Note Id {c.NoteId}",
-                                        currentNote.Text
+                if ((_result.Payload is Domain.Note currentNote) && !string.IsNullOrWhiteSpace(currentNote.Text))
+                {
+                    itemName = _libRepo.GetByName(c.LibName)?.GetItemById(c.ItemId)?.Name;
+                    _result = RenderTUITextReader(_selectedFrameTheme.ToColorScheme(),
+                                        $"{c.LibName}/{(itemName?.IsCompound() ?? false ? $"\'{itemName}\'" : itemName) ?? c.ItemId} | Note {c.NoteId}",
+                                        currentNote.Text,
+                                        margin,
+                                        margin.Length - 2,
+                                        Pos.Top(promptLabel) - _dialogHeight, _dialogHeight
                                         );
-
-                EditNote.Execute(c.ItemId, c.NoteId, c.LibName, newNote, _libRepo);
+                }
+                if (_result?.IsSuccess ?? false)
+                    _result = EditNote.Execute(c.ItemId, c.NoteId, c.LibName, (string)(_result?.Payload ?? ""), _libRepo);
+                else
+                {
+                    _result = Result.Warn("Note editing canceled.");
+                }
+                RenderResult(_result);
                 break;
 
             case NewNoteCommand c:
-                var note = ReadText(_selectedFrameTheme.ToColorScheme(), $"{c.LibName}/{c.ItemId}");
-                NewNote.Execute(c.ItemId, c.LibName, note, _user!, _libRepo);
+                itemName = _libRepo.GetByName(c.LibName)?.GetItemById(c.ItemId)?.Name;
+                _result = RenderTUITextReader(_selectedFrameTheme.ToColorScheme(),
+                    $"{c.LibName}/{(itemName?.IsCompound() ?? false ? $"\'{itemName}\'" : itemName) ?? c.ItemId}",
+                    "",
+                    margin,
+                    margin.Length - 2,
+                    Pos.Top(promptLabel) - _dialogHeight, _dialogHeight
+                    );
+                if (_result?.IsSuccess ?? false)
+                    _result = NewNote.Execute(c.ItemId, c.LibName, (string) (_result?.Payload ?? ""), _user!, _libRepo);
+                else
+                {
+                    _result = Result.Warn("Note creation canceled.");
+                }
+                RenderResult(_result);
+                break;
+
+            case RemoveNoteCommand c:
+                _result = SelectItemNote.Execute(c.ItemId, c.NoteId, c.LibName, _libRepo);
+
+                if ((_result.Payload is Domain.Note targetNote) && !string.IsNullOrWhiteSpace(targetNote.Text))
+                {
+                    itemName = _libRepo.GetByName(c.LibName)?.GetItemById(c.ItemId)?.Name;
+                    promptMessage = $"\nAre you sure you want to delete note of ID {c.NoteId} from item '{itemName ?? ""}' from library '{c.LibName ?? ""}'?\n\n";
+                    if (!ConfirmationPrompt(_selectedFrameTheme.ToColorScheme(), promptMessage))
+                        _result = Result.Warn("Note deletion canceled.");
+                    else
+                    {
+                        _result = RemoveNote.Execute(c.ItemId, c.NoteId, c.LibName!, _libRepo);                        
+                    }
+                }
+                RenderResult(_result);
                 break;
 
             case RemoveItemCommand c:
@@ -308,6 +394,12 @@ public partial class TUIApp : ITUIApp
         return string.IsNullOrEmpty(stderr) ? stdout : stdout + Environment.NewLine + stderr;
     }
 
+    private void RestartTUI(string[] args)
+    {
+        _finalAction = null;
+        Program.Main(args);
+    }
+
     private void ExitTUI()
     {
         Terminal.Gui.Application.RequestStop();
@@ -332,7 +424,7 @@ public partial class TUIApp : ITUIApp
 
             if (!string.IsNullOrWhiteSpace(command) && (commandHistory.Count == 0 || commandHistory[^1] != command))
             {
-                commandHistory.Add(command + " ");
+                commandHistory.Add(command);
             }
         }
 

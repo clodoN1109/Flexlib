@@ -18,13 +18,11 @@ public class Authenticator
 #endif
 
     private readonly IUserRepository _userRepo;
-    private readonly IReader _reader;
     private static readonly IPresenter _presenter = new ConsolePresenter();
    
-    public Authenticator(IUserRepository userRepo, IReader reader)
+    public Authenticator(IUserRepository userRepo)
     {
         _userRepo = userRepo;
-        _reader = reader;
 
     }
 

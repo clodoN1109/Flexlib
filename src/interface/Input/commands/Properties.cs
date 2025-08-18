@@ -27,7 +27,7 @@ public class NewPropertyCommand : Command
 
     public override bool IsValid()
     {
-        return (Options.Length >= 1 && Options.Length <= 3);
+        return (Options.Length >= 1 && Options.Length <= 3) ;
     }
     
     public override CommandUsageInfo GetUsageInfo()
@@ -195,7 +195,7 @@ public class RenamePropertyCommand : Command
 
     public override bool IsValid()
     {
-        return (Options.Length == 3);
+        return Options.Length == 3;
     }
     
     public override CommandUsageInfo GetUsageInfo()
@@ -254,7 +254,7 @@ public class UnsetPropertyCommand : Command
 
     public override bool IsValid()
     {
-        return (Options.Length == 4);
+        return Options.Length == 4;
     }
     
     public override CommandUsageInfo GetUsageInfo()

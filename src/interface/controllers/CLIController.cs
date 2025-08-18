@@ -22,7 +22,8 @@ public static class CLIController
     private static LibraryItem? _selectedItem { get; set; }
     private static Library? _selectedLibrary { get; set; }
     private static string? _input { get; set; } 
-    private static object? _payload { get; set; } 
+    private static object? _payload { get; set; }
+    private static Result? _result { get; set; }
     public static void Handle(Command cmd, IUser authUser)
     {
         if (Authorization.IsNotAuthorized(cmd, authUser))
@@ -57,10 +58,10 @@ public static class CLIController
                 if (!string.Equals(_input, "y", StringComparison.OrdinalIgnoreCase))
                     return Result.Fail("Deletion cancelled.");
                 return RemoveItem.Execute(c.ItemId, c.LibraryName, _libRepo);
-            
+
             case RenameItemCommand c:
                 return RenameItem.Execute(c.ItemId, c.NewName, c.LibraryName, _libRepo);
-            
+
             case UpdateItemOriginCommand c:
                 return UpdateItemOrigin.Execute(c.ItemId, c.NewOrigin, c.LibraryName, _libRepo);
 
@@ -73,7 +74,7 @@ public static class CLIController
                     return Result.Fail($"The item has no defined origin.");
 
                 return Result.Success($"The current origin for item of ID {c.ItemId} is {currentOrigin}.");
-            
+
             case ViewItemCommand c:
                 return ViewItem.Execute(c.ItemId, c.LibraryName, c.Application, _libRepo, _presenter);
 
@@ -111,7 +112,12 @@ public static class CLIController
                 return ReturnItem.Execute(c.ItemId, c.DeskId, c.LibraryName, authUser.Id, _libRepo);
 
             case ListLibrariesCommand c:
-                return ListLibs.Execute(_libRepo, _presenter);
+                _result = ListLibs.Execute(_libRepo);
+                if (_result.Payload is List<Library> libs)
+                {
+                    _presenter.ListLibs(libs);
+                }
+                return _result;
 
             case ListItemsCommand c:
                 return ListItems.Execute(c.LibraryName, c.FilterSequence, c.SortSequence, c.ItemName, _libRepo, _presenter);
