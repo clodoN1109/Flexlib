@@ -164,7 +164,7 @@ public class JsonLibraryRepository : ILibraryRepository
         var storageResult = UpdateLocalStorage(item, lib);
 
         if (storageResult.IsFailure)
-            return Result.Fail($"The item \"{item.Name}\" was added to the library \"{lib.Name}\", but its content could not be fetched from the informed origin.");
+            return Result.Warn($"The item \"{item.Name}\" was added to the library \"{lib.Name}\", but its content could not be fetched from the informed origin.");
 
         return Result.Success($"The item \"{item.Name}\" was saved successfully.");
     }

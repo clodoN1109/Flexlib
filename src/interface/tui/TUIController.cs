@@ -17,7 +17,9 @@ public partial class TUIApp : ITUIApp
     {
         if (string.IsNullOrWhiteSpace(input))
             return;
-        AddToCommandHistory(input);
+
+        if (isNotRecursiveCall)
+            AddToCommandHistory(input);
 
         var args = input.ToArrayOfStrings();
         string commandName = args[0].ToLowerInvariant();
@@ -66,7 +68,7 @@ public partial class TUIApp : ITUIApp
 
         if (!processed.IsValid || processed.Value is not Input.Command cmd || !Input.Command.IsKnownCommandName(commandName))
         {
-            RenderResult(Result.Fail($"Invalid command '{input}'. \n\nFor the list of available commands, use 'help'.")); return;
+            RenderResult(Result.Fail($"Invalid command '{input.Trim()}'. \n\nFor the list of available commands, use 'help'.")); return;
         }
 
         if (cmd.IsSpecificHelp())
@@ -150,6 +152,13 @@ public partial class TUIApp : ITUIApp
 
             case RenameItemCommand c:
                 _result = RenameItem.Execute(c.ItemId, c.NewName, c.LibraryName, _libRepo);
+                RenderResult(_result);
+                break;
+
+            case ViewItemCommand c:
+                _result = GetItemLocalCopy.Execute(c.ItemId, c.LibraryName, c.Application, _libRepo);
+                if (_result.Payload is string filePath)
+                    _result = _mediaService.TryOpenFile(filePath);
                 RenderResult(_result);
                 break;
 

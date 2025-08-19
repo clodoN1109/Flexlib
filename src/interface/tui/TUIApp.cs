@@ -9,6 +9,7 @@ using Flexlib.Domain;
 using Flexlib.Infrastructure.Interop;
 using Flexlib.Interface.Output;
 using Flexlib.Infrastructure.Authentication;
+using Flexlib.Services.Media;
 
 namespace Flexlib.Interface.TUI;
 
@@ -20,6 +21,7 @@ public partial class TUIApp : ITUIApp
     private static ILibraryRepository _libRepo = new JsonLibraryRepository();
     private static readonly IUserRepository _userRepo = new JsonUserRepository();
     private static readonly IReader _reader = new TUIReader(RenderTUITextReader);
+    private readonly IMediaService _mediaService = MediaServiceFactory.CreateDefault();
     private static readonly Authenticator _auth = new Authenticator(_userRepo);
     private static LibraryItem? _selectedItem { get; set; }
     private static Library? _selectedLibrary { get; set; }
