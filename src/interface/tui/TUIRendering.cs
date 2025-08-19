@@ -588,7 +588,7 @@ public partial class TUIApp : ITUIApp
             ColorScheme = scheme,
             DesiredCursorVisibility = CursorVisibility.Invisible
         };
-        textView.Text = result.Message ?? string.Empty;
+        textView.Text = result.Message?.Trim() ?? string.Empty;
         // Add TextView first so ScrollBarView has a SuperView
         dialog.Add(textView);
 

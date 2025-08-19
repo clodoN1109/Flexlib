@@ -121,7 +121,10 @@ public static class CLIController
                 return Result.Success($"The current origin for item of ID {c.ItemId} is {currentOrigin}.");
 
             case ViewItemCommand c:
-                return ViewItem.Execute(c.ItemId, c.LibraryName, c.Application, _libRepo, _presenter);
+                _result = GetItemLocalCopy.Execute(c.ItemId, c.LibraryName, c.Application, _libRepo);
+                if (_result.Payload is string localCopy)
+                    _result =_presenter.File(localCopy);
+                return _result;
 
             // Desks
             case NewDeskCommand c:

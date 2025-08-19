@@ -6,11 +6,11 @@ using System.Text;
 
 namespace Flexlib.Application.UseCases;
 
-public static class ViewItem
+public static class GetItemLocalCopy
 {
-    public static Result Execute(object itemId, string libName, string application, ILibraryRepository repo, IPresenter presenter)
+    public static Result Execute(object itemId, string libName, string application, ILibraryRepository repo)
     {
-        var parsedArgs = new ParsedArgs(itemId, libName, application, repo, presenter); 
+        var parsedArgs = new ParsedArgs(itemId, libName, application, repo); 
 
         var validation = IsOperationAllowed(parsedArgs);
 
@@ -27,8 +27,8 @@ public static class ViewItem
         var selectedItem = selectedLibrary.GetItemById(parsedArgs.ItemId);
         
         var localCopy = parsedArgs.Repo.GetItemLocalCopy(selectedItem!, selectedLibrary!);
-        
-        return parsedArgs.Presenter.File(localCopy!);
+
+        return Result.Success("Successfully retrieved the item's local copy.", localCopy);
 
     }
 
@@ -64,15 +64,12 @@ public static class ViewItem
         public string LibName { get; }
         public string Application { get; }
         public ILibraryRepository Repo { get; }
-        public IPresenter Presenter { get; }
-
-        public ParsedArgs(object itemId, string libName, string application, ILibraryRepository repo, IPresenter presenter)
+        public ParsedArgs(object itemId, string libName, string application, ILibraryRepository repo)
         {
             ItemId = itemId;
             LibName = libName;
             Application = application;
             Repo = repo; 
-            Presenter = presenter; 
         }
     }
 }
