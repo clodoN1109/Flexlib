@@ -1,12 +1,9 @@
 using Flexlib.Infrastructure.Interop;
-using System.Diagnostics;
-using System.Text;
-using System.Runtime.CompilerServices;
-using System.Linq.Expressions;
-using Flexlib.Infrastructure.Modelling;
 using Terminal.Gui;
 using Flexlib.Infrastructure.Environment;
 using Flexlib.Application.Ports;
+using Flexlib.Infrastructure.Processing;
+using Flexlib.Interface.Output;
 
 namespace Flexlib.Interface.TUI;
 
@@ -19,8 +16,45 @@ public partial class TUIApp : ITUIApp
     private static Theme _errorFrameTheme = Themes.Get("basic");
     private static Theme _warningFrameTheme = Themes.Get("basic");
     private static Theme _successFrameTheme = Themes.Get("basic");
+    private Window win = new();
+    private TextView pagePane = new();
+    private FrameView outputFrame = new();
+    private FrameView helpFrame = new();
+    private TextView helpPane = new();
+    private TextField promptPane = new();
+    private Label promptLabel = new();
+    private Label leftTopLabel = new();
+    private Label rightTopLabel = new();
+    private Label authLabel = new();
+    private Label footerPane = new();
+    private ScrollBarView helpScrollBar = new();
+    private ScrollBarView outputScrollBar = new();
+    private string margin = "     ";
+    private TUIPage _page = new();
+    private readonly ConsoleRenderer _renderer = new();
 
+    private Toplevel RenderTUI(IUser user)
+    {
+        var top = Terminal.Gui.Application.Top;
 
+        var scheme = _generalTheme.ToColorScheme();
+        var helpScheme = _helpTheme.ToColorScheme();
+
+        RenderWindow(top, scheme);
+        RenderTitleBar(scheme);
+        RenderFooter(scheme);
+        RenderPrompt(scheme, user);
+        RenderPagePane(scheme);
+        RenderHelpPane(helpScheme);
+        RenderAuthLabel(scheme, user);
+
+        _page = new(pagePane);
+
+        promptPane.SetFocus();
+
+        return top;
+
+    }
     private void RenderWindow(Toplevel top, ColorScheme scheme)
     {
         win = new Window()
@@ -128,7 +162,7 @@ public partial class TUIApp : ITUIApp
             {
                 string input = promptPane.Text?.ToString() ?? "";
 
-                ProcessCommand(input);
+                TUIController(input);
 
                 promptPane.Text = "";
                 args.Handled = true;
@@ -180,7 +214,7 @@ public partial class TUIApp : ITUIApp
         win.Add(promptLabel, promptPane);
     }
 
-    private void RenderOutputPane(ColorScheme scheme)
+    private void RenderPagePane(ColorScheme scheme)
     {
         // --- Output Pane ---
         int outputScrollbarMargin = 1;
@@ -194,7 +228,7 @@ public partial class TUIApp : ITUIApp
             CanFocus = false,
         };
 
-        outputPane = new TextView()
+        pagePane = new TextView()
         {
             X = margin.Length,
             Y = 1,
@@ -204,40 +238,40 @@ public partial class TUIApp : ITUIApp
             ColorScheme = scheme,
             DesiredCursorVisibility = CursorVisibility.Invisible
         };
-        outputFrame.Add(outputPane);
+        outputFrame.Add(pagePane);
 
-        outputPane.Enter += (_) =>
+        pagePane.Enter += (_) =>
         {
-            outputPane.ReadOnly = true;
+            pagePane.ReadOnly = true;
             outputFrame.ColorScheme = _selectedFrameTheme.ToColorScheme();
-            outputPane.ColorScheme = _selectedFrameTheme.ToColorScheme();
+            pagePane.ColorScheme = _selectedFrameTheme.ToColorScheme();
         };
-        outputPane.Leave += (_) =>
+        pagePane.Leave += (_) =>
         {
-            outputPane.ReadOnly = false;
+            pagePane.ReadOnly = false;
             outputFrame.ColorScheme = _generalTheme.ToColorScheme();
-            outputPane.ColorScheme = _generalTheme.ToColorScheme();
+            pagePane.ColorScheme = _generalTheme.ToColorScheme();
         };
-        BindScrollToArrowKeys(outputPane);
+        BindScrollToArrowKeys(pagePane);
         win.Add(outputFrame);
 
         // Add vertical scroll bar, positioned after the margin
-        outputScrollBar = new ScrollBarView(outputPane, true)
+        outputScrollBar = new ScrollBarView(pagePane, true)
         {
-            X = Pos.Right(outputPane) + outputScrollbarMargin
+            X = Pos.Right(pagePane) + outputScrollbarMargin
         };
 
         outputScrollBar.ChangedPosition += () =>
         {
-            outputPane.TopRow = outputScrollBar.Position;
-            outputPane.SetNeedsDisplay();
+            pagePane.TopRow = outputScrollBar.Position;
+            pagePane.SetNeedsDisplay();
         };
 
-        outputPane.DrawContent += (_) =>
+        pagePane.DrawContent += (_) =>
         {
-            outputScrollBar.Size = outputPane.Lines;
+            outputScrollBar.Size = pagePane.Lines;
             outputScrollBar.ColorScheme = scheme;
-            outputScrollBar.Position = outputPane.TopRow;
+            outputScrollBar.Position = pagePane.TopRow;
             outputScrollBar.Refresh();
         };
 
@@ -618,7 +652,7 @@ public partial class TUIApp : ITUIApp
         leftTopLabel.ColorScheme = _generalTheme.ToColorScheme();
         rightTopLabel.ColorScheme = _generalTheme.ToColorScheme();
         outputFrame.ColorScheme = _generalTheme.ToColorScheme();
-        outputPane.ColorScheme = _generalTheme.ToColorScheme();
+        pagePane.ColorScheme = _generalTheme.ToColorScheme();
         helpFrame.ColorScheme = _helpTheme.ToColorScheme();
         helpPane.ColorScheme = _helpTheme.ToColorScheme();
         promptPane.ColorScheme = _generalTheme.ToColorScheme();
@@ -626,11 +660,11 @@ public partial class TUIApp : ITUIApp
         footerPane.ColorScheme = _generalTheme.ToColorScheme();
         authLabel.ColorScheme = _generalTheme.ToColorScheme();
 
-        outputPane.DrawContent += (_) =>
+        pagePane.DrawContent += (_) =>
         {
-            outputScrollBar.Size = outputPane.Lines;
+            outputScrollBar.Size = pagePane.Lines;
             outputScrollBar.ColorScheme = _generalTheme.ToColorScheme();
-            outputScrollBar.Position = outputPane.TopRow;
+            outputScrollBar.Position = pagePane.TopRow;
             outputScrollBar.Refresh();
         };
         helpPane.DrawContent += (_) =>
@@ -670,6 +704,57 @@ public partial class TUIApp : ITUIApp
         public string? ReadText() => ReadText("");
 
         public string? ReadPassword() => "";
+    }
+    static void BindScrollToArrowKeys(TextView textView)
+    {
+        textView.KeyDown += (args) =>
+        {
+            int visibleHeight = textView.Bounds.Height;
+            int totalLines = textView.Lines;
+            int topRow = textView.CurrentRow;
+
+            switch (args.KeyEvent.Key)
+            {
+                case Key.CursorDown:
+                    if (topRow + visibleHeight < totalLines)
+                        textView.ScrollTo(topRow + 3);
+                    args.Handled = true;
+                    break;
+
+                case Key.CursorUp:
+                    if (topRow > 0)
+                        textView.ScrollTo(topRow - 3);
+                    args.Handled = true;
+                    break;
+            }
+        };
+    }
+    private void ActivateHelpFrame(string outputStream)
+    {
+        int rows = outputStream.RowCount();
+
+        // Clamp rows to max 15
+        int visibleRows = Math.Min(rows, 15);
+
+
+        helpPane.Text = outputStream; // Set text on the TextView
+        helpFrame.Height = visibleRows + 2; // Border + padding
+        helpFrame.Y = Pos.Top(promptPane) - (visibleRows + 2);
+        helpFrame.Visible = true;
+        helpFrame.CanFocus = true;
+        Terminal.Gui.Application.Refresh();
+        IsHelpActive = true;
+        helpPane.SetFocus();
+    }
+
+
+    private void DeactivateHelpFrame()
+    {
+        helpFrame.Visible = false;
+        helpFrame.Height = 0;
+        helpFrame.CanFocus = false;
+        Terminal.Gui.Application.Refresh();
+        IsHelpActive = false;
     }
 
 }

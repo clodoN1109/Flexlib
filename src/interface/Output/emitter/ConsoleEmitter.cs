@@ -22,6 +22,20 @@ public class ConsoleEmitter
     public void PrintLines(List<Components.ColoredLine> lines, bool clearHost = true)
     {
 
+        if (clearHost)
+        {
+            bool isInteractiveTerminal = !Console.IsOutputRedirected && !Console.IsErrorRedirected;
+            if (isInteractiveTerminal)
+            {
+                Console.Clear();
+            }
+        }
+
+        foreach (var line in lines)
+            Print(line.Text, line.Color);
+    }
+    public void PrintLines(List<string> lines, ConsoleColor color, bool clearHost = true)
+    {
         if (clearHost) {
             bool isInteractiveTerminal = !Console.IsOutputRedirected && !Console.IsErrorRedirected;
             if (isInteractiveTerminal) {
@@ -30,7 +44,7 @@ public class ConsoleEmitter
         }
 
         foreach (var line in lines)
-            Print(line.Text, line.Color);
+            Print(line, color);
     }
 }
 

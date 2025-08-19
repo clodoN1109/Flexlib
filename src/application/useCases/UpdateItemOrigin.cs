@@ -22,19 +22,12 @@ public static class UpdateItemOrigin
     private static Result _UpdateItemOrigin(ParsedArgs parsedArgs)
     {
         var selectedLibrary = parsedArgs.Repo.GetByName(parsedArgs.LibName);
-        if (selectedLibrary is null)
-            return Result.Fail($"Library '{parsedArgs.LibName}' not found.");
 
-        var selectedItem = selectedLibrary.GetItemById(parsedArgs.ItemId);
-        if (selectedItem is null)
-            return Result.Fail($"Item '{parsedArgs.ItemId}' not found in library '{parsedArgs.LibName}'.");
+        var selectedItem = selectedLibrary!.GetItemById(parsedArgs.ItemId);
 
-        if (string.IsNullOrWhiteSpace(parsedArgs.NewOrigin))
-            return Result.Fail("New origin must be provided.");
+        selectedItem!.Origin = parsedArgs.NewOrigin.Trim();
 
-        selectedItem.Origin = parsedArgs.NewOrigin.Trim();
-
-        parsedArgs.Repo.Save(selectedLibrary);
+        parsedArgs.Repo.Save(selectedItem, selectedLibrary);
 
         return Result.Success($"Item '{parsedArgs.ItemId}' origin updated to '{parsedArgs.NewOrigin}' in library '{parsedArgs.LibName}'.");
     }

@@ -17,45 +17,50 @@ $ProgressPreference = 'SilentlyContinue'
 Safe-Cleanup $resultsPath
 Safe-Cleanup $flexlibDataPath
 
-# Run test
-& $flexlibPath new-lib TestLibrary $resultsPath
+# Library
+$libraryName  = "TestLibrary"
+
+# Run simulations
 # --------------------------------------------------------
-& $flexlibPath new-item $item1 Item1 TestLibrary
-& $flexlibPath new-item $item2 Item2 TestLibrary
-& $flexlibPath new-item $item3 Item3 TestLibrary
-& $flexlibPath new-item $item4 Item4 TestLibrary
+# Create the library
+& $flexlibPath new-lib $libraryName $resultsPath
 # --------------------------------------------------------
-& $flexlibPath new-prop author TestLibrary string
-& $flexlibPath new-prop publisher TestLibrary string
-& $flexlibPath new-prop theme TestLibrary list
-& $flexlibPath new-prop year TestLibrary int
+# Create items
+& $flexlibPath new-item $item1 "Item1" $libraryName
+& $flexlibPath new-item $item2 "Item2" $libraryName
+& $flexlibPath new-item $item3 "Item3" $libraryName
+& $flexlibPath new-item $item4 "Item4" $libraryName
 # --------------------------------------------------------
-& $flexlibPath set-prop author newton 1 TestLibrary 
-& $flexlibPath set-prop author pascal 2 TestLibrary 
-& $flexlibPath set-prop author einstein 3 TestLibrary 
-& $flexlibPath set-prop author euler 4 TestLibrary 
-
-& $flexlibPath set-prop publisher dover 1 TestLibrary 
-& $flexlibPath set-prop publisher dover 2 TestLibrary 
-& $flexlibPath set-prop publisher 'nova fronteira' 3 TestLibrary 
-& $flexlibPath set-prop publisher 'alta books' 4 TestLibrary 
-
-& $flexlibPath set-prop theme mathematics 1 TestLibrary 
-& $flexlibPath set-prop theme physics 1 TestLibrary 
-
-& $flexlibPath set-prop theme mathematics 2 TestLibrary 
-& $flexlibPath set-prop theme philosophy 2 TestLibrary 
-
-& $flexlibPath set-prop theme mathematics 3 TestLibrary 
-& $flexlibPath set-prop theme history 3 TestLibrary 
-
-& $flexlibPath set-prop theme history 4 TestLibrary 
-& $flexlibPath set-prop theme physics 4 TestLibrary 
-
-& $flexlibPath set-prop year 1920 1 TestLibrary 
-& $flexlibPath set-prop year 1940 2 TestLibrary 
-& $flexlibPath set-prop year 1945 3 TestLibrary 
-& $flexlibPath set-prop year 2001 4 TestLibrary 
+# Create properties
+& $flexlibPath new-prop "author"    $libraryName string
+& $flexlibPath new-prop "publisher" $libraryName string
+& $flexlibPath new-prop "theme"     $libraryName list
+& $flexlibPath new-prop "year"      $libraryName int
+# --------------------------------------------------------
+# Authors
+& $flexlibPath set-prop "author" "newton"   $item1 $libraryName
+& $flexlibPath set-prop "author" "pascal"   $item2 $libraryName
+& $flexlibPath set-prop "author" "einstein" $item3 $libraryName
+& $flexlibPath set-prop "author" "euler"    $item4 $libraryName
+# Publishers
+& $flexlibPath set-prop "publisher" "dover"          $item1 $libraryName
+& $flexlibPath set-prop "publisher" "dover"          $item2 $libraryName
+& $flexlibPath set-prop "publisher" "nova fronteira" $item3 $libraryName
+& $flexlibPath set-prop "publisher" "alta books"     $item4 $libraryName
+# Themes
+& $flexlibPath set-prop "theme" "mathematics" $item1 $libraryName
+& $flexlibPath set-prop "theme" "physics"     $item1 $libraryName
+& $flexlibPath set-prop "theme" "mathematics" $item2 $libraryName
+& $flexlibPath set-prop "theme" "philosophy"  $item2 $libraryName
+& $flexlibPath set-prop "theme" "mathematics" $item3 $libraryName
+& $flexlibPath set-prop "theme" "history"     $item3 $libraryName
+& $flexlibPath set-prop "theme" "history"     $item4 $libraryName
+& $flexlibPath set-prop "theme" "physics"     $item4 $libraryName
+# Years
+& $flexlibPath set-prop "year" 1920 $item1 $libraryName
+& $flexlibPath set-prop "year" 1940 $item2 $libraryName
+& $flexlibPath set-prop "year" 1945 $item3 $libraryName
+& $flexlibPath set-prop "year" 2001 $item4 $libraryName
 # --------------------------------------------------------
 & $flexlibPath set-layout TestLibrary theme/publisher/author/year
 # --------------------------------------------------------

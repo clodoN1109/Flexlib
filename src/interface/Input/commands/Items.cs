@@ -16,17 +16,17 @@ public class NewItemCommand : Command
 
     public NewItemCommand(string[] options)
     {
-        ItemOrigin = options.Length > 0 ? options[0] : "";
-        ItemName = options.Length > 1 ? options[1] : Infer.ItemNameFromOrigin(ItemOrigin);
-        LibraryName = options.Length > 2 ? options[2] : "";
-        Options = options;
+        LibraryName = options.Length  > 0 ? options[0] : "";
+        ItemName    = options.Length  > 1 ? options[1] : "";
+        ItemOrigin  = options.Length  > 2 ? options[2] : "";
+        Options     = options;
     }
 
     public override string Type => "new-item";
 
     public override bool IsValid()
     {
-        return Options.Length == 3;
+        return Options.Length < 4;
     }
     
     public override CommandUsageInfo GetUsageInfo()
@@ -37,14 +37,13 @@ public class NewItemCommand : Command
             Title = "new-item",
             Description = "Creates a new item in the selected library.",
             Group = CommandGroups.Items,
-            Syntax = "flexlib new-item <item origin> <item name> <library name>",
+            Syntax = "new-item <library name> <item name> [item origin]",
             Options = new List<Option>
             {
                 new Option{
                     Name = "item origin",
                     Description = "The information necessary and sufficient to locate the item.",
                     OptionDomain = new VariableDomain(),
-                    Mandatory = true
                 },
                 
                 new Option{
@@ -72,9 +71,9 @@ public class RenameItemCommand : Command
 
     public RenameItemCommand(string[] options)
     {
-        ItemId      =   options.Length > 0 ? options[0]   :  "";
-        NewName     =   options.Length > 1 ? options[1]   :  "";
-        LibraryName =   options.Length > 2 ? options[2]   :  "";
+        LibraryName =   options.Length > 0 ? options[0]   :  "";
+        ItemId      =   options.Length > 1 ? options[1]   :  "";
+        NewName     =   options.Length > 2 ? options[2]   :  "";
         Options     =   options;
     }
 
@@ -93,7 +92,7 @@ public class RenameItemCommand : Command
             Title = "rename-item",
             Description = "Renames the selected item.",
             Group = CommandGroups.Items,
-            Syntax = "flexlib rename-item <item id> <new name> <library name>",
+            Syntax = "rename-item <library name> <item id> <new name>",
             Options = new List<Option>
             {
                 new Option{
@@ -127,10 +126,10 @@ public class UpdateItemOriginCommand : Command
 
     public UpdateItemOriginCommand(string[] options)
     {
-        ItemId = options.Length > 0 ? options[0] : "";
-        NewOrigin = options.Length > 1 ? options[1] : "";
-        LibraryName = options.Length > 2 ? options[2] : "";
-        Options = options;
+        LibraryName = options.Length > 0 ? options[0] : "";
+        ItemId      = options.Length > 1 ? options[1] : "";
+        NewOrigin   = options.Length > 2 ? options[2] : "";
+        Options     = options;
     }
 
     public override string Type => "update-origin";
@@ -148,7 +147,7 @@ public class UpdateItemOriginCommand : Command
             Title = "update-origin",
             Description = "Updates the origin of the selected item.",
             Group = CommandGroups.Items,
-            Syntax = "flexlib update-origin <item id> <new origin> <library name>",
+            Syntax = "update-origin <library name> <item id> <new origin>",
             Options = new List<Option>
             {
                 new Option{
@@ -181,8 +180,8 @@ public class GetItemOriginCommand : Command
 
     public GetItemOriginCommand(string[] options)
     {
-        ItemId      =   options.Length > 0 ? options[0]   :  "";
-        LibraryName =   options.Length > 1 ? options[1]   :  "";
+        LibraryName =   options.Length > 0 ? options[0]   :  "";
+        ItemId      =   options.Length > 1 ? options[1]   :  "";
         Options     =   options;
     }
 
@@ -201,7 +200,7 @@ public class GetItemOriginCommand : Command
             Title = "get-origin",
             Description = "Get the current origin for the selected item.",
             Group = CommandGroups.Items,
-            Syntax = "flexlib get-origin <item id> <library name>",
+            Syntax = "get-origin <library name> <item id>",
             Options = new List<Option>
             {
                 new Option{
@@ -229,9 +228,9 @@ public class RemoveItemCommand : Command
 
     public RemoveItemCommand(string[] options)
     {
-        ItemId = options.Length > 0 ? options[0] : "";
-        LibraryName = options.Length > 1 ? options[1] : "";
-        Options = options;
+        LibraryName = options.Length > 0 ? options[0] : "";
+        ItemId      = options.Length > 1 ? options[1] : "";
+        Options     = options;
     }
 
     public override string Type => "remove-item";
@@ -249,7 +248,7 @@ public class RemoveItemCommand : Command
             Title = "remove-item",
             Description = "Removes the selected item from the selected library.",
             Group = CommandGroups.Items,
-            Syntax = "flexlib remove-item <item id> <library name>",
+            Syntax = "remove-item <library name> <item id>",
             Options = new List<Option>
             {
                 new Option{
@@ -277,17 +276,17 @@ public class ViewItemCommand : Command
     
     public ViewItemCommand(string[] options)
     {
-        Options = options;
-        ItemId =  options.Length > 0 ? options[0] : "";
-        LibraryName = options.Length > 1 ? options[1] : "";
+        LibraryName = options.Length > 0 ? options[0] : "";
+        ItemId      = options.Length > 1 ? options[1] : "";
         Application = options.Length > 2 ? options[1] : "Default App";
+        Options     = options;
     }
 
     public override string Type => "view-item";
 
     public override bool IsValid()
     {
-        return (Options.Length > 0 && Options.Length < 4);
+        return Options.Length > 0 && Options.Length < 4;
     }
     
     public override CommandUsageInfo GetUsageInfo()
@@ -298,7 +297,7 @@ public class ViewItemCommand : Command
             Title = "view-item",
             Description = "Opens for visualization the selected item from the selected library.",
             Group = CommandGroups.Items,
-            Syntax = "flexlib view-item <item id> <library name> [preferred application]",
+            Syntax = "view-item <library name> <item id> [preferred application]",
             Options = new List<Option>
             {
                 new Option{
@@ -335,10 +334,10 @@ public class ListItemsCommand : Command
     public ListItemsCommand(string[] options)
     {
         Options = options;
-        LibraryName = options.Length > 0 ? options[0] : "";
-        FilterSequence = options.Length > 1 ? options[1] : "";
-        ItemName = options.Length > 2 ? options[2] : "";
-        SortSequence = options.Length > 3 ? options[3] : "";
+        LibraryName     = options.Length > 0 ? options[0] : "";
+        FilterSequence  = options.Length > 1 ? options[1] : "";
+        ItemName        = options.Length > 2 ? options[2] : "";
+        SortSequence    = options.Length > 3 ? options[3] : "";
     }
     
     public override string Type => "list-items";
@@ -346,12 +345,7 @@ public class ListItemsCommand : Command
     public override bool IsValid()
     {
 
-        if (( (Options.Length > 0) && (Options.Length < 5) ))
-        {
-            return true;
-        }
-
-        return false;
+        return Options.Length > 0 && Options.Length < 5;
         
     }
     
@@ -363,11 +357,11 @@ public class ListItemsCommand : Command
             Title = "list items",
             Description = "Presents a filtered and sorted list of items of the selected library.",
             Group = CommandGroups.Items,
-            Syntax = "flexlib list-items <library name> [\"filter sequence\"] [\"item name\"] [\"sort sequence\"]",
+            Syntax = "list-items <library name> [\"filter sequence\"] [\"item name\"] [\"sort sequence\"]",
             Examples = new List<string> {
-                "flexlib list-items Literature \"physics,math/Newton, Gottfried Leibniz/1780-1856\" \"optics,principles\" year/publisher",
-                "flexlib list-items Cinema Ernst/*/1990-2021 \"\" budget/year/rating",
-                "flexlib list-items Music * \"Sonata, Concerto\" year/artist"
+                "list-items Literature \"physics,math/Newton, Gottfried Leibniz/1780-1856\" \"optics,principles\" year/publisher",
+                "list-items Cinema Ernst/*/1990-2021 \"\" budget/year/rating",
+                "list-items Music * \"Sonata, Concerto\" year/artist"
                 },
             Options = new List<Option>
             {

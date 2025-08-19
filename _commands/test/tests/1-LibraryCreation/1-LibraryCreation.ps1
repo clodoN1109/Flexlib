@@ -5,7 +5,7 @@ param (
 # Resolve paths
 $flexlibPath       = Resolve-Path "$PSScriptRoot/../../../flexlib.ps1"
 $resultsPath       = "$PSScriptRoot/data/results"
-$referencesPath     = "$PSScriptRoot/data/references"
+$referencesPath    = "$PSScriptRoot/data/references"
 
 # Clean up previous test output
 $ProgressPreference = 'SilentlyContinue'

@@ -37,7 +37,7 @@ public class TUIStartUp : ParsedInput
             Meta = new List<string>(),
             Title = "tui",
             Description = "Launches the text user interface for Flexlib.",
-            Syntax = "flexlib tui [theme] [language]",
+            Syntax = "tui [theme] [language]",
             Options = new List<Option>
             {
                 new Option

@@ -4,6 +4,7 @@ using Flexlib.Interface.Input;
 using Flexlib.Infrastructure.Interop;
 using Flexlib.Services.Media;
 using Flexlib.Infrastructure.Environment;
+using System.Drawing;
 
 namespace Flexlib.Interface.Output;
 
@@ -119,26 +120,10 @@ public class ConsolePresenter : IPresenter
         _emitter.PrintLines(lines);
     }
 
-    public void ListLayoutSequence(List<string> layoutSequence)
+    public void PresentLayoutSequence(List<string> layoutSequence)
     {
-        if (layoutSequence.Count == 0)
-        {
-            Console.WriteLine("\nLayout sequence is empty.");
-            return;
-        }
-
-        Console.WriteLine("\nlayout structure:");
-        Console.WriteLine("\n📂");
-
-        string indentUnit = "  ";
-        for (int i = 0; i < layoutSequence.Count; i++)
-        {
-            string indent = string.Concat(Enumerable.Repeat(indentUnit, i));
-            string symbol = i == layoutSequence.Count - 1 ? "└─" : "├─";
-            Console.WriteLine($"{indent}{symbol} {layoutSequence[i]}");
-        }
-
-        Console.WriteLine();
+        var lines = _renderer.RenderLayoutSequence(layoutSequence);
+        _emitter.PrintLines(lines, ConsoleColor.Blue, false);
     }
 
 }

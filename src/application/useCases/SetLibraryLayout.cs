@@ -9,9 +9,9 @@ namespace Flexlib.Application.UseCases;
 
 public static class SetLibraryLayout
 {
-    public static Result Execute(string libName, string layoutString, ILibraryRepository repo, IPresenter presenter)
+    public static Result Execute(string libName, string layoutString, ILibraryRepository repo)
     {
-        var parsedArgs = new ParsedArgs(libName, layoutString, repo, presenter); 
+        var parsedArgs = new ParsedArgs(libName, layoutString, repo); 
 
         var validation = IsOperationAllowed(parsedArgs);
 
@@ -55,14 +55,12 @@ public static class SetLibraryLayout
         public string LibName { get; }
         public string LayoutString { get; }
         public ILibraryRepository Repo { get; }
-        public IPresenter Presenter { get; }
 
-        public ParsedArgs(string libName, string layoutString, ILibraryRepository repo, IPresenter presenter)
+        public ParsedArgs(string libName, string layoutString, ILibraryRepository repo)
         {
             LibName = libName;
             LayoutString = layoutString;
             Repo = repo;    
-            Presenter = presenter;
         }
     }
 }

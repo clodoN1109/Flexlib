@@ -4,6 +4,7 @@ namespace Flexlib.Interface.Input.Heuristics;
 
 public static class Infer{
 
+    [Obsolete("Not used anymore, since item name became a non-optional argument.")]
     public static string ItemNameFromOrigin(string origin)
     {
 

@@ -37,7 +37,7 @@ public class SignUpCommand : Command
             Title = "signup",
             Description = "Registers a new user.",
             Group = CommandGroups.Authentication,
-            Syntax = "flexlib signup",
+            Syntax = "signup",
             Options = new List<Option>()
         };
     }
@@ -71,7 +71,7 @@ public class LoginCommand : Command
             Title = "login",
             Description = "Login as an existing user.",
             Group = CommandGroups.Authentication,
-            Syntax = "flexlib login",
+            Syntax = "login",
             Options = new List<Option>()
         };
     }
@@ -105,7 +105,7 @@ public class LogoutCommand : Command
             Title = "logout",
             Description = "Logout from an opened session.",
             Group = CommandGroups.Authentication,
-            Syntax = "flexlib logout",
+            Syntax = "logout",
             Options = new List<Option>()
         };
     }

@@ -15,8 +15,8 @@ public class NewDeskCommand : Command
 
     public NewDeskCommand(string[] options)
     {
-        DeskName    =   options.Length > 0 ? options[0]   :  "";
-        LibraryName =   options.Length > 1 ? options[1]   :  "";
+        LibraryName =   options.Length > 0 ? options[0]   :  "";
+        DeskName    =   options.Length > 1 ? options[1]   :  "";
         Options     =   options;
     }
 
@@ -35,7 +35,7 @@ public class NewDeskCommand : Command
             Title = "new-desk",
             Description = "Creates a new desk to organize borrowed items and track their progress.",
             Group = CommandGroups.Desks,
-            Syntax = "flexlib new-desk <desk name> <library name>",
+            Syntax = "new-desk <library name> <desk name>",
             Options = new List<Option>
             {
                 new Option{
@@ -80,7 +80,7 @@ public class ListDesksCommand : Command
             Title = "list-desks",
             Description = "Lists all desks in the specified library.",
             Group = CommandGroups.Desks,
-            Syntax = "flexlib list-desks <library name>",
+            Syntax = "list-desks <library name>",
             Options = new List<Option>
             {
                 new Option
@@ -102,8 +102,8 @@ public class ViewDeskCommand : Command
 
     public ViewDeskCommand(string[] options)
     {
-        DeskId          = options.Length > 0 ? options[0] : "";
-        LibraryName     = options.Length > 1 ? options[1] : "";
+        LibraryName     = options.Length > 0 ? options[0] : "";
+        DeskId          = options.Length > 1 ? options[1] : "";
         SortSequence    = options.Length > 2 ? options[2] : "";
         Options = options;
     }
@@ -123,7 +123,7 @@ public class ViewDeskCommand : Command
             Title = "view-desk",
             Description = "Displays the items and progress for a specific desk.",
             Group = CommandGroups.Desks,
-            Syntax = "flexlib view-desk <desk id> <library name> [sort sequence]",
+            Syntax = "view-desk <library name> <desk id> [sort sequence]",
             Options = new List<Option>
             {
                 new Option
@@ -159,10 +159,10 @@ public class BorrowItemCommand : Command
 
     public BorrowItemCommand(string[] options)
     {
-        ItemId = options.Length > 0 ? options[0] : "";
-        DeskId = options.Length > 1 ? options[1] : "";
-        LibraryName = options.Length > 2 ? options[2] : "";
-        Options = options;
+        LibraryName = options.Length > 0 ? options[0] : "";
+        DeskId      = options.Length > 1 ? options[1] : "";
+        ItemId      = options.Length > 2 ? options[2] : "";
+        Options     = options;
     }
 
     public override string Type => "borrow-item";
@@ -180,7 +180,7 @@ public class BorrowItemCommand : Command
             Title = "borrow-item",
             Description = "Borrows an item to a desk to track its usage or progress.",
             Group = CommandGroups.Desks,
-            Syntax = "flexlib borrow-item <item id> <desk id> <library name>",
+            Syntax = "borrow-item <library name> <desk id> <item id>",
             Options = new List<Option>
             {
                 new Option
@@ -213,9 +213,9 @@ public class ListLoansCommand : Command
 
     public ListLoansCommand(string[] options)
     {
-        ItemId = options.Length > 0 ? options[0] : "";
-        LibraryName = options.Length > 1 ? options[1] : "";
-        Options = options;
+        LibraryName = options.Length > 0 ? options[0] : "";
+        ItemId      = options.Length > 1 ? options[1] : "";
+        Options     = options;
     }
 
     public override string Type => "list-loans";
@@ -233,7 +233,7 @@ public class ListLoansCommand : Command
             Title = "list-loans",
             Description = "Lists the loan history for the selected item.",
             Group = CommandGroups.Desks,
-            Syntax = "flexlib list-loans <item id> <library name>",
+            Syntax = "list-loans <library name> <item id>",
             Options = new List<Option>
             {
                 new Option
@@ -263,10 +263,10 @@ public class ReturnItemCommand : Command
 
     public ReturnItemCommand(string[] options)
     {
-        ItemId = options.Length > 0 ? options[0] : "";
-        DeskId = options.Length > 1 ? options[1] : "";
-        LibraryName = options.Length > 2 ? options[2] : "";
-        Options = options;
+        LibraryName = options.Length > 0 ? options[0] : "";
+        DeskId      = options.Length > 1 ? options[1] : "";
+        ItemId      = options.Length > 2 ? options[2] : "";
+        Options     = options;
     }
 
     public override string Type => "return-item";
@@ -284,7 +284,7 @@ public class ReturnItemCommand : Command
             Title = "return-item",
             Description = "Returns an item from a desk, marking it as no longer borrowed.",
             Group = CommandGroups.Desks,
-            Syntax = "flexlib return-item <item id> <desk id> <library name>",
+            Syntax = "return-item <library name> <desk id> <item id>",
             Options = new List<Option>
             {
                 new Option
@@ -319,11 +319,11 @@ public class SetAppetiteCommand : Command
 
     public SetAppetiteCommand(string[] options)
     {
-        ItemID     = options.Length > 0 ? options[0] : "";
-        DeskID     = options.Length > 1 ? options[1] : "";
-        LibraryName  = options.Length > 2 ? options[2] : "";
-        Date       = options.Length > 3 ? options[3] : "";
-        Options    = options;
+        LibraryName = options.Length > 0 ? options[0] : "";
+        DeskID      = options.Length > 1 ? options[1] : "";
+        ItemID      = options.Length > 2 ? options[2] : "";
+        Date        = options.Length > 3 ? options[3] : "";
+        Options     = options;
     }
 
     public override string Type => "set-appetite";
@@ -338,7 +338,7 @@ public class SetAppetiteCommand : Command
             Title = "set-appetite",
             Description = "Assigns an appetite time to an item.",
             Group = CommandGroups.Items,
-            Syntax = "flexlib set-appetite <item id> <desk id> <library name> <date>",
+            Syntax = "set-appetite <library name> <desk id> <item id> <date>",
             Options = new List<Option>
             {
                 new("item id", new VariableDomain(), true),
@@ -351,8 +351,8 @@ public class SetAppetiteCommand : Command
             },
             Examples = new List<string>
             {
-                "flexlib set-appetite 312 42 Literature '08/10/25 14:00'",
-                "flexlib set-appetite B9cE 7 History '09/01/25 09:30'"
+                "set-appetite Literature 312 42 \"08/10/25 14:00\"",
+                "set-appetite History B9cE 7 \"09/01/25 09:30\""
             }
         };
     }
@@ -367,11 +367,11 @@ public class SetProgressCommand : Command
 
     public SetProgressCommand(string[] options)
     {
-        NewValue   = options.Length > 0 ? options[0] : "";
-        ItemID     = options.Length > 1 ? options[1] : "";
-        DeskID     = options.Length > 2 ? options[2] : "";
-        LibraryName  = options.Length > 3 ? options[3] : "";
-        Options    = options;
+        LibraryName = options.Length > 0 ? options[0] : "";
+        DeskID      = options.Length > 1 ? options[1] : "";
+        ItemID      = options.Length > 2 ? options[2] : "";
+        NewValue    = options.Length > 3 ? options[3] : "";
+        Options     = options;
     }
 
     public override string Type => "set-progress";
@@ -386,12 +386,12 @@ public class SetProgressCommand : Command
             Title = "set-progress",
             Description = "Updates the progress value of an item.",
             Group = CommandGroups.Items,
-            Syntax = "flexlib set-progress <new value> <item id> <desk id> <library name>",
+            Syntax = "set-progress <library name> <desk id> <item id> <new value>",
             Options = new List<Option>
             {
-                new("new value", new VariableDomain(), true),
-                new("item id", new VariableDomain(), true),
-                new("desk id", new VariableDomain(), true),
+                new("new value",    new VariableDomain(), true),
+                new("item id",      new VariableDomain(), true),
+                new("desk id",      new VariableDomain(), true),
                 new("library name", new VariableDomain(), true)
             }
         };
@@ -408,11 +408,11 @@ public class DefineProgressCommand : Command
 
     public DefineProgressCommand(string[] options)
     {
-        Unit            = options.Length > 0 ? options[0] : "";
-        CompletionValue = options.Length > 1 ? options[1] : "";
+        LibraryName     = options.Length > 0 ? options[0] : "";
+        DeskID          = options.Length > 1 ? options[1] : "";
         ItemID          = options.Length > 2 ? options[2] : "";
-        DeskID          = options.Length > 3 ? options[3] : "";
-        LibraryName       = options.Length > 4 ? options[4] : "";
+        Unit            = options.Length > 3 ? options[3] : "";
+        CompletionValue = options.Length > 4 ? options[4] : "";
         Options         = options;
     }
 
@@ -428,7 +428,7 @@ public class DefineProgressCommand : Command
             Title = "define-progress",
             Description = "Defines or renames a progress state.",
             Group = CommandGroups.Items,
-            Syntax = "flexlib define-progress <unit> <completion value> <item id> <desk id> <library name>",
+            Syntax = "define-progress <library name> <desk id> <item id> <unit> <completion value>",
             Options = new List<Option>
             {
                 new("unit", new VariableDomain(), true),
@@ -450,16 +450,17 @@ public class SetPriorityCommand : Command
 
     public SetPriorityCommand(string[] options)
     {
-        NewPriority = options.Length > 0 ? options[0] : "";
-        ItemID      = options.Length > 1 ? options[1] : "";
-        DeskID      = options.Length > 2 ? options[2] : "";
-        LibraryName   = options.Length > 3 ? options[3] : "";
-        Options     = options;
+        LibraryName   = options.Length > 0 ? options[0] : "";
+        DeskID        = options.Length > 1 ? options[1] : "";
+        ItemID        = options.Length > 2 ? options[2] : "";
+        NewPriority   = options.Length > 3 ? options[3] : "";
+
+        Options       = options;
     }
 
     public override string Type => "set-priority";
 
-    public override bool IsValid() => (Options.Length == 4 && int.TryParse(NewPriority, out _));
+    public override bool IsValid() => Options.Length == 4;
 
     public override CommandUsageInfo GetUsageInfo()
     {
@@ -469,7 +470,7 @@ public class SetPriorityCommand : Command
             Title = "set-priority",
             Description = "Sets the priority of an item.",
             Group = CommandGroups.Items,
-            Syntax = "flexlib set-priority <priority> <item id> <desk id> <library name>",
+            Syntax = "set-priority <library name> <desk id> <item id> <priority>",
             Options = new List<Option>
             {
                 new("priority", new VariableDomain(), true),
@@ -489,10 +490,10 @@ public class RenameDeskCommand : Command
 
     public RenameDeskCommand(string[] options)
     {
-        NewName    = options.Length > 0 ? options[0] : "";
-        DeskID     = options.Length > 1 ? options[1] : "";
-        LibraryName  = options.Length > 2 ? options[2] : "";
-        Options    = options;
+        LibraryName = options.Length > 0 ? options[0] : "";
+        DeskID      = options.Length > 1 ? options[1] : "";
+        NewName     = options.Length > 2 ? options[2] : "";
+        Options     = options;
     }
 
     public override string Type => "rename-desk";
@@ -506,7 +507,7 @@ public class RenameDeskCommand : Command
             Title = "rename-desk",
             Description = "Renames an existing desk.",
             Group = CommandGroups.Desks,
-            Syntax = "flexlib rename-desk <new name> <desk id> <library name>",
+            Syntax = "rename-desk <library name> <desk id> <new name>",
             Options = new List<Option>
             {
                 new("new name", new VariableDomain(), true),
