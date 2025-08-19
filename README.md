@@ -70,7 +70,7 @@ Make sure the following tools are installed:
 
 ### 🔹 Option 1 — Use Prebuilt Release
 
-1. Go to the [Releases](https://github.com/your-username/flexlib/releases) page.
+1. Go to the [Releases](https://github.com/clodoN1109/flexlib/releases) page.
 2. Download the latest `.zip`.
 3. Extract the contents into any folder.
 4. (Optional) Add that folder to your system `PATH`.
@@ -85,7 +85,7 @@ Make sure the following tools are installed:
 ### 🔸 Option 2 — Build from Source
 
 ```powershell
-git clone https://github.com/<your-username>/flexlib.git
+git clone https://github.com/clodoN1109/flexlib.git
 cd ./flexlib/
 ./_commands/build
 ./_commands/flexlib help
