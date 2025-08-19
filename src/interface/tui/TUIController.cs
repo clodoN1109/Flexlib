@@ -286,6 +286,47 @@ public partial class TUIApp : ITUIApp
                 RenderResult(_result);
                 break;
 
+            // Desks    
+            case NewDeskCommand c:
+                _result = NewDesk.Execute(c.DeskName, c.LibraryName, _libRepo);
+                RenderResult(_result);
+                break;
+
+            case SetAppetiteCommand c:
+                _result = SetAppetite.Execute(c.ItemID, c.DeskID, c.LibraryName, c.Date, _libRepo);
+                RenderResult(_result);
+                break;
+
+            case SetProgressCommand c:
+                _result = SetProgress.Execute(c.NewValue, c.ItemID, c.DeskID, c.LibraryName, _libRepo);
+                RenderResult(_result);
+                break;
+
+            case DefineProgressCommand c:
+                _result = DefineProgress.Execute(c.Unit, c.CompletionValue, c.ItemID, c.DeskID, c.LibraryName, _libRepo);
+                RenderResult(_result);
+                break;
+
+            case SetPriorityCommand c:
+                _result = SetPriority.Execute(c.NewPriority, c.ItemID, c.DeskID, c.LibraryName, _libRepo);
+                RenderResult(_result);
+                break;
+
+            case RenameDeskCommand c:
+                _result = RenameDesk.Execute(c.NewName, c.DeskID, c.LibraryName, _libRepo);
+                RenderResult(_result);
+                break;
+
+            case BorrowItemCommand c:
+                _result = BorrowItem.Execute(c.ItemId, c.DeskId, c.LibraryName, _user!.Id, _libRepo);
+                RenderResult(_result);
+                break;
+
+            case ReturnItemCommand c:
+                _result = ReturnItem.Execute(c.ItemId, c.DeskId, c.LibraryName, _user!.Id, _libRepo);
+                RenderResult(_result);
+                break;
+
             // Temporary redirect to the CLI controller
             default:
                 string outputStream = RunFlexlib(args);
