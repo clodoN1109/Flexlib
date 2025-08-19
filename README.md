@@ -51,7 +51,6 @@ Instead of relying on rigid directory hierarchies, Flexlib treats your library a
 | CLI                                 | ✅ Implemented |
 | TUI                                 | ✅ Implemented |
 | GUI interface                       | 🚧 In Progress |
-| Cross-platform support (Linux/macOS)| 🚧 Planned     |
 
 ---
 
