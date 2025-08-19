@@ -9,9 +9,9 @@ namespace Flexlib.Application.UseCases;
 
 public static class GetLibraryLayout
 {
-    public static Result Execute(string libName, ILibraryRepository repo, IPresenter presenter)
+    public static Result Execute(string libName, ILibraryRepository repo)
     {
-        var parsedArgs = new ParsedArgs(libName, repo, presenter); 
+        var parsedArgs = new ParsedArgs(libName, repo); 
 
         var validation = IsOperationAllowed(parsedArgs);
 
@@ -30,14 +30,7 @@ public static class GetLibraryLayout
             .Select(def => def.Name)
             .ToList();
 
-        if (layoutSequence.Count > 0)
-        { 
-            parsedArgs.Presenter.ListLayoutSequence(layoutSequence);
-            return Result.Success("");
-        }
-        else {
-            return Result.Fail("Layout sequence is empty.");
-        }
+        return Result.Success("", layoutSequence);
     }
 
     private static Result IsOperationAllowed(ParsedArgs parsedArgs)
@@ -56,13 +49,11 @@ public static class GetLibraryLayout
     {
         public string LibName { get; }
         public ILibraryRepository Repo { get; }
-        public IPresenter Presenter { get; }
 
-        public ParsedArgs(string libName, ILibraryRepository repo, IPresenter presenter)
+        public ParsedArgs(string libName, ILibraryRepository repo)
         {
             LibName = libName;
             Repo = repo;    
-            Presenter = presenter;
         }
     }
 }

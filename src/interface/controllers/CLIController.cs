@@ -43,13 +43,55 @@ public static class CLIController
 
         switch (cmd)
         {
+
+            // Libraries
             case NewLibraryCommand c:
                 return NewLibrary.Execute(c.Name, c.Path, _libRepo);
 
+            case ListLibrariesCommand c:
+                _result = ListLibs.Execute(_libRepo);
+                if (_result.Payload is List<Library> libs)
+                {
+                    _presenter.ListLibs(libs);
+                }
+                return _result;
+                
+            case GetLibraryLayoutCommand c:
+                _result = GetLibraryLayout.Execute(c.LibraryName, _libRepo);
+
+                if (_result.Payload is not List<string> layout)
+                    return _result;
+                    
+                if (layout.Count > 0)
+                {
+                    _presenter.PresentLayoutSequence(layout);
+                    return Result.Success("");
+                }
+                else
+                {
+                    return Result.Fail("Layout sequence is empty.");
+                }
+
+            case SetLibraryLayoutCommand c:
+                return SetLibraryLayout.Execute(c.LibraryName, c.LayoutString, _libRepo);
+
+            case RemoveLibraryCommand c:
+
+                _selectedLibrary = _libRepo.GetByName(c.Name)!;
+                Console.WriteLine($"\nAre you sure you want to delete the library '{c.Name}' at path:\n\n  {_selectedLibrary.Path} ?\n");
+                Console.Write("(y/N) > ");
+                _input = Console.ReadLine();
+
+                if (!string.Equals(_input, "y", StringComparison.OrdinalIgnoreCase))
+                {
+                    return Result.Fail("Deletion cancelled by user.");
+                }
+                return RemoveLibrary.Execute(c.Name, _libRepo);
+
+            // Items
             case NewItemCommand c:
                 return NewItem.Execute(c.LibraryName, c.ItemOrigin, c.ItemName, _libRepo);
-
-            case RemoveItemCommand c:
+                            case RemoveItemCommand c:
                 _selectedLibrary = _libRepo.GetByName(c.LibraryName)!;
                 _selectedItem = _selectedLibrary.GetItemById(c.ItemId);
                 Console.WriteLine($"\nAre you sure you want to delete the item '{_selectedItem?.Name ?? ""}' from library '{_selectedLibrary?.Name ?? ""}'?\n\n");
@@ -58,6 +100,9 @@ public static class CLIController
                 if (!string.Equals(_input, "y", StringComparison.OrdinalIgnoreCase))
                     return Result.Fail("Deletion cancelled.");
                 return RemoveItem.Execute(c.ItemId, c.LibraryName, _libRepo);
+
+            case ListItemsCommand c:
+                return ListItems.Execute(c.LibraryName, c.FilterSequence, c.SortSequence, c.ItemName, _libRepo, _presenter);
 
             case RenameItemCommand c:
                 return RenameItem.Execute(c.ItemId, c.NewName, c.LibraryName, _libRepo);
@@ -78,6 +123,7 @@ public static class CLIController
             case ViewItemCommand c:
                 return ViewItem.Execute(c.ItemId, c.LibraryName, c.Application, _libRepo, _presenter);
 
+            // Desks
             case NewDeskCommand c:
                 return NewDesk.Execute(c.DeskName, c.LibraryName, _libRepo);
 
@@ -111,47 +157,14 @@ public static class CLIController
             case ReturnItemCommand c:
                 return ReturnItem.Execute(c.ItemId, c.DeskId, c.LibraryName, authUser.Id, _libRepo);
 
-            case ListLibrariesCommand c:
-                _result = ListLibs.Execute(_libRepo);
-                if (_result.Payload is List<Library> libs)
-                {
-                    _presenter.ListLibs(libs);
-                }
-                return _result;
-
-            case ListItemsCommand c:
-                return ListItems.Execute(c.LibraryName, c.FilterSequence, c.SortSequence, c.ItemName, _libRepo, _presenter);
-
-            case GetLibraryLayoutCommand c:
-                return GetLibraryLayout.Execute(c.LibraryName, _libRepo, _presenter);
-
-            case SetLibraryLayoutCommand c:
-                return SetLibraryLayout.Execute(c.LibraryName, c.LayoutString, _libRepo, _presenter);
-
+            // Local Storage
             case FetchFilesCommand c:
                 return FetchFiles.Execute(c.LibraryName, _libRepo);
-            
+
             case RebalanceLocalStorageCommand c:
                 return RebalanceLocalStorage.Execute(c.LibraryName, _libRepo);
 
-            case NewPropertyCommand c:
-                return NewProperty.Execute(c.LibName, c.PropName, c.PropType, _libRepo);
-
-            case ListPropertiesCommand c:
-                return ListProperties.Execute(c.LibName, c.ItemId, _libRepo, _presenter);
-            
-            case SetPropertyCommand c:
-                return SetProperty.Execute(c.PropName, c.NewValue, c.LibName, c.ItemId, _libRepo);
-            
-            case RenamePropertyCommand c:
-                return RenameProperty.Execute(c.PropName, c.NewName, c.LibName, _libRepo);
-
-            case UnsetPropertyCommand c:
-                return UnsetProperty.Execute(c.PropName, c.TargetValue, c.LibName, c.ItemId, _libRepo);
-
-            case RemovePropertyCommand c:
-                return RemoveProperty.Execute(c.PropName, c.LibName, _libRepo);
-
+            // Notes
             case NewNoteCommand c:
                 var note = string.IsNullOrWhiteSpace(c.Note)
                     ? _reader.ReadText()
@@ -180,19 +193,25 @@ public static class CLIController
             case RemoveNoteCommand c:
                 return RemoveNote.Execute(c.ItemId, c.NoteId, c.LibName, _libRepo);
 
-            case RemoveLibraryCommand c:
+            // Properties
+            case NewPropertyCommand c:
+                return NewProperty.Execute(c.LibName, c.PropName, c.PropType, _libRepo);
 
-                _selectedLibrary = _libRepo.GetByName(c.Name)!;
-                Console.WriteLine($"\nAre you sure you want to delete the library '{c.Name}' at path:\n\n  {_selectedLibrary.Path} ?\n");
-                Console.Write("(y/N) > ");
-                _input = Console.ReadLine();
+            case ListPropertiesCommand c:
+                return ListProperties.Execute(c.LibName, c.ItemId, _libRepo, _presenter);
 
-                if (!string.Equals(_input, "y", StringComparison.OrdinalIgnoreCase))
-                {
-                    return Result.Fail("Deletion cancelled by user.");
-                }
-                return RemoveLibrary.Execute(c.Name, _libRepo);
+            case SetPropertyCommand c:
+                return SetProperty.Execute(c.PropName, c.NewValue, c.LibName, c.ItemId, _libRepo);
 
+            case RenamePropertyCommand c:
+                return RenameProperty.Execute(c.PropName, c.NewName, c.LibName, _libRepo);
+
+            case UnsetPropertyCommand c:
+                return UnsetProperty.Execute(c.PropName, c.TargetValue, c.LibName, c.ItemId, _libRepo);
+
+            case RemovePropertyCommand c:
+                return RemoveProperty.Execute(c.PropName, c.LibName, _libRepo);
+            // Unknown Command   
             default:
                 return Result.Fail($"Unknown use case: {cmd?.GetType().Name ?? "null"}");
         }

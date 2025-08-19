@@ -37,7 +37,7 @@ public class NewLibraryCommand : Command
             Title = "new-lib",
             Description = "Creates a new library with the selected name and located at the selected path.",
             Group = CommandGroups.Libraries,
-            Syntax = "flexlib new-lib <library name> [library path]",
+            Syntax = "new-lib <library name> [library path]",
             Options = new List<Option>
             {
                 new Option{
@@ -83,7 +83,7 @@ public class RemoveLibraryCommand : Command
             Title = "remove-lib",
             Description = "Removes the selected library and all its items.",
             Group = CommandGroups.Libraries,
-            Syntax = "flexlib remove-lib <library name>",
+            Syntax = "remove-lib <library name>",
             Options = new List<Option>
             {
                 new Option{
@@ -126,7 +126,7 @@ public class ListLibrariesCommand : Command
             Title = "list-libs",
             Description = "Lists all accessible existing libraries.",
             Group = CommandGroups.Libraries,
-            Syntax = "flexlib list-libs",
+            Syntax = "list-libs",
             Options = new List<Option>()
         };
     }
@@ -164,7 +164,7 @@ public class GetLibraryLayoutCommand : Command
             Title = "get-layout",
             Description = "Gets the current library layout.",
             Group = CommandGroups.Libraries,
-            Syntax = "flexlib get-layout <library name>",
+            Syntax = "get-layout <library name>",
             Options = new List<Option>
             {
                 new Option{
@@ -212,7 +212,7 @@ public class SetLibraryLayoutCommand : Command
             Title = "set-layout",
             Description = "Redefines the selected library layout.",
             Group = CommandGroups.Libraries,
-            Syntax = "flexlib set-layout <library name> <layout>",
+            Syntax = "set-layout <library name> <layout>",
             Options = new List<Option>
             {
                 new Option{

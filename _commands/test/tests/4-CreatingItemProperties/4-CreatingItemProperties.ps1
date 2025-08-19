@@ -15,15 +15,22 @@ $item3             = "$dataPath/input/Item3.pdf"
 $ProgressPreference = 'SilentlyContinue'
 Safe-Cleanup $resultsPath
 Safe-Cleanup $flexlibDataPath
-# Run test
-& $flexlibPath new-lib TestLibrary $resultsPath
-& $flexlibPath new-item $item1 Item1 TestLibrary
-& $flexlibPath new-item $item2 Item2 TestLibrary
-& $flexlibPath new-item $item3 Item3 TestLibrary
-& $flexlibPath new-prop Property1 TestLibrary string
-& $flexlibPath new-prop Property2 TestLibrary string
-& $flexlibPath set-prop Property1 NewValue 1 TestLibrary 
-& $flexlibPath set-prop Property2 NewValue 2 TestLibrary
+# Run simulations
+
+# Define entities
+$libraryName = "TestLibrary"
+# Create a new library
+& $flexlibPath new-lib $libraryName $resultsPath
+# Add new items
+& $flexlibPath new-item $item1 "Item1" $libraryName
+& $flexlibPath new-item $item2 "Item2" $libraryName
+& $flexlibPath new-item $item3 "Item3" $libraryName
+# Add properties
+& $flexlibPath new-prop "Property1" $libraryName string
+& $flexlibPath new-prop "Property2" $libraryName string
+# Set property values
+& $flexlibPath set-prop "Property1" "NewValue 1" $item1 $libraryName
+& $flexlibPath set-prop "Property2" "NewValue 2" $item2 $libraryName
 
 if ($UpdateReferences) {
     Safe-Cleanup $referencesPath

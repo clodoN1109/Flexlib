@@ -115,6 +115,10 @@ public static class StringExtensions
         }
     }
 
+    public static string ToMultilineString(this List<string> list)
+    {
+        return string.Join("\n", list);
+    }
 
 }
 

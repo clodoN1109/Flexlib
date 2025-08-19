@@ -13,11 +13,13 @@ namespace Flexlib.Interface.CLI;
 public abstract class NoteCommand : Command
 {
     public object ItemId { get; } 
+    public string LibName { get; set; }
 
     protected NoteCommand(string[] options)
     {
         Options = options;
-        ItemId = options.Length > 0 ? options[0] : "";
+        LibName = options.Length > 0 ? options[0] : "";
+        ItemId  = options.Length > 1 ? options[1] : "";
     }
 
 }
@@ -25,11 +27,8 @@ public abstract class NoteCommand : Command
 public class NewNoteCommand : NoteCommand
 {
     public string? Note { get; set; }
-    public string LibName { get; set; }
-
     public NewNoteCommand(string[] options) : base(options) 
     {
-        LibName = options.Length > 1 ? options[1] : "";
         Note = options.Length > 2 ? options[2] : "";
     }
     
@@ -37,7 +36,7 @@ public class NewNoteCommand : NoteCommand
     
     public override bool IsValid()
     {
-        return (Options.Length > 0 && Options.Length <= 3);
+        return Options.Length > 0 && Options.Length <= 3;
     }
 
     public override CommandUsageInfo GetUsageInfo()
@@ -48,7 +47,7 @@ public class NewNoteCommand : NoteCommand
             Title = "new-note",
             Description = "Creates a new note for the selected library item.",
             Group = CommandGroups.Notes,
-            Syntax = "flexlib new-note <item id> <library name> [note]" ,
+            Syntax = "new-note <library name> <item id> [note]" ,
             Options = new List<Option>
             {
                 new Option{
@@ -74,11 +73,9 @@ public class NewNoteCommand : NoteCommand
 
 public class ListNotesCommand : NoteCommand
 {
-    public string LibName { get; set; }
     
     public ListNotesCommand(string[] options) : base(options) 
     {
-        LibName = options.Length > 1 ? options[1] : "";
     }
 
     public override string Type => "list-notes";
@@ -96,7 +93,7 @@ public class ListNotesCommand : NoteCommand
             Title = "list-notes",
             Description = "List all notes from a selected library item.",
             Group = CommandGroups.Notes,
-            Syntax = "flexlib list-notes <item id> <library name>",
+            Syntax = "list-notes <library name> <item id>",
             Options = new List<Option>
             {
                 new Option{
@@ -121,13 +118,9 @@ public class ListNotesCommand : NoteCommand
 public class EditNoteCommand : NoteCommand
 {
     public string NoteId;
-    public string LibName { get; set; }
-
     public EditNoteCommand(string[] options) : base(options) { 
         
-        NoteId = options.Length > 1 ? options[1] : "";
-        LibName = options.Length > 2 ? options[2] : ""; 
-   
+        NoteId = options.Length > 2 ? options[2] : "";   
     }
     
     public override string Type => "edit-note";
@@ -145,7 +138,7 @@ public class EditNoteCommand : NoteCommand
             Title = "edit-note",
             Description = "Edit a selected commment.",
             Group = CommandGroups.Notes,
-            Syntax = "flexlib edit-note <item id> <note id> <library name>",
+            Syntax = "edit-note <library name> <item id> <note id>",
             Options = new List<Option>
             {
                 new Option{
@@ -173,12 +166,9 @@ public class EditNoteCommand : NoteCommand
 public class RemoveNoteCommand : NoteCommand
 {
     public string NoteId;
-    public string LibName { get; set; }
-
     public RemoveNoteCommand(string[] options) : base(options) { 
         
-        NoteId = options.Length > 1 ? options[1] : "";
-        LibName = options.Length > 2 ? options[2] : ""; 
+        NoteId = options.Length > 2 ? options[2] : "";
    
     }
     
@@ -197,7 +187,7 @@ public class RemoveNoteCommand : NoteCommand
             Title = "remove-note",
             Description = "Remove a note from a selected item.",
             Group = CommandGroups.Notes,
-            Syntax = "flexlib remove-note <item id> <note id> <library name>",
+            Syntax = "remove-note <library name> <item id> <note id>",
             Options = new List<Option>
             {
                 new Option{

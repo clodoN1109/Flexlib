@@ -21,6 +21,7 @@ Write-Host ""
 if ($Mode -ne "DEBUG") {
     & $flexlibPath signup
 }
+
 # ========== LIBRARIES =========
 
 & $flexlibPath new-lib GeneralLibrary  $resultsPath
@@ -29,135 +30,136 @@ if ($Mode -ne "DEBUG") {
 
 # ========== ITEMS ==========
 
-& $flexlibPath new-item $itemPaths[0] Item1  GeneralLibrary
-& $flexlibPath new-item $itemPaths[1] Item2  GeneralLibrary
-& $flexlibPath new-item $itemPaths[2] Item3  GeneralLibrary
+& $flexlibPath new-item GeneralLibrary 1 $itemPaths[0]
+& $flexlibPath new-item GeneralLibrary 2 $itemPaths[1]
+& $flexlibPath new-item GeneralLibrary 3 $itemPaths[2]
 
-& $flexlibPath new-item $itemPaths[3] Item4  ScienceLibrary
-& $flexlibPath new-item $itemPaths[4] Item5  ScienceLibrary
-& $flexlibPath new-item $itemPaths[5] Item6  ScienceLibrary
+& $flexlibPath new-item ScienceLibrary 1 $itemPaths[3]
+& $flexlibPath new-item ScienceLibrary 2 $itemPaths[4]
+& $flexlibPath new-item ScienceLibrary 3 $itemPaths[5]
 
-& $flexlibPath new-item $itemPaths[6] Item7  CultureLibrary
-& $flexlibPath new-item $itemPaths[7] Item8  CultureLibrary
-& $flexlibPath new-item $itemPaths[8] Item9  CultureLibrary
+& $flexlibPath new-item CultureLibrary 1 $itemPaths[6]
+& $flexlibPath new-item CultureLibrary 2 $itemPaths[7]
+& $flexlibPath new-item CultureLibrary 3 $itemPaths[8]
 
 # ========== PROPERTIES ==========
 
 $allLibs = @("GeneralLibrary", "ScienceLibrary", "CultureLibrary")
 
 foreach ($lib in $allLibs) {
-    & $flexlibPath new-prop author        $lib string
-    & $flexlibPath new-prop publisher     $lib string
-    & $flexlibPath new-prop theme         $lib list
-    & $flexlibPath new-prop year          $lib int
-    & $flexlibPath new-prop language      $lib string
-    & $flexlibPath new-prop difficulty    $lib string
+    & $flexlibPath new-prop $lib author     string
+    & $flexlibPath new-prop $lib publisher  string
+    & $flexlibPath new-prop $lib theme      list
+    & $flexlibPath new-prop $lib year       int
+    & $flexlibPath new-prop $lib language   string
+    & $flexlibPath new-prop $lib difficulty string
 }
 
 # ========== PROPERTIES VALUES ==========
 
 # GeneralLibrary Items
-& $flexlibPath set-prop author      Newton              1 GeneralLibrary
-& $flexlibPath set-prop author      Pascal              2 GeneralLibrary
-& $flexlibPath set-prop author      Leibniz             3 GeneralLibrary
+& $flexlibPath set-prop GeneralLibrary 1 author     Newton
+& $flexlibPath set-prop GeneralLibrary 2 author     Pascal
+& $flexlibPath set-prop GeneralLibrary 3 author     Leibniz
 
-& $flexlibPath set-prop publisher   dover               1 GeneralLibrary
-& $flexlibPath set-prop publisher   springer            2 GeneralLibrary
-& $flexlibPath set-prop publisher   'cambridge press'   3 GeneralLibrary
+& $flexlibPath set-prop GeneralLibrary 1 publisher  dover
+& $flexlibPath set-prop GeneralLibrary 2 publisher  springer
+& $flexlibPath set-prop GeneralLibrary 3 publisher  'cambridge press'
 
-& $flexlibPath set-prop theme       mathematics         1 GeneralLibrary
-& $flexlibPath set-prop theme       physics             1 GeneralLibrary
-& $flexlibPath set-prop theme       logic               2 GeneralLibrary
-& $flexlibPath set-prop theme       philosophy          3 GeneralLibrary
+& $flexlibPath set-prop GeneralLibrary 1 theme      mathematics
+& $flexlibPath set-prop GeneralLibrary 1 theme      physics
+& $flexlibPath set-prop GeneralLibrary 2 theme      logic
+& $flexlibPath set-prop GeneralLibrary 3 theme      philosophy
 
-& $flexlibPath set-prop year        1687                1 GeneralLibrary
-& $flexlibPath set-prop year        1654                2 GeneralLibrary
-& $flexlibPath set-prop year        1710                3 GeneralLibrary
+& $flexlibPath set-prop GeneralLibrary 1 year       1687
+& $flexlibPath set-prop GeneralLibrary 2 year       1654
+& $flexlibPath set-prop GeneralLibrary 3 year       1710
 
-& $flexlibPath set-prop language    latin               1 GeneralLibrary
-& $flexlibPath set-prop language    french              2 GeneralLibrary
-& $flexlibPath set-prop language    german              3 GeneralLibrary
+& $flexlibPath set-prop GeneralLibrary 1 language   latin
+& $flexlibPath set-prop GeneralLibrary 2 language   french
+& $flexlibPath set-prop GeneralLibrary 3 language   german
 
-& $flexlibPath set-prop difficulty  hard                1 GeneralLibrary
-& $flexlibPath set-prop difficulty  medium              2 GeneralLibrary
-& $flexlibPath set-prop difficulty  hard                3 GeneralLibrary
+& $flexlibPath set-prop GeneralLibrary 1 difficulty hard
+& $flexlibPath set-prop GeneralLibrary 2 difficulty medium
+& $flexlibPath set-prop GeneralLibrary 3 difficulty hard
 
-# ScienceLibrary s
-& $flexlibPath set-prop author      Curie               1 ScienceLibrary
-& $flexlibPath set-prop author      Einstein            2 ScienceLibrary
-& $flexlibPath set-prop author      Feynman             3 ScienceLibrary
+# ScienceLibrary Items
+& $flexlibPath set-prop ScienceLibrary 1 author     Curie
+& $flexlibPath set-prop ScienceLibrary 2 author     Einstein
+& $flexlibPath set-prop ScienceLibrary 3 author     Feynman
 
-& $flexlibPath set-prop publisher   "nobel house"       1 ScienceLibrary
-& $flexlibPath set-prop publisher   "princeton"         2 ScienceLibrary
-& $flexlibPath set-prop publisher   "mit press"         3 ScienceLibrary
+& $flexlibPath set-prop ScienceLibrary 1 publisher  "nobel house"
+& $flexlibPath set-prop ScienceLibrary 2 publisher  "princeton"
+& $flexlibPath set-prop ScienceLibrary 3 publisher  "mit press"
 
-& $flexlibPath set-prop theme       chemistry           1 ScienceLibrary
-& $flexlibPath set-prop theme       physics             2 ScienceLibrary
-& $flexlibPath set-prop theme       quantum             3 ScienceLibrary
+& $flexlibPath set-prop ScienceLibrary 1 theme      chemistry
+& $flexlibPath set-prop ScienceLibrary 2 theme      physics
+& $flexlibPath set-prop ScienceLibrary 3 theme      quantum
 
-& $flexlibPath set-prop year        1911                1 ScienceLibrary
-& $flexlibPath set-prop year        1916                2 ScienceLibrary
-& $flexlibPath set-prop year        1965                3 ScienceLibrary
+& $flexlibPath set-prop ScienceLibrary 1 year       1911
+& $flexlibPath set-prop ScienceLibrary 2 year       1916
+& $flexlibPath set-prop ScienceLibrary 3 year       1965
 
-& $flexlibPath set-prop language    french              1 ScienceLibrary
-& $flexlibPath set-prop language    german              2 ScienceLibrary
-& $flexlibPath set-prop language    english             3 ScienceLibrary
+& $flexlibPath set-prop ScienceLibrary 1 language   french
+& $flexlibPath set-prop ScienceLibrary 2 language   german
+& $flexlibPath set-prop ScienceLibrary 3 language   english
 
-& $flexlibPath set-prop difficulty  hard                1 ScienceLibrary
-& $flexlibPath set-prop difficulty  hard                2 ScienceLibrary
-& $flexlibPath set-prop difficulty  medium              3 ScienceLibrary
+& $flexlibPath set-prop ScienceLibrary 1 difficulty hard
+& $flexlibPath set-prop ScienceLibrary 2 difficulty hard
+& $flexlibPath set-prop ScienceLibrary 3 difficulty medium
 
-# CultureLibrary s
-& $flexlibPath set-prop author      Homer               1 CultureLibrary
-& $flexlibPath set-prop author      Shakespeare         2 CultureLibrary
-& $flexlibPath set-prop author      Camus               3 CultureLibrary
+# CultureLibrary Items
+& $flexlibPath set-prop CultureLibrary 1 author     Homer
+& $flexlibPath set-prop CultureLibrary 2 author     Shakespeare
+& $flexlibPath set-prop CultureLibrary 3 author     Camus
 
-& $flexlibPath set-prop publisher   penguin             1 CultureLibrary
-& $flexlibPath set-prop publisher   'oxford press'      2 CultureLibrary
-& $flexlibPath set-prop publisher   gallimard           3 CultureLibrary
+& $flexlibPath set-prop CultureLibrary 1 publisher  penguin
+& $flexlibPath set-prop CultureLibrary 2 publisher  'oxford press'
+& $flexlibPath set-prop CultureLibrary 3 publisher  gallimard
 
-& $flexlibPath set-prop theme       literature          1 CultureLibrary
-& $flexlibPath set-prop theme       tragedy             2 CultureLibrary
-& $flexlibPath set-prop theme       absurd              3 CultureLibrary
+& $flexlibPath set-prop CultureLibrary 1 theme      literature
+& $flexlibPath set-prop CultureLibrary 2 theme      tragedy
+& $flexlibPath set-prop CultureLibrary 3 theme      absurd
 
-& $flexlibPath set-prop year        '-700'              1 CultureLibrary
-& $flexlibPath set-prop year        1603                2 CultureLibrary
-& $flexlibPath set-prop year        1942                3 CultureLibrary
+& $flexlibPath set-prop CultureLibrary 1 year       '-700'
+& $flexlibPath set-prop CultureLibrary 2 year       1603
+& $flexlibPath set-prop CultureLibrary 3 year       1942
 
-& $flexlibPath set-prop language    greek               1 CultureLibrary
-& $flexlibPath set-prop language    english             2 CultureLibrary
-& $flexlibPath set-prop language    french              3 CultureLibrary
+& $flexlibPath set-prop CultureLibrary 1 language   greek
+& $flexlibPath set-prop CultureLibrary 2 language   english
+& $flexlibPath set-prop CultureLibrary 3 language   french
 
-& $flexlibPath set-prop difficulty  medium              1 CultureLibrary
-& $flexlibPath set-prop difficulty  hard                2 CultureLibrary
-& $flexlibPath set-prop difficulty  medium              3 CultureLibrary
+& $flexlibPath set-prop CultureLibrary 1 difficulty medium
+& $flexlibPath set-prop CultureLibrary 2 difficulty hard
+& $flexlibPath set-prop CultureLibrary 3 difficulty medium
 
 # ========== NOTES ==========
 
-& $flexlibPath new-note 1 GeneralLibrary "This is a single-line note with a reference to {ScienceLibrary/Item1}." 
-& $flexlibPath new-note 2 GeneralLibrary "This is a single-line note with a reference to {ScienceLibrary/Item2}." 
-& $flexlibPath new-note 3 GeneralLibrary "This is a single-line note with a reference to {ScienceLibrary/Item3}." 
-& $flexlibpath new-note 1 GeneralLibrary "This is a multi-line note.`nThis is a second line.`nThis is a third line." 
-& $flexlibpath new-note 2 GeneralLibrary "This is a multi-line note.`nThis is a second line.`nThis is a third line." 
-& $flexlibpath new-note 3 GeneralLibrary "This is a multi-line note.`nThis is a second line.`nThis is a third line." 
+& $flexlibPath new-note GeneralLibrary 1 "This is a single-line note with a reference to {ScienceLibrary/Item1}."
+& $flexlibPath new-note GeneralLibrary 2 "This is a single-line note with a reference to {ScienceLibrary/Item2}."
+& $flexlibPath new-note GeneralLibrary 3 "This is a single-line note with a reference to {ScienceLibrary/Item3}."
+& $flexlibPath new-note GeneralLibrary 1 "This is a multi-line note.`nThis is a second line.`nThis is a third line."
+& $flexlibPath new-note GeneralLibrary 2 "This is a multi-line note.`nThis is a second line.`nThis is a third line."
+& $flexlibPath new-note GeneralLibrary 3 "This is a multi-line note.`nThis is a second line.`nThis is a third line."
 
-& $flexlibpath new-note 1 ScienceLibrary "This is a single-line note with a reference to {GeneralLibrary/item1}." 
-& $flexlibpath new-note 2 ScienceLibrary "This is a single-line note with a reference to {GeneralLibrary/item2}." 
-& $flexlibpath new-note 3 ScienceLibrary "This is a single-line note with a reference to {GeneralLibrary/item3}." 
-& $flexlibpath new-note 1 ScienceLibrary "This is a multi-line note.`nThis is a second line.`nThis is a third line." 
-& $flexlibpath new-note 2 ScienceLibrary "This is a multi-line note.`nThis is a second line.`nThis is a third line." 
-& $flexlibpath new-note 3 ScienceLibrary "This is a multi-line note.`nThis is a second line.`nThis is a third line." 
+& $flexlibPath new-note ScienceLibrary 1 "This is a single-line note with a reference to {GeneralLibrary/Item1}."
+& $flexlibPath new-note ScienceLibrary 2 "This is a single-line note with a reference to {GeneralLibrary/Item2}."
+& $flexlibPath new-note ScienceLibrary 3 "This is a single-line note with a reference to {GeneralLibrary/Item3}."
+& $flexlibPath new-note ScienceLibrary 1 "This is a multi-line note.`nThis is a second line.`nThis is a third line."
+& $flexlibPath new-note ScienceLibrary 2 "This is a multi-line note.`nThis is a second line.`nThis is a third line."
+& $flexlibPath new-note ScienceLibrary 3 "This is a multi-line note.`nThis is a second line.`nThis is a third line."
 
-& $flexlibPath new-note 1 CultureLibrary "This is a single-line note with a reference to {ScienceLibrary/Item1}." 
-& $flexlibPath new-note 2 CultureLibrary "This is a single-line note with a reference to {ScienceLibrary/Item2}." 
-& $flexlibPath new-note 3 CultureLibrary "This is a single-line note with a reference to {ScienceLibrary/Item3}." 
-& $flexlibpath new-note 1 CultureLibrary "This is a multi-line note.`nThis is a second line.`nThis is a third line." 
-& $flexlibpath new-note 2 CultureLibrary "This is a multi-line note.`nThis is a second line.`nThis is a third line." 
-& $flexlibpath new-note 3 CultureLibrary "This is a multi-line note.`nThis is a second line.`nThis is a third line." 
+& $flexlibPath new-note CultureLibrary 1 "This is a single-line note with a reference to {ScienceLibrary/Item1}."
+& $flexlibPath new-note CultureLibrary 2 "This is a single-line note with a reference to {ScienceLibrary/Item2}."
+& $flexlibPath new-note CultureLibrary 3 "This is a single-line note with a reference to {ScienceLibrary/Item3}."
+& $flexlibPath new-note CultureLibrary 1 "This is a multi-line note.`nThis is a second line.`nThis is a third line."
+& $flexlibPath new-note CultureLibrary 2 "This is a multi-line note.`nThis is a second line.`nThis is a third line."
+& $flexlibPath new-note CultureLibrary 3 "This is a multi-line note.`nThis is a second line.`nThis is a third line."
 
 # ========== LAYOUTS ==========
 
 & $flexlibPath set-layout GeneralLibrary  theme/publisher/author/year
 & $flexlibPath set-layout ScienceLibrary  theme/author/year
 & $flexlibPath set-layout CultureLibrary  author/theme
+
 

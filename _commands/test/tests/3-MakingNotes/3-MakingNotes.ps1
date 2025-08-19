@@ -6,7 +6,7 @@ param (
 $flexlibPath       = Resolve-Path "$PSScriptRoot/../../../flexlib.ps1"
 $dataPath          = "$PSScriptRoot/data"  
 $resultsPath       = "$dataPath/results"
-$referencesPath     = "$dataPath/references"
+$referencesPath    = "$dataPath/references"
 $item1             = "$dataPath/input/Item1.pdf"
 $item2             = "$dataPath/input/Item2.pdf"
 $item3             = "$dataPath/input/Item3.pdf"
@@ -16,13 +16,13 @@ $ProgressPreference = 'SilentlyContinue'
 Safe-Cleanup $resultsPath
 Safe-Cleanup $flexlibDataPath
 # Run test
-& $flexlibPath new-lib TestLibrary $resultsPath
-& $flexlibPath new-item $item1 Item1 TestLibrary
-& $flexlibPath new-item $item2 'Compound Name' TestLibrary
-& $flexlibPath new-item $item3 Item3 TestLibrary
-& $flexlibPath new-note 1 TestLibrary 'This is a note.'
-& $flexlibPath new-note 2 TestLibrary 'This is a note quoting {TestLibrary/Item1}.'
-& $flexlibPath new-note 3 TestLibrary 'This is a note quoting {TestLibrary/Item1} and {TestLibrary/Compound Name}.'
+& $flexlibPath new-lib  TestLibrary $resultsPath
+& $flexlibPath new-item TestLibrary Item1 $item1
+& $flexlibPath new-item TestLibrary 'Compound Name' $item2 
+& $flexlibPath new-item TestLibrary Item3 $item3 
+& $flexlibPath new-note TestLibrary 1 'This is a note.'
+& $flexlibPath new-note TestLibrary 2 'This is a note quoting {TestLibrary/Item1}.'
+& $flexlibPath new-note TestLibrary 3 'This is a note quoting {TestLibrary/Item1} and {TestLibrary/Compound Name}.'
 
 if ($UpdateReferences) {
     Safe-Cleanup $referencesPath

@@ -1,5 +1,4 @@
 using Flexlib.Domain;
-using Flexlib.Interface.CLI;
 using Flexlib.Interface.Input;
 using Flexlib.Infrastructure.Interop;
 
@@ -26,7 +25,7 @@ public interface IPresenter
                 double localSizeInBytes, 
                 List<string> itemNameFilter);
 
-    void    ListLayoutSequence(List<string> layoutSequence);
+    void    PresentLayoutSequence(List<string> layoutSequence);
     void    AvailableActions(List<string> actions);
     Result  File(string filePath);
     void    ItemProperties(LibraryItem item, Library lib);

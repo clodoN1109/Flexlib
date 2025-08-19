@@ -34,7 +34,7 @@ public class FetchFilesCommand : Command
             Title = "fetch-files",
             Description = "Fetches the selected library's files from the defined origins of items and saves them to the local system.",
             Group = CommandGroups.Storage,
-            Syntax = "flexlib fetch-files <library name>",
+            Syntax = "fetch-files <library name>",
             Options = new List<Option>
             {
                 new Option{
@@ -73,7 +73,7 @@ public class RebalanceLocalStorageCommand : Command
             Title = "rebalance",
             Description = "Rebalances the local storage subfolders of the selected libraries to conform to the current configuration.",
             Group = CommandGroups.Storage,
-            Syntax = "flexlib rebalance <library name>",
+            Syntax = "rebalance <library name>",
             Options = new List<Option>
             {
                 new Option{

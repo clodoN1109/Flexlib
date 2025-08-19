@@ -2,63 +2,8 @@
   {
     "Name": "TestLibrary",
     "Path": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\4-CreatingItemProperties\\data\\results",
-    "PropertyDefinitions": [
-      {
-        "Name": "property1",
-        "TypeName": "string"
-      },
-      {
-        "Name": "property2",
-        "TypeName": "string"
-      }
-    ],
-    "Items": [
-      {
-        "Name": "Item1",
-        "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\4-CreatingItemProperties\\data\\input\\Item1.pdf",
-        "Id": 1,
-        "FileExtension": ".pdf",
-        "Notes": [],
-        "PropertyValues": {
-          "property1": "NewValue",
-          "property2": null
-        },
-        "Loans": {
-          "Entries": []
-        },
-        "IsAvailable": true
-      },
-      {
-        "Name": "Item2",
-        "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\4-CreatingItemProperties\\data\\input\\Item2.pdf",
-        "Id": 2,
-        "FileExtension": ".pdf",
-        "Notes": [],
-        "PropertyValues": {
-          "property1": null,
-          "property2": "NewValue"
-        },
-        "Loans": {
-          "Entries": []
-        },
-        "IsAvailable": true
-      },
-      {
-        "Name": "Item3",
-        "Origin": "C:\\Users\\clovi\\OneDrive\\\u00C1rea de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\_commands\\test\\tests\\4-CreatingItemProperties\\data\\input\\Item3.pdf",
-        "Id": 3,
-        "FileExtension": ".pdf",
-        "Notes": [],
-        "PropertyValues": {
-          "property1": null,
-          "property2": null
-        },
-        "Loans": {
-          "Entries": []
-        },
-        "IsAvailable": true
-      }
-    ],
+    "PropertyDefinitions": [],
+    "Items": [],
     "LayoutSequence": [],
     "Desks": []
   }

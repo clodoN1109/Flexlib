@@ -29,7 +29,7 @@ public class GUIStartUp : ParsedInput {
             Meta = new List<string> {},
             Title = "new-item",
             Description = "Creates a new item in the selected library.",
-            Syntax = "flexlib gui [theme] [language]",
+            Syntax = "gui [theme] [language]",
             Options = new List<Option>
             {
                 new Option{
