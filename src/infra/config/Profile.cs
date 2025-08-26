@@ -12,7 +12,7 @@ public class Profile
 
     // A profile is considered default if it's the "Library" one
     [JsonIgnore]
-    public bool IsDefault => string.Equals(Name, "Library", StringComparison.OrdinalIgnoreCase);
+    public bool IsDefault => string.Equals(Name, "library", StringComparison.OrdinalIgnoreCase);
 
     // Map from source word → target word
     public Dictionary<string, string> Translator { get; set; } = new();
@@ -60,6 +60,11 @@ public static class ProfileExtensions
         return result;
     }
 
+    public static List<string> TranslateToProfile(this List<string> input)
+    {
+        return [.. input.Select(x => x.TranslateToProfile())]; 
+    }
+
     public static string TranslateToDefault(this string input)
     {
         Profile profile = new JsonLibraryRepository().Config.SelectedProfile;
@@ -75,7 +80,7 @@ public static class ProfileExtensions
             string defaultWord = kvp.Key;
 
             // Match substring, not just whole words
-            string pattern = Regex.Escape(profileWord);   
+            string pattern = Regex.Escape(profileWord);
 
             result = Regex.Replace(result, pattern, match =>
             {
@@ -122,7 +127,8 @@ public static class Profiles
             { "lib", "proj" },
             { "item", "task" },
             { "items", "tasks" },
-            { "desk", "plan" }
+            { "desk", "plan" },
+            { "borrow", "select"}
         }
     };
 }

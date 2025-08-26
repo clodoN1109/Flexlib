@@ -166,7 +166,7 @@ public partial class ConsoleRenderer
 
     public List<Components.ColoredRow> RenderLibrariesTable(List<Library> libraries, int consoleWidth)
     {
-        var headers = new[] { "NAME", "ITEMS", "PROPERTIES", "LAYOUT", "LOCATION" };
+        var headers = new[] { "NAME", "ITEMS", "PROPERTIES", "LAYOUT", "LOCATION" }.ToList().TranslateToProfile();
 
         var rows = libraries.Select(lib => new[]
         {
@@ -189,7 +189,7 @@ public partial class ConsoleRenderer
     public List<Components.ColoredRow> RenderDeskItemsTable(Desk desk, int consoleWidth)
     {
 
-        var tableHeaders = new[] { "ID", "NAME", "BORROWED AT", "APPETITE", "PROGRESS", "PRIORITY" };
+        var tableHeaders = new[] { "ID", "NAME", "BORROWED AT", "APPETITE", "PROGRESS", "PRIORITY" }.ToList().TranslateToProfile();
 
         var rows = new List<string[]>();
         foreach (var item in desk.BorrowedItems)
@@ -218,7 +218,7 @@ public partial class ConsoleRenderer
 
     public List<Components.ColoredRow> RenderNoteTable(List<Note> notes, string itemName, int itemId, string libName, int consoleWidth)
     {
-        var tableHeaders = new[] { "ID", "AUTHOR", "TEXT", "CREATED AT", "EDITED AT" };
+        var tableHeaders = new[] { "ID", "AUTHOR", "TEXT", "CREATED AT", "EDITED AT" }.ToList().TranslateToProfile();
 
         // Keep \n for multiline cell rendering; strip only \r
         var rows = notes
@@ -240,7 +240,7 @@ public partial class ConsoleRenderer
     List<LibraryItem> items, Library lib, int consoleWidth)
     {
         var allKeys = lib.PropertyDefinitions.Select(d => d.Name).OrderBy(k => k).ToList();
-        var tableHeaders = new[] { "ID", "NAME" }.Concat(allKeys).ToList();
+        var tableHeaders = new[] { "ID", "NAME" }.ToList().TranslateToProfile().Concat(allKeys).ToList();
 
         var rows = new List<string[]>();
         foreach (var item in items)
@@ -266,7 +266,7 @@ public partial class ConsoleRenderer
 
     public List<Components.ColoredRow> RenderDesksTable(List<Desk> desks, int consoleWidth)
     {
-        var tableHeaders = new[] { "ID", "NAME", "BORROWED ITEMS" };
+        var tableHeaders = new[] { "ID", "NAME", "BORROWED ITEMS" }.ToList().TranslateToProfile();
 
         var rows = desks.Select(d => new[]
                                 {
@@ -280,7 +280,7 @@ public partial class ConsoleRenderer
 
     public List<Components.ColoredRow> RenderPropertyDefinitionsTable(Library lib, int consoleWidth)
     {
-        var tableHeaders = new[] { "NAME", "TYPE", "DESCRIPTION" };
+        var tableHeaders = new[] { "NAME", "TYPE", "DESCRIPTION" }.ToList().TranslateToProfile();
 
         var rows = lib.PropertyDefinitions
             .OrderBy(d => d.Name)
@@ -296,7 +296,7 @@ public partial class ConsoleRenderer
 
     public List<Components.ColoredRow> RenderItemPropertiesTable(LibraryItem item, Library lib, int consoleWidth)
     {
-        var tableHeaders = new[] { "PROPERTY", "VALUE" }.ToList();
+        var tableHeaders = new[] { "PROPERTY", "VALUE" }.ToList().TranslateToProfile();
 
         var propertyValues = item.GetPropertyValuesAsListOfStrings();
         var rows = lib.PropertyDefinitions
@@ -313,7 +313,7 @@ public partial class ConsoleRenderer
     }
     public List<Components.ColoredRow> RenderLoanHistoryTable(LoanHistory history, LibraryItem item, string libName, int consoleWidth)
     {
-        var tableHeaders = new[] { "BORROWED AT", "RETURNED AT", "BORROWER" };
+        var tableHeaders = new[] { "BORROWED AT", "RETURNED AT", "BORROWER" }.ToList().TranslateToProfile();
 
         var rows = history.Entries
             .Select(entry => new[]

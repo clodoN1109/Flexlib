@@ -44,14 +44,16 @@ public class TUIPage
     {
         Update(newAddress);
         BodyPane.Text = body;
-        TitleLabel.Text = title;
+
+        TitleLabel.Text = title.TranslateToProfile();
         TopLeftLabel.Text = topLeftInfo;
         
         TopRightLabel.Text = topRightInfo;
         TopRightLabel.X = Pos.AnchorEnd(topRightInfo.Length);    
+
         BottomLeftLabel.Text = bottomLeftInfo;
 
-        BottomRightLabel.Text = bottomRightInfo;
+        BottomRightLabel.Text = bottomRightInfo.TranslateToProfile();
         BottomRightLabel.X = Pos.AnchorEnd(bottomRightInfo.Length);    
     }
 

@@ -9,7 +9,6 @@ using Flexlib.Interface.Input.Commands;
 using Flexlib.Interface.Output;
 using Flexlib.Infrastructure.Environment;
 using Flexlib.Domain;
-using System.ComponentModel;
 
 namespace Flexlib.Interface.TUI;
 
@@ -17,7 +16,8 @@ public partial class TUIApp : ITUIApp
 {
     private void TUIController(Command cmd, bool isNotRecursiveCall)
     {
-            
+        _libRepo = new JsonLibraryRepository();
+
         if (cmd.IsSpecificHelp())
         {
             string outputStream = RunFlexlibExe(cmd);
@@ -93,7 +93,7 @@ public partial class TUIApp : ITUIApp
                         $"{libs.Count.ToString()} libraries"
                     );
                 else
-                    RenderResult(Result.Fail("Could not retrieve the requested list of libraries."));
+                    RenderResult(Result.Fail($"Could not retrieve the requested list of {"libraries".TranslateToProfile()}."));
                 break;
 
             case ListItemsCommand c:
@@ -175,7 +175,7 @@ public partial class TUIApp : ITUIApp
                 break;
 
             case ListLoansCommand c:
-                _result = ListLoans.Execute(c.ItemId, c.LibraryName,_libRepo);
+                _result = ListLoans.Execute(c.ItemId, c.LibraryName, _libRepo);
                 if (_result.Payload is (LoanHistory loans, LibraryItem libItem))
                     _page?.Update(
                         c,
@@ -190,11 +190,11 @@ public partial class TUIApp : ITUIApp
                 break;
 
             case ListNotesCommand c:
-                _result = ListNotes.Execute(c.ItemId, c.LibName,_libRepo);
+                _result = ListNotes.Execute(c.ItemId, c.LibName, _libRepo);
                 if (_result.Payload is (List<Note> notes, LibraryItem i))
                     _page?.Update(
                         c,
-                        _renderer.RenderNoteTable(notes, i!.Name ?? "", i!.Id,  c.LibName, pageWidth).ToMultiRowString(),
+                        _renderer.RenderNoteTable(notes, i!.Name ?? "", i!.Id, c.LibName, pageWidth).ToMultiRowString(),
                         "NOTES",
                         $"{c.LibName}/{i.Name}",
                         $"",
@@ -230,12 +230,12 @@ public partial class TUIApp : ITUIApp
                 _selectedLibrary = _libRepo.GetByName(c.Name)!;
                 if (_selectedLibrary == null)
                 {
-                    _result = Result.Fail($"Library named {c.Name} not found.");
+                    _result = Result.Fail($"{"Library".TranslateToProfile()} named {c.Name} not found.");
                     RenderResult(_result);
                     break;
                 }
 
-                confirmationMessage = $"\nAre you sure you want to delete the library '{c.Name}' at path:\n\n  {_selectedLibrary.Path} ?\n";
+                confirmationMessage = $"\nAre you sure you want to delete the {"library".TranslateToProfile()} '{c.Name}' at path:\n\n  {_selectedLibrary.Path} ?\n";
                 if (!ConfirmationPrompt(_selectedFrameTheme.ToColorScheme(), confirmationMessage))
                     break;
                 _result = RemoveLibrary.Execute(c.Name, _libRepo);
@@ -275,12 +275,12 @@ public partial class TUIApp : ITUIApp
                 _selectedItem = _selectedLibrary.GetItemById(c.ItemId);
                 if (_selectedItem == null)
                 {
-                    _result = Result.Fail($"Item with ID {c.ItemId} not found in library {c.LibraryName}.");
+                    _result = Result.Fail($"{"Item".TranslateToProfile()} with ID {c.ItemId} not found in {"library".TranslateToProfile()} {c.LibraryName}.");
                     RenderResult(_result);
                     break;
                 }
 
-                confirmationMessage = $"\nAre you sure you want to delete the item '{_selectedItem?.Name ?? ""}' from library '{_selectedLibrary?.Name ?? ""}'?\n\n";
+                confirmationMessage = $"\nAre you sure you want to delete the {"item".TranslateToProfile()} '{_selectedItem?.Name ?? ""}' from {"library".TranslateToProfile()} '{_selectedLibrary?.Name ?? ""}'?\n\n";
                 if (!ConfirmationPrompt(_selectedFrameTheme.ToColorScheme(), confirmationMessage))
                     break;
                 _result = RemoveItem.Execute(c.ItemId, c.LibraryName, _libRepo);
@@ -336,7 +336,7 @@ public partial class TUIApp : ITUIApp
                 if ((_result.Payload is Domain.Note targetNote) && !string.IsNullOrWhiteSpace(targetNote.Text))
                 {
                     itemName = _libRepo.GetByName(c.LibName)?.GetItemById(c.ItemId)?.Name;
-                    confirmationMessage = $"\nAre you sure you want to delete note of ID {c.NoteId} from item '{itemName ?? ""}' from library '{c.LibName ?? ""}'?\n\n";
+                    confirmationMessage = $"\nAre you sure you want to delete note of ID {c.NoteId} from {"item".TranslateToProfile()} '{itemName ?? ""}' from {"library".TranslateToProfile()} '{c.LibName ?? ""}'?\n\n";
                     if (!ConfirmationPrompt(_selectedFrameTheme.ToColorScheme(), confirmationMessage))
                         _result = Result.Warn("Note deletion canceled.");
                     else
@@ -424,13 +424,13 @@ public partial class TUIApp : ITUIApp
                 _result = ReturnItem.Execute(c.ItemId, c.DeskId, c.LibraryName, _user!.Id, _libRepo);
                 RenderResult(_result);
                 break;
-                
+
             // Configurations
             case SelectProfileCommand c:
                 _result = SelectProfile.Execute(c.Name, _libRepo);
                 RenderResult(_result);
                 break;
-                
+
             // Fallback to the CLI route
             default:
                 string outputStream = RunFlexlibExe(cmd);
