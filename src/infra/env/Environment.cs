@@ -3,22 +3,28 @@ using System.Reflection;
 using System.IO;
 using System;
 using Flexlib.Infrastructure.Config;
+using System.Diagnostics;
 
 namespace Flexlib.Infrastructure.Environment;
 
 public static class Env
 {
 
+    // Folder that contains the actual running executable (works with single-file)
     public static string GetExecutingAssemblyLocation()
     {
-        // Returns the folder where the executable resides, works for both normal and single-file builds
-        return AppContext.BaseDirectory;
+        var exePath = System.Environment.ProcessPath
+                      ?? Process.GetCurrentProcess().MainModule?.FileName
+                      ?? throw new InvalidOperationException("Cannot determine executable path.");
+        return Path.GetDirectoryName(exePath)!;
     }
 
+    // Full path to the running executable (the single-file host)
     public static string GetExecutingAssemblyFullName()
     {
-        // Combines the executable folder with the expected exe name
-        return Path.Combine(GetExecutingAssemblyLocation(), "Flexlib.exe");
+        return System.Environment.ProcessPath
+               ?? Process.GetCurrentProcess().MainModule?.FileName
+               ?? throw new InvalidOperationException("Cannot determine executable path.");
     }
 
     public static string? GetApplicationPath()
