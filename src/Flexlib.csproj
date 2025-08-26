@@ -12,6 +12,14 @@
       <PackageReference Include="Figgle.Fonts" Version="0.6.5" />
       <PackageReference Include="Terminal.Gui" Version="1.19.0" />
     </ItemGroup>
+  
+
+    <ItemGroup>
+      <!-- Preserve System.Text.Json reflection for trimming -->
+        <TrimmerRootAssembly Include="System.Text.Json" />
+        <TrimmerRootAssembly Include="Flexlib.Infrastructure.Persistence" />
+    </ItemGroup>
+
 
     <Target Name="EmitBuildTargetInfo" AfterTargets="Build">
       <WriteLinesToFile File="$(MSBuildProjectDirectory)\..\builds\last\build-target-info.json" Lines="&#xD;&#xA;        {&#xD;&#xA;          &quot;TargetFramework&quot;: &quot;$(TargetFramework)&quot;,&#xD;&#xA;          &quot;RuntimeIdentifier&quot;: &quot;$(RuntimeIdentifier)&quot;&#xD;&#xA;        }" Overwrite="true" />

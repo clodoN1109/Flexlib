@@ -9,14 +9,18 @@ namespace Flexlib.Infrastructure.Environment;
 public static class Env
 {
 
-    public static string? GetExecutingAssemblyLocation()
+    public static string GetExecutingAssemblyLocation()
     {
-        return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        // Returns the folder where the executable resides, works for both normal and single-file builds
+        return AppContext.BaseDirectory;
     }
-    public static string? GetExecutingAssemblyFullName()
+
+    public static string GetExecutingAssemblyFullName()
     {
-        return Path.Combine(GetExecutingAssemblyLocation() ?? "", "Flexlib.exe") ;
+        // Combines the executable folder with the expected exe name
+        return Path.Combine(GetExecutingAssemblyLocation(), "Flexlib.exe");
     }
+
     public static string? GetApplicationPath()
     {
         return Path.Combine(AppContext.BaseDirectory, "Flexlib.exe");
