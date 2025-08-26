@@ -10,9 +10,9 @@ namespace Flexlib.Application.UseCases;
 
 public static class ListItems
 {
-    public static Result Execute(string libName, string filterSequenceString, string sortSequenceString, string itemNameFilter, ILibraryRepository repo, IPresenter presenter)
+    public static Result Execute(string libName, string filterSequenceString, string sortSequenceString, string itemNameFilter, ILibraryRepository repo)
     {
-        var parsedArgs = new ParsedArgs(libName, filterSequenceString, sortSequenceString, itemNameFilter, repo, presenter); 
+        var parsedArgs = new ParsedArgs(libName, filterSequenceString, sortSequenceString, itemNameFilter, repo);
 
         var validation = IsOperationAllowed(parsedArgs);
 
@@ -24,28 +24,27 @@ public static class ListItems
     private static Result _ListItems(ParsedArgs parsedArgs)
     {
 
-        try 
-        {  
-
+        try
+        {
             var selectedLibrary = parsedArgs.Repo.GetByName(parsedArgs.LibName)!;
 
-            var filterSequence = new FilterSequence( parsedArgs.FilterSequenceString );
-            var sortSequence   = new SortSequence( parsedArgs.SortSequenceString );
-            
-            var selectedItems = selectedLibrary.GetItems(filterSequence, sortSequence, parsedArgs.ItemNameFilter); 
+            var filterSequence = new FilterSequence(parsedArgs.FilterSequenceString);
+            var sortSequence = new SortSequence(parsedArgs.SortSequenceString);
+
+            var selectedItems = selectedLibrary.GetItems(filterSequence, sortSequence, parsedArgs.ItemNameFilter);
 
             double localSizeInBytes = parsedArgs.Repo.GetLocalItemFileSizes(selectedItems, selectedLibrary);
-            
-            parsedArgs.Presenter.ListItems( selectedItems, 
-                                            selectedLibrary, 
-                                            parsedArgs.FilterSequenceString, 
-                                            parsedArgs.SortSequenceString, 
-                                            localSizeInBytes,
-                                            parsedArgs.ItemNameFilter
-                                            );
-            return Result.Success($"");
+
+            return Result.Success("Items retrieved", new ListItemsPayload(
+                selectedLibrary,
+                selectedItems,
+                parsedArgs.FilterSequenceString,
+                parsedArgs.SortSequenceString,
+                parsedArgs.ItemNameFilter,
+                localSizeInBytes
+            ));
         }
-        catch 
+        catch
         {
             return Result.Fail($"Couldn't retrieve list of items from Library {parsedArgs.LibName}.");
         }
@@ -55,7 +54,7 @@ public static class ListItems
     private static Result IsOperationAllowed(ParsedArgs parsedArgs)
     {
 
-        
+
         if (string.IsNullOrWhiteSpace(parsedArgs.LibName))
             return Result.Fail("Library name must be informed.");
 
@@ -73,17 +72,23 @@ public static class ListItems
         public string FilterSequenceString { get; }
         public string SortSequenceString { get; }
         public ILibraryRepository Repo { get; }
-        public IPresenter Presenter { get; }
 
-        public ParsedArgs(string libName, string filterSequenceString, string sortSequenceString, string itemNameFilter, ILibraryRepository repo, IPresenter presenter)
+        public ParsedArgs(string libName, string filterSequenceString, string sortSequenceString, string itemNameFilter, ILibraryRepository repo)
         {
             LibName = libName;
-            ItemNameFilter = string.IsNullOrWhiteSpace(itemNameFilter) ? new List<string>{"*"} : TextUtil.ParseCommaSeparated(itemNameFilter);
-            FilterSequenceString = string.IsNullOrWhiteSpace(filterSequenceString) ? "*": filterSequenceString;
+            ItemNameFilter = string.IsNullOrWhiteSpace(itemNameFilter) ? new List<string> { "*" } : TextUtil.ParseCommaSeparated(itemNameFilter);
+            FilterSequenceString = string.IsNullOrWhiteSpace(filterSequenceString) ? "*" : filterSequenceString;
             SortSequenceString = sortSequenceString;
-            Repo = repo;    
-            Presenter = presenter;
+            Repo = repo;
         }
     }
 }
 
+public record ListItemsPayload(
+    Library Library,
+    List<LibraryItem> Items,
+    string FilterSequence,
+    string SortSequence,
+    List<string>ItemNameFilter,
+    double LocalSizeInBytes
+);

@@ -76,6 +76,20 @@ public static class Themes
             Accent = Color.DarkGray,
             Icon = "☀"
         },
+        ["selected-light-prompt"] = new Theme("selected-light-prompt")
+        {
+            Background = Color.Gray,
+            Foreground = Color.Red,
+            Accent = Color.Red,
+            Icon = "☀"
+        },
+        ["selected-dark-prompt"] = new Theme("selected-dark-prompt")
+        {
+            Background = Color.Black,
+            Foreground = Color.Cyan,
+            Accent = Color.Cyan,
+            Icon = "☽"
+        },
         ["success-dark-frame"] = new Theme("success-dark-frame")
         {
             Background = Color.Black,

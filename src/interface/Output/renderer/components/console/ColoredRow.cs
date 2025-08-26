@@ -1,18 +1,15 @@
-using System;
-using System.Linq;
-using System.Text;
 using Flexlib.Infrastructure.Environment;
 
 namespace Flexlib.Interface.Output;
 
 public static partial class Components
 {
-    public class ColoredLine
+    public class ColoredRow
     {
         public string Text { get; set; }
         public ConsoleColor Color { get; set; } = ConsoleColor.White;
 
-        public ColoredLine(string text, ConsoleColor color = ConsoleColor.White, bool truncate = true)
+        public ColoredRow(string text, ConsoleColor color = ConsoleColor.White, bool truncate = true)
         {
             Text = truncate ? Truncate(text) : text;
             Color = color;
@@ -25,7 +22,7 @@ public static partial class Components
         }
     }
 
-    public static string ToMultiRowString(this List<ColoredLine> lines)
+    public static string ToMultiRowString(this List<ColoredRow> lines)
     {
         return string.Join(Environment.NewLine, lines.Select(l => l.Text));
     }

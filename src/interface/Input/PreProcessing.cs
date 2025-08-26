@@ -1,11 +1,6 @@
-using Flexlib.Domain;
-using Flexlib.Interface.Output;
-using Flexlib.Application.Ports;
-using Flexlib.Infrastructure.Authentication;
 using Flexlib.Infrastructure.Processing;
 
 namespace Flexlib.Interface.Input;
-
 
 public static class InputPreProcessing
 {
@@ -18,9 +13,11 @@ public static class InputPreProcessing
             NewValue = input
         };
 
-        var process = new Process(raw)
-            .Apply<object, Normalized>(Input.Normalize)
-            .Apply<Normalized, ParsedInput>(Input.Parse);
+        var process = new Process(raw) { }
+            .Apply<object? , string[]>    (Input.Casting)
+            .Apply<string[], string[]>    (Input.Sanitization)
+            .Apply<string[], string[]>    (Input.Normalization)
+            .Apply<string[], ParsedInput> (Input.Parsing);
 
         var final = process.CurrentValue<ProcessedInput>();
 
@@ -28,7 +25,7 @@ public static class InputPreProcessing
         {
             Value = final,
             Original = process.OriginalInput,
-            IsValid = final is ParsedInput 
+            IsValid = final is ParsedInput parsed
         };
     }
 }

@@ -7,14 +7,14 @@ namespace Flexlib.Application.UseCases;
 
 public static class ViewDesk
 {
-    public static Result Execute(string deskId, string libName, string sortSequence, ILibraryRepository repo, IPresenter presenter)
+    public static Result Execute(string deskId, string libName, string sortSequence, ILibraryRepository repo)
     {
 
         Result validation = IsOperationAllowed(deskId, libName, repo);
 
         if (validation.IsSuccess)
         {
-            return _ViewDesk(deskId, libName, sortSequence, repo, presenter);
+            return _ViewDesk(deskId, libName, sortSequence, repo);
         }
         else 
         {
@@ -23,7 +23,7 @@ public static class ViewDesk
 
     }
 
-    private static Result _ViewDesk(string deskId, string libName, string sortSequence, ILibraryRepository repo, IPresenter presenter)
+    private static Result _ViewDesk(string deskId, string libName, string sortSequence, ILibraryRepository repo)
     {
         
         try {
@@ -31,13 +31,11 @@ public static class ViewDesk
             var desk = lib!.GetDeskById(deskId);
 
             desk!.Sort( new SortSequence(sortSequence).Elements );
-
-            presenter.ViewDesk(desk!, libName);
             
-            return Result.Success($"");
+            return Result.Success($"", desk);
         }
         catch {
-            return Result.Fail($"");
+            return Result.Fail($"Could not retrieve the desk of ID {deskId} from the library {libName}");
         }
         
     }

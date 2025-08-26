@@ -1,4 +1,5 @@
 using Flexlib.Domain;
+using Flexlib.Infrastructure.Config;
 using Flexlib.Infrastructure.Interop;
 
 namespace Flexlib.Application.Ports;
@@ -8,6 +9,7 @@ public interface ILibraryRepository
 {
     Result Save(Library lib, bool skipLocalStorage = false);
     Result Save(LibraryItem item, Library lib, bool skipLocalStorage = false);
+    Result Save(FlexlibConfig config);
     bool Exists(string name);
     Library? GetByName(string name);
     Result RemoveLibraryByName(string name);
@@ -19,4 +21,6 @@ public interface ILibraryRepository
     Result VerifyAndRebalanceLocalStorage(Library lib);
     string? GetItemLocalCopy(LibraryItem item, Library lib);
     Result RenameItem(LibraryItem item, string newName, Library lib);
+    FlexlibConfig Config { get; set; }
+
 }

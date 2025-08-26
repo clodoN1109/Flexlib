@@ -41,6 +41,12 @@ public static class ActionsList
         "remove-lib",
         "gui",
         "tui",
-        "help"
+        "exit",
+        "light",
+        "dark",
+        "clear",
+        "cls",
+        "help",
+        "select-profile"
     };
 }

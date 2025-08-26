@@ -1,7 +1,3 @@
-using System;
-using System.Linq;
-using System.Text;
-
 namespace Flexlib.Interface.Output;
 
 public static partial class Components
@@ -9,48 +5,48 @@ public static partial class Components
     public static string LineFilled(
         int totalWidth,
         string alignment = "left",
+        int padding = 0,
         char filler = '░',
         params string[] parts
     )
     {
+        // Padding string around the whole content
+        string paddingStr = new string(filler, padding);
+
         // Surround each part with a space
         var spacedParts = parts.Select(p => $" {p} ").ToArray();
 
         // Join them with the filler
         string content = string.Join(filler.ToString(), spacedParts);
 
+        // Add padding to left & right of content
+        content = paddingStr + content + paddingStr;
+
         // Truncate if needed
         if (content.Length > totalWidth)
         {
-            content = content.Substring(0, totalWidth);
+            return content.Substring(0, totalWidth);
         }
-        else
-        {
-            int remaining = totalWidth - content.Length;
 
-            if (alignment.ToLower() == "right")
-            {
-                content = new string(filler, remaining) + content;
-            }
-            else if (alignment.ToLower() == "center")
-            {
+        int remaining = totalWidth - content.Length;
+
+        switch (alignment.ToLower())
+        {
+            case "right":
+                return new string(filler, remaining) + content;
+
+            case "center":
                 int padLeft = remaining / 2;
                 int padRight = remaining - padLeft;
-                content = new string(filler, padLeft) + content + new string(filler, padRight);
-            }
-            else // default to left
-            {
-                content = content + new string(filler, remaining);
-            }
-        }
+                return new string(filler, padLeft) + content + new string(filler, padRight);
 
-        return content;
+            default: // left
+                return content + new string(filler, remaining);
+        }
     }
 
     public static string LineFilled(int totalWidth, params string[] parts)
     {
-        return LineFilled(totalWidth, "left", '░', parts);
+        return LineFilled(totalWidth, "left", 0, '░', parts);
     }
-
-
 }

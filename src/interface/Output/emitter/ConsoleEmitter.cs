@@ -19,7 +19,7 @@ public class ConsoleEmitter
             Console.ResetColor();
     }
 
-    public void PrintLines(List<Components.ColoredLine> lines, bool clearHost = true)
+    public void PrintLines(List<Components.ColoredRow> lines, bool clearHost = true)
     {
 
         if (clearHost)
@@ -50,7 +50,6 @@ public class ConsoleEmitter
 
 public static class PrettyException
 {
-#if DEBUG
     public static void HookGlobalHandler()
     {
         AppDomain.CurrentDomain.UnhandledException += (_, e) =>
@@ -136,6 +135,6 @@ public static class PrettyException
 
         Console.WriteLine();
     }
-#endif
+
 }
 

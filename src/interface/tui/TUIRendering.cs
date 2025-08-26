@@ -13,51 +13,56 @@ public partial class TUIApp : ITUIApp
     private static Theme _generalTheme = Themes.Get("basic");
     private static Theme _helpTheme = Themes.Get("basic");
     private static Theme _selectedFrameTheme = Themes.Get("basic");
+    private static Theme _selectedPromptTheme = Themes.Get("basic");
     private static Theme _errorFrameTheme = Themes.Get("basic");
     private static Theme _warningFrameTheme = Themes.Get("basic");
     private static Theme _successFrameTheme = Themes.Get("basic");
-    private Window win = new();
-    private TextView pagePane = new();
-    private FrameView outputFrame = new();
+    private TextView bodyPane = new();
+    private TextView outputFrame = new();
     private FrameView helpFrame = new();
     private TextView helpPane = new();
-    private TextField promptPane = new();
-    private Label promptLabel = new();
-    private Label leftTopLabel = new();
-    private Label rightTopLabel = new();
+    private Label titleLabel = new();
+    private FrameView bottomInfoFrame = new();
+    private FrameView topInfoFrame = new();
+    private FrameView bodyFrame = new();
+    private TextField cmdLinePane = new();
+    private Label prompt = new();
+    private Label windowTopLeft = new();
+    private Label windowTopRight = new();
+    private Label topLeftLabel = new();
+    private Label topRightLabel = new();
+    private Label bottomLeftLabel = new();
+    private Label bottomRightLabel = new();
     private Label authLabel = new();
     private Label footerPane = new();
     private ScrollBarView helpScrollBar = new();
     private ScrollBarView outputScrollBar = new();
     private string margin = "     ";
-    private TUIPage _page = new();
+    private Window _tui = new();
+    private TUIPage? _page;
     private readonly ConsoleRenderer _renderer = new();
 
-    private Toplevel RenderTUI(IUser user)
+    private void RenderTUI(IUser user)
     {
-        var top = Terminal.Gui.Application.Top;
-
         var scheme = _generalTheme.ToColorScheme();
         var helpScheme = _helpTheme.ToColorScheme();
 
-        RenderWindow(top, scheme);
-        RenderTitleBar(scheme);
-        RenderFooter(scheme);
-        RenderPrompt(scheme, user);
-        RenderPagePane(scheme);
-        RenderHelpPane(helpScheme);
-        RenderAuthLabel(scheme, user);
+        _tui = RenderWindow(scheme);
+        RenderTopBar(scheme).ForEach(v => _tui.Add(v));
+        RenderFooter(scheme).ForEach(v => _tui.Add(v));
+        RenderPrompt(scheme, user).ForEach(v => _tui.Add(v));
+        RenderPage(scheme).ForEach(v => _tui.Add(v));
+        RenderHelpPane(helpScheme).ForEach(v => _tui.Add(v));
+        RenderAuthLabel(scheme, user).ForEach(v => _tui.Add(v));
 
-        _page = new(pagePane);
+        _page = new(bodyPane, titleLabel, topLeftLabel, topRightLabel, bottomLeftLabel, bottomRightLabel);
 
-        promptPane.SetFocus();
-
-        return top;
-
+        cmdLinePane.SetFocus();
     }
-    private void RenderWindow(Toplevel top, ColorScheme scheme)
+
+    private Window RenderWindow(ColorScheme scheme)
     {
-        win = new Window()
+        var win = new Window()
         {
             X = 0,
             Y = 0,
@@ -66,13 +71,15 @@ public partial class TUIApp : ITUIApp
             ColorScheme = scheme,
             Border = new Border() { BorderStyle = BorderStyle.None }
         };
-        top.Add(win);
+
+        return win;
+
     }
 
-    private void RenderTitleBar(ColorScheme scheme)
+    private List<View> RenderTopBar(ColorScheme scheme)
     {
         string logo = $"{margin}>::>  flexlib";  // Removed leading spaces to avoid confusion
-        leftTopLabel = new Label(logo)
+        windowTopLeft = new Label(logo)
         {
             X = 0,
             Y = 0,
@@ -82,10 +89,10 @@ public partial class TUIApp : ITUIApp
             VerticalTextAlignment = VerticalTextAlignment.Middle,
             ColorScheme = scheme
         };
-        leftTopLabel.CanFocus = false;
+        windowTopLeft.CanFocus = false;
 
         string meta = $"{_generalTheme.Icon}       v{(Env.IsDebug() ? Env.BuildId : Env.Version)}{margin}";  // Minimal spaces for cleaner alignment
-        rightTopLabel = new Label(meta)  // pass text here!
+        windowTopRight = new Label(meta)
         {
             X = Pos.AnchorEnd(meta.Length),
             Y = 0,
@@ -95,14 +102,12 @@ public partial class TUIApp : ITUIApp
             VerticalTextAlignment = VerticalTextAlignment.Middle,
             ColorScheme = scheme
         };
-        rightTopLabel.CanFocus = false;
+        topRightLabel.CanFocus = false;
 
-        win.Add(leftTopLabel, rightTopLabel);
-
-
+        return new List<View>() {windowTopLeft, windowTopRight};
     }
 
-    private void RenderFooter(ColorScheme scheme)
+    private List<View> RenderFooter(ColorScheme scheme)
     {
         footerPane = new Label()
         {
@@ -115,16 +120,16 @@ public partial class TUIApp : ITUIApp
             ColorScheme = scheme
         };
         footerPane.CanFocus = false;
-        win.Add(footerPane);
+        return new List<View>() {footerPane};
     }
 
     private List<string> commandHistory = new();
     private int historyIndex = -1;
 
-    private void RenderPrompt(ColorScheme scheme, IUser user)
+    private List<View> RenderPrompt(ColorScheme scheme, IUser user)
     {
         // Prompt Label
-        promptLabel = new Label(">")
+        prompt = new Label(">")
         {
             X = margin.Length,
             Y = Pos.Top(footerPane) - 1,
@@ -135,9 +140,9 @@ public partial class TUIApp : ITUIApp
         };
 
         // Prompt Text Field
-        promptPane = new TextField("")
+        cmdLinePane = new TextField("")
         {
-            X = Pos.Right(promptLabel),
+            X = Pos.Right(prompt),
             Y = Pos.Top(footerPane) - 1,
             Width = Dim.Fill() - user.Id.Length - 10,
             Height = 1,
@@ -145,26 +150,26 @@ public partial class TUIApp : ITUIApp
         };
 
         // Change prompt symbol on focus/blur
-        promptPane.Enter += (_) =>
+        cmdLinePane.Enter += (_) =>
         {
-            promptLabel.Text = ">";
-            promptLabel.ColorScheme = _selectedFrameTheme.ToColorScheme();
+            prompt.Text = ">";
+            prompt.ColorScheme = _selectedPromptTheme.ToColorScheme();
         };
-        promptPane.Leave += (_) =>
+        cmdLinePane.Leave += (_) =>
         {
-            promptLabel.Text = "˄";
-            promptLabel.ColorScheme = _generalTheme.ToColorScheme();
+            prompt.Text = "˄";
+            prompt.ColorScheme = _generalTheme.ToColorScheme();
         };
 
-        promptPane.KeyPress += (args) =>
+        cmdLinePane.KeyPress += (args) =>
         {
             if (args.KeyEvent.Key == Key.Enter)
             {
-                string input = promptPane.Text?.ToString() ?? "";
+                string input = cmdLinePane.Text?.ToString() ?? "";
 
-                TUIController(input);
+                TUIRouter(input);
 
-                promptPane.Text = "";
+                cmdLinePane.Text = "";
                 args.Handled = true;
             }
 
@@ -172,22 +177,22 @@ public partial class TUIApp : ITUIApp
             {
                 DeactivateHelpFrame();
 
-                promptPane.Text = "";
+                cmdLinePane.Text = "";
                 args.Handled = true;
 
-                promptPane.SetFocus();
+                cmdLinePane.SetFocus();
             }
         };
 
         // Key handling for history navigation
-        promptPane.KeyPress += (e) =>
+        cmdLinePane.KeyPress += (e) =>
         {
             if (e.KeyEvent.Key == Key.CursorUp)
             {
                 if (commandHistory.Count > 0 && historyIndex > 0)
                 {
                     historyIndex--;
-                    promptPane.Text = commandHistory[historyIndex] + " ";
+                    cmdLinePane.Text = commandHistory[historyIndex] + " ";
                 }
                 e.Handled = true;
             }
@@ -196,99 +201,252 @@ public partial class TUIApp : ITUIApp
                 if (commandHistory.Count > 0 && historyIndex < commandHistory.Count - 1)
                 {
                     historyIndex++;
-                    promptPane.Text = commandHistory[historyIndex] + " ";
+                    cmdLinePane.Text = commandHistory[historyIndex] + " ";
                 }
                 else
                 {
                     historyIndex = commandHistory.Count;
-                    promptPane.Text = "";
+                    cmdLinePane.Text = "";
                 }
                 e.Handled = true;
             }
             if (e.KeyEvent.Key == Key.CursorUp || e.KeyEvent.Key == Key.CursorDown)
             {
-                promptPane.CursorPosition = promptPane.Text.Length;
+                cmdLinePane.CursorPosition = cmdLinePane.Text.Length;
             }
         };
 
-        win.Add(promptLabel, promptPane);
+        return new List<View> { prompt, cmdLinePane };
     }
 
-    private void RenderPagePane(ColorScheme scheme)
+    public void DisplayLogo(string noddingPhrase, string productName, string catchPhrase)
     {
-        // --- Output Pane ---
-        int outputScrollbarMargin = 1;
-        outputFrame = new FrameView()
+        var logoWin = new Window()
         {
-            X = margin.Length,
-            Y = Pos.Bottom(rightTopLabel),
-            Width = Dim.Fill() - margin.Length,
-            Height = Dim.Fill() - 3,
-            ColorScheme = scheme,
-            CanFocus = false,
+            Width = Dim.Fill(),
+            Height = Dim.Fill(),
+            ColorScheme = _generalTheme.ToColorScheme(),
+            Border = new Border() { BorderStyle = BorderStyle.None } // clean background
         };
 
-        pagePane = new TextView()
+        var logo = new View()
+        {
+            Width = Dim.Fill(),
+            Height = Dim.Fill(),
+            VerticalTextAlignment = VerticalTextAlignment.Middle,
+            ColorScheme = _generalTheme.ToColorScheme()
+        };
+
+        var noddingLabel = new Label($"{noddingPhrase}\n")
+        {
+            X = Pos.Center(),
+            Y = Pos.Center() - 4
+        };
+        logo.Add(noddingLabel);
+
+        var productLabel = new Label(Components.AsciiArt(productName))
+        {
+            X = Pos.Center(),
+            Y = Pos.Bottom(noddingLabel),
+            TextAlignment = TextAlignment.Centered
+        };
+        logo.Add(productLabel);
+
+        var catchLabel = new Label($"{catchPhrase}")
+        {
+            X = Pos.Center(),
+            Y = Pos.Bottom(productLabel)
+        };
+        logo.Add(catchLabel);
+
+        logoWin.Add(logo);
+
+        _tui.Add(logoWin);
+        Terminal.Gui.Application.MainLoop.AddTimeout(TimeSpan.FromSeconds(3), (_) =>
+        {
+            _tui.Remove(logoWin);
+            cmdLinePane.DesiredCursorVisibility = CursorVisibility.Invisible;
+            TUIRouter("list-libs", false);
+            return false;
+        });
+    }
+    private View RenderTitleRow(string title, ColorScheme scheme)
+    {
+        titleLabel = new Label(title)
+        {
+            X = margin.Length + 1,
+            Y = Pos.Bottom(windowTopLeft) + 1,
+            Width = Dim.Fill() - margin.Length,
+            Height = 2,
+            ColorScheme = scheme,
+            CanFocus = false,
+            TextAlignment = TextAlignment.Left
+        };
+        return titleLabel;
+    }
+
+    private View RenderTopInfoRow(string leftInfo, string rightInfo, ColorScheme scheme)
+    {
+        topInfoFrame = new FrameView()
+        {
+            X = margin.Length + 1,
+            Height = 1,
+            Width = Dim.Fill() - margin.Length - 1,
+            Y = Pos.Bottom(titleLabel),
+            CanFocus = false,
+            ColorScheme = scheme,
+            Border = new Border() { BorderStyle = BorderStyle.None }
+        };
+
+        topLeftLabel = new Label(leftInfo ?? "")
+        {
+            X = 0,
+            Y = 0,
+            CanFocus = false,
+            ColorScheme = scheme
+        };
+
+        topRightLabel = new Label(rightInfo ?? "")
+        {
+            X = Pos.AnchorEnd(),
+            Y = 0,
+            CanFocus = false,
+            ColorScheme = scheme
+        };
+
+        topInfoFrame.Add(topLeftLabel);
+        topInfoFrame.Add(topRightLabel);
+
+        return topInfoFrame;
+    }
+
+    private View RenderBottomInfoRow(string leftInfo, string rightInfo, ColorScheme scheme)
+    {
+        bottomInfoFrame = new FrameView()
+        {
+            X = margin.Length + 1,
+            Height = 1,
+            Width = Dim.Fill() - margin.Length - 1, // match top frame
+            Y = Pos.Bottom(bodyFrame),
+            CanFocus = false,
+            ColorScheme = scheme,
+            Border = new Border() { BorderStyle = BorderStyle.None }
+        };
+
+        bottomLeftLabel = new Label(leftInfo ?? "")
+        {
+            X = 0,
+            Y = 0,
+            CanFocus = false,
+            ColorScheme = scheme
+        };
+
+        bottomRightLabel = new Label(rightInfo ?? "")
+        {
+            X = Pos.AnchorEnd(),
+            Y = 0,
+            CanFocus = false,
+            ColorScheme = scheme
+        };
+
+        bottomInfoFrame.Add(bottomLeftLabel);
+        bottomInfoFrame.Add(bottomRightLabel);
+
+        return bottomInfoFrame;
+    }
+
+    private (View Frame, TextView bodyPane) RenderBodyPane(ColorScheme scheme)
+    {
+        int outputScrollbarMargin = 1;
+
+        bodyFrame = new FrameView()
         {
             X = margin.Length,
+            Y = Pos.Bottom(topInfoFrame), // below title
+            Width = Dim.Fill() - margin.Length,
+            Height = Dim.Fill() - 5,
+            ColorScheme = scheme,
+            CanFocus = false
+        };
+
+        bodyPane = new TextView()
+        {
+            X = 1,
             Y = 1,
-            Width = Dim.Fill() - (margin.Length + outputScrollbarMargin + 1),
+            Width = Dim.Fill() - (outputScrollbarMargin + 1) - 1,
             Height = Dim.Fill() - 1,
             ReadOnly = false,
             ColorScheme = scheme,
             DesiredCursorVisibility = CursorVisibility.Invisible
         };
-        outputFrame.Add(pagePane);
+        bodyFrame.Add(bodyPane);
 
-        pagePane.Enter += (_) =>
+        // focus events
+        bodyPane.Enter += (_) =>
         {
-            pagePane.ReadOnly = true;
-            outputFrame.ColorScheme = _selectedFrameTheme.ToColorScheme();
-            pagePane.ColorScheme = _selectedFrameTheme.ToColorScheme();
+            bodyPane.ReadOnly = true;
+            bodyFrame.ColorScheme = _selectedFrameTheme.ToColorScheme();
+            bodyPane.ColorScheme = _selectedFrameTheme.ToColorScheme();
         };
-        pagePane.Leave += (_) =>
+        bodyPane.Leave += (_) =>
         {
-            pagePane.ReadOnly = false;
-            outputFrame.ColorScheme = _generalTheme.ToColorScheme();
-            pagePane.ColorScheme = _generalTheme.ToColorScheme();
+            bodyPane.ReadOnly = false;
+            bodyFrame.ColorScheme = _generalTheme.ToColorScheme();
+            bodyPane.ColorScheme = _generalTheme.ToColorScheme();
         };
-        BindScrollToArrowKeys(pagePane);
-        win.Add(outputFrame);
+        BindScrollToArrowKeys(bodyPane);
 
-        // Add vertical scroll bar, positioned after the margin
-        outputScrollBar = new ScrollBarView(pagePane, true)
+        // scrollbar
+        var scrollBar = new ScrollBarView(bodyPane, true)
         {
-            X = Pos.Right(pagePane) + outputScrollbarMargin
+            X = Pos.Right(bodyPane) + outputScrollbarMargin
         };
-
-        outputScrollBar.ChangedPosition += () =>
+        scrollBar.ChangedPosition += () =>
         {
-            pagePane.TopRow = outputScrollBar.Position;
-            pagePane.SetNeedsDisplay();
+            bodyPane.TopRow = scrollBar.Position;
+            bodyPane.SetNeedsDisplay();
         };
-
-        pagePane.DrawContent += (_) =>
+        bodyPane.DrawContent += (_) =>
         {
-            outputScrollBar.Size = pagePane.Lines;
-            outputScrollBar.ColorScheme = scheme;
-            outputScrollBar.Position = pagePane.TopRow;
-            outputScrollBar.Refresh();
+            scrollBar.Size = bodyPane.Lines;
+            scrollBar.ColorScheme = scheme;
+            scrollBar.Position = bodyPane.TopRow;
+            scrollBar.Refresh();
         };
 
+        return (bodyFrame, bodyPane);
     }
 
-    private void RenderHelpPane(ColorScheme helpScheme)
+    public List<View> RenderPage(ColorScheme scheme,
+                                    string title = "LIBRARIES", 
+                                    string topLeftInfo = "TOP LEFT INFO",
+                                    string topRightInfo = "TOP RIGHT INFO",
+                                    string bottomLeftInfo = "BOTTOM LEFT INFO",
+                                    string bottomRightInfo = "BOTTOM RIGHT INFO")
+    {
+        var titleRow = RenderTitleRow(title, scheme);
+        var topInfoRow = RenderTopInfoRow(topLeftInfo, topRightInfo, scheme);
+        var (bodyFrame, bodyPane) = RenderBodyPane(scheme);
+        var bottomInfoRow = RenderBottomInfoRow(bottomLeftInfo, bottomRightInfo, scheme);
+
+        // save refs if needed
+        bodyPane.ReadOnly = false;
+
+        return new List<View> { titleRow, bodyFrame, topInfoRow, bottomInfoRow };
+    }
+
+    private List<View> RenderHelpPane(ColorScheme helpScheme)
     {
         // --- Help Frame & Help Pane ---
         helpFrame = new FrameView("? TUI Help")
         {
             X = margin.Length - 2,
-            Y = Pos.Top(promptPane),
+            Y = Pos.Top(cmdLinePane),
             Width = Dim.Fill() - margin.Length - 35,
             Height = 0,
             ColorScheme = helpScheme,
             CanFocus = false,
-            Visible = false
+            Visible = false,
         };
 
         // Make the helpPane narrower so there’s a margin before the scrollbar
@@ -297,11 +455,12 @@ public partial class TUIApp : ITUIApp
         {
             X = 2,
             Y = 1,
-            Width = Dim.Fill() - (2 + scrollbarMargin), // space for frame border + margin + scrollbar
+            Width = Dim.Fill() - (2 + scrollbarMargin) - 1,
             Height = Dim.Fill() - 1,
             ReadOnly = true,
             ColorScheme = helpScheme,
             DesiredCursorVisibility = CursorVisibility.Invisible,
+            WordWrap = true,
         };
         BindScrollToArrowKeys(helpPane);
 
@@ -319,7 +478,6 @@ public partial class TUIApp : ITUIApp
         };
 
         helpFrame.Add(helpPane);
-        win.Add(helpFrame);
 
         // Add vertical scroll bar, positioned after the margin
         helpScrollBar = new ScrollBarView(helpPane, true)
@@ -341,9 +499,11 @@ public partial class TUIApp : ITUIApp
             helpScrollBar.Refresh();
         };
 
+        return new List<View>() { helpFrame };
+
     }
 
-    private void RenderAuthLabel(ColorScheme scheme, IUser user)
+    private List<View> RenderAuthLabel(ColorScheme scheme, IUser user)
     {
         authLabel = new Label($"{user.Id}")
         {
@@ -354,8 +514,7 @@ public partial class TUIApp : ITUIApp
             ColorScheme = scheme
         };
 
-        win.Add(authLabel);
-
+        return new List<View>() { authLabel };
     }
     public delegate Result? RenderTextDelegate(ColorScheme scheme,
                                                     string prompt,
@@ -463,7 +622,7 @@ public partial class TUIApp : ITUIApp
         return result;
     }
 
-    private bool ConfirmationPrompt(ColorScheme scheme, string prompt)
+    private bool ConfirmationPrompt(ColorScheme scheme, string promptMessage)
     {
         bool result = false;
 
@@ -474,7 +633,7 @@ public partial class TUIApp : ITUIApp
         var dialog = new Window($"⚠  Confirmation")
         {
             X = margin.Length - 2,
-            Y = Pos.Top(promptLabel) - dialogHeight,
+            Y = Pos.Top(prompt) - dialogHeight,
             Width = dialogWidth,
             Height = dialogHeight,
             ColorScheme = scheme
@@ -488,7 +647,7 @@ public partial class TUIApp : ITUIApp
             Width = Dim.Fill() - (scrollbarMargin + 2), // space for scrollbar
             Height = Dim.Fill() - 2, // space for bottom label
             ColorScheme = scheme,
-            Text = prompt,
+            Text = promptMessage,
             WordWrap = true,
             CanFocus = true,
             ReadOnly = true,
@@ -569,7 +728,7 @@ public partial class TUIApp : ITUIApp
         var dialog = new Window($"ℹ  Response")
         {
             X = margin.Length - 2,
-            Y = Pos.Top(promptLabel) - dialogHeight,
+            Y = Pos.Top(prompt) - dialogHeight,
             Width = dialogWidth,
             Height = dialogHeight,
             ColorScheme = scheme
@@ -642,29 +801,30 @@ public partial class TUIApp : ITUIApp
         _generalTheme = Themes.Get($"{theme}");
         _helpTheme = Themes.Get($"{theme}-help");
         _selectedFrameTheme = Themes.Get($"selected-{theme}-frame");
+        _selectedPromptTheme = Themes.Get($"selected-{theme}-prompt");
         _errorFrameTheme = Themes.Get($"error-{theme}-frame");
         _warningFrameTheme = Themes.Get($"warning-{theme}-frame");
         _successFrameTheme = Themes.Get($"success-{theme}-frame");
     }
-    private void UpdateSchemes()
+    private void UpdateSchemes(Window win)
     {
-        win.ColorScheme = _generalTheme.ToColorScheme();
-        leftTopLabel.ColorScheme = _generalTheme.ToColorScheme();
-        rightTopLabel.ColorScheme = _generalTheme.ToColorScheme();
-        outputFrame.ColorScheme = _generalTheme.ToColorScheme();
-        pagePane.ColorScheme = _generalTheme.ToColorScheme();
-        helpFrame.ColorScheme = _helpTheme.ToColorScheme();
-        helpPane.ColorScheme = _helpTheme.ToColorScheme();
-        promptPane.ColorScheme = _generalTheme.ToColorScheme();
-        promptLabel.ColorScheme = _generalTheme.ToColorScheme();
-        footerPane.ColorScheme = _generalTheme.ToColorScheme();
-        authLabel.ColorScheme = _generalTheme.ToColorScheme();
+        win.ColorScheme             = _generalTheme .ToColorScheme();
+        topLeftLabel.ColorScheme    = _generalTheme .ToColorScheme();
+        topRightLabel.ColorScheme   = _generalTheme .ToColorScheme();
+        outputFrame.ColorScheme     = _generalTheme .ToColorScheme();
+        bodyPane.ColorScheme        = _generalTheme .ToColorScheme();
+        helpFrame.ColorScheme       = _helpTheme    .ToColorScheme();
+        helpPane.ColorScheme        = _helpTheme    .ToColorScheme();
+        cmdLinePane.ColorScheme      = _generalTheme .ToColorScheme();
+        prompt.ColorScheme     = _generalTheme .ToColorScheme();
+        footerPane.ColorScheme      = _generalTheme .ToColorScheme();
+        authLabel.ColorScheme       = _generalTheme .ToColorScheme();
 
-        pagePane.DrawContent += (_) =>
+        bodyPane.DrawContent += (_) =>
         {
-            outputScrollBar.Size = pagePane.Lines;
+            outputScrollBar.Size = bodyPane.Lines;
             outputScrollBar.ColorScheme = _generalTheme.ToColorScheme();
-            outputScrollBar.Position = pagePane.TopRow;
+            outputScrollBar.Position = bodyPane.TopRow;
             outputScrollBar.Refresh();
         };
         helpPane.DrawContent += (_) =>
@@ -676,7 +836,7 @@ public partial class TUIApp : ITUIApp
         };
 
         string meta = $"{_generalTheme.Icon}       v{(Env.IsDebug() ? Env.BuildId : Env.Version)}{margin}";  // Minimal spaces for cleaner alignment
-        rightTopLabel.Text = meta;
+        topRightLabel.Text = meta;
     }
 
     public class TUIReader : IReader
@@ -739,7 +899,7 @@ public partial class TUIApp : ITUIApp
 
         helpPane.Text = outputStream; // Set text on the TextView
         helpFrame.Height = visibleRows + 2; // Border + padding
-        helpFrame.Y = Pos.Top(promptPane) - (visibleRows + 2);
+        helpFrame.Y = Pos.Top(cmdLinePane) - (visibleRows + 2);
         helpFrame.Visible = true;
         helpFrame.CanFocus = true;
         Terminal.Gui.Application.Refresh();

@@ -14,52 +14,30 @@ public class Program
 
     public static void Main(string[] input)
     {
-        // Extract and remove --width=<value>
-        input = StripWidthOption(input);
 
-        if (Initialize(out var result).IsFailure)
+        if (Initialization(out var result).IsFailure)
         {
             _emitter.Emit(result.ErrorMessage!);
             return;
         }
 
-        InputPreProcessing.Execute(input, out PreProcessingResult processed);
+        InputPreProcessing.Execute(input, out PreProcessingResult output);
 
-        if (processed.IsValid)
+        if (output.IsValid)
         {
-            Router.Route((ProcessedInput)processed.Value!);
+            Router.Route((ProcessedInput)output.Value!);
         }
     }
 
-    private static string[] StripWidthOption(string[] input)
+    static Result Initialization(out Result result)
     {
-        var remaining = new List<string>();
-        foreach (var arg in input)
-        {
-            if (arg.StartsWith("--width=", StringComparison.OrdinalIgnoreCase))
-            {
-                if (int.TryParse(arg.Substring(8), out int width))
-                {
-                    GlobalConfig.ConsoleWidth = width;
-                }
-            }
-            else
-            {
-                remaining.Add(arg);
-            }
-        }
-        return remaining.ToArray();
-    }
-
-    static Result Initialize(out Result result)
-    {
-        GlobalConfig.SetEncoding(Encoding.UTF8);
         try
         {
+            GlobalConfig.SetEncoding(Encoding.UTF8);
 #if DEBUG
             PrettyException.HookGlobalHandler();
 #endif
-            result = Result.Success("");
+            result = Result.Success("Program initialized.");
             return result;
         }
         catch (Exception ex)

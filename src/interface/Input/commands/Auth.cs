@@ -1,13 +1,4 @@
-using Flexlib.Infrastructure.Interop;
-using Flexlib.Infrastructure.Modelling;
-using Flexlib.Infrastructure.Environment;
-using Flexlib.Interface.Input.Heuristics;
-using System.IO;
-using Flexlib.Interface.Input;
-using System.Collections.Generic;
-
-namespace Flexlib.Interface.CLI;
-
+namespace Flexlib.Interface.Input.Commands;
 
 public class SignUpCommand : Command
 {

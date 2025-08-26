@@ -19,7 +19,7 @@ public class JsonLibraryRepository : ILibraryRepository
     private string? ExeFolder;
     private string? AppDataFolder;
     private string? AppConfigFolder;
-    private FlexlibConfig Config;
+    public FlexlibConfig Config { get; set; }
 
     public JsonLibraryRepository()
     {
@@ -65,9 +65,10 @@ public class JsonLibraryRepository : ILibraryRepository
     #if DEBUG
         dataDirectory = Path.Combine(exeFolder, "data");
     #else
-        string flexlibDir = Path.Combine(appDataFolder, "Flexlib");
-        Directory.CreateDirectory(flexlibDir);
-        dataDirectory = Path.Combine(flexlibDir, "data");
+        //string flexlibDir = Path.Combine(appDataFolder, "Flexlib");
+        //Directory.CreateDirectory(flexlibDir);
+        //dataDirectory = Path.Combine(flexlibDir, "data");
+        dataDirectory = Path.Combine(exeFolder, "data");
     #endif
 
         Directory.CreateDirectory(dataDirectory);
@@ -119,6 +120,23 @@ public class JsonLibraryRepository : ILibraryRepository
         File.WriteAllText(configFilePath, defaultJson);
 
         return defaultConfig;
+    }
+
+    public Result Save(FlexlibConfig config)
+    {
+        try
+        {
+            string configFilePath = Path.Combine(AppConfigFolder!, "FlexlibConfig.json");
+
+            JsonHelpers.WriteJson(configFilePath, config);
+
+            return Result.Success("Configuration file successfully updated");
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail($"Could not update the configuration file. {ex}");
+        }
+        
     }
 
     public Result Save(Library lib, bool skipLocalStorage = false)

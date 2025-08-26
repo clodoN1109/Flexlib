@@ -6,7 +6,7 @@ using System.IO;
 using Flexlib.Interface.Input;
 using System.Collections.Generic;
 
-namespace Flexlib.Interface.CLI;
+namespace Flexlib.Interface.Input.Commands;
 
 public class NewLibraryCommand : Command
 {

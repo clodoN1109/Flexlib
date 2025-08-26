@@ -38,7 +38,7 @@ public class Result
         new(true, false, message, null, null, payload);
 
     public static Result Warn(string warning, string success = "", object? payload = null) =>
-        new(true, true, success, null, warning, payload);
+        new(false, true, success, null, warning, payload);
 
     public static Result Fail(string message, object? payload = null) =>
         new(false, false, null, message, null, payload);

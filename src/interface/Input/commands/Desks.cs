@@ -6,7 +6,7 @@ using System.IO;
 using Flexlib.Interface.Input;
 using System.Collections.Generic;
 
-namespace Flexlib.Interface.CLI;
+namespace Flexlib.Interface.Input.Commands;
 
 public class NewDeskCommand : Command
 {
@@ -112,7 +112,7 @@ public class ViewDeskCommand : Command
 
     public override bool IsValid()
     {
-        return (Options.Length > 1 && Options.Length < 4);
+        return Options.Length > 1 && Options.Length < 4;
     }
 
     public override CommandUsageInfo GetUsageInfo()

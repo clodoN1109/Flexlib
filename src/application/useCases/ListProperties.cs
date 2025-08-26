@@ -8,9 +8,9 @@ namespace Flexlib.Application.UseCases;
 
 public static class ListProperties
 {
-    public static Result Execute(string libName, string itemId, ILibraryRepository repo, IPresenter presenter)
+    public static Result Execute(string libName, string itemId, ILibraryRepository repo)
     {
-        var parsedArgs = new ParsedArgs(libName, itemId, repo, presenter); 
+        var parsedArgs = new ParsedArgs(libName, itemId, repo); 
 
         var validation = IsOperationAllowed(parsedArgs);
 
@@ -33,19 +33,18 @@ public static class ListProperties
 
     private static Result ListPropertyDefinitions(Library selectedLibrary, ParsedArgs parsedArgs)
     {
-        parsedArgs.Presenter.LibraryProperties(selectedLibrary);        
-
-        return Result.Success("");
+        if (selectedLibrary == null)
+            return Result.Fail($"Could not retrieve library named {parsedArgs.LibName}.");
+        return Result.Success("", selectedLibrary);
     }
 
     private static Result ListItemPropertiesWithValues(Library selectedLibrary, ParsedArgs parsedArgs)
     {
 
         var selectedItem = selectedLibrary.GetItemById(parsedArgs.ItemId);
-
-        parsedArgs.Presenter.ItemProperties(selectedItem!, selectedLibrary!);        
-
-        return Result.Success("");
+        if (selectedItem == null)
+            return Result.Fail($"Could not retrieve item of ID {parsedArgs.ItemId}.");
+        return Result.Success("", (selectedLibrary, selectedItem));
     }
 
     private static Result IsOperationAllowed(ParsedArgs parsedArgs)
@@ -80,14 +79,12 @@ public static class ListProperties
         public string LibName { get; }
         public string ItemId { get; }
         public ILibraryRepository Repo { get; }
-        public IPresenter Presenter { get; }
 
-        public ParsedArgs(string libName, string? itemId, ILibraryRepository repo, IPresenter presenter)
+        public ParsedArgs(string libName, string? itemId, ILibraryRepository repo)
         {
             LibName = libName ?? "";
             ItemId = itemId ?? "";
             Repo = repo;
-            Presenter = presenter;
         }
     }
 }

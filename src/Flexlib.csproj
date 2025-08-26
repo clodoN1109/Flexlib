@@ -8,6 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Figgle" Version="0.6.5" />
+      <PackageReference Include="Figgle.Fonts" Version="0.6.5" />
       <PackageReference Include="Terminal.Gui" Version="1.19.0" />
     </ItemGroup>
 

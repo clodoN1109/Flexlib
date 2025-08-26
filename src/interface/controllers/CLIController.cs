@@ -5,9 +5,9 @@ using Flexlib.Application.Common;
 using Flexlib.Infrastructure.Persistence;
 using Flexlib.Infrastructure.Authorization;
 using Flexlib.Interface.Input;
-using Flexlib.Interface.CLI;
 using Flexlib.Interface.Output;
 using Flexlib.Domain;
+using Flexlib.Interface.Input.Commands;
 
 namespace Flexlib.Interface.Controllers;
 
@@ -24,17 +24,19 @@ public static class CLIController
     private static string? _input { get; set; } 
     private static object? _payload { get; set; }
     private static Result? _result { get; set; }
-    public static void Handle(Command cmd, IUser authUser)
+    public static Result Handle(Command cmd, IUser authUser)
     {
         if (Authorization.IsNotAuthorized(cmd, authUser))
         {
-            _presenter.Result(Result.Fail($"User {authUser.Name} is not authorized to perform action {cmd.Type}."));
-            return;
+            _result = Result.Fail($"User {authUser.Name} is not authorized to perform action {cmd.Type}.");
+            _presenter.Result(_result);
+            return _result;
         }
 
-        var result = Execute(cmd, authUser);
+        _result = Execute(cmd, authUser);
+        _presenter.Result(_result);
 
-        _presenter.Result(result);
+        return _result;
 
     }
 
@@ -43,6 +45,10 @@ public static class CLIController
 
         switch (cmd)
         {
+
+            // Configuration
+            case SelectProfileCommand c:
+                return SelectProfile.Execute(c.Name, _libRepo);
 
             // Libraries
             case NewLibraryCommand c:
@@ -91,7 +97,8 @@ public static class CLIController
             // Items
             case NewItemCommand c:
                 return NewItem.Execute(c.LibraryName, c.ItemOrigin, c.ItemName, _libRepo);
-                            case RemoveItemCommand c:
+
+            case RemoveItemCommand c:
                 _selectedLibrary = _libRepo.GetByName(c.LibraryName)!;
                 _selectedItem = _selectedLibrary.GetItemById(c.ItemId);
                 Console.WriteLine($"\nAre you sure you want to delete the item '{_selectedItem?.Name ?? ""}' from library '{_selectedLibrary?.Name ?? ""}'?\n\n");
@@ -102,7 +109,16 @@ public static class CLIController
                 return RemoveItem.Execute(c.ItemId, c.LibraryName, _libRepo);
 
             case ListItemsCommand c:
-                return ListItems.Execute(c.LibraryName, c.FilterSequence, c.SortSequence, c.ItemName, _libRepo, _presenter);
+                _result = ListItems.Execute(c.LibraryName, c.FilterSequence, c.SortSequence, c.ItemName, _libRepo);
+                if (_result.Payload is ListItemsPayload payload)
+                    _presenter.ListItems(payload.Items,
+                                    payload.Library,
+                                    payload.FilterSequence,
+                                    payload.SortSequence,
+                                    payload.LocalSizeInBytes,
+                                    payload.ItemNameFilter
+                                    );
+                return _result;
 
             case RenameItemCommand c:
                 return RenameItem.Execute(c.ItemId, c.NewName, c.LibraryName, _libRepo);
@@ -131,10 +147,15 @@ public static class CLIController
                 return NewDesk.Execute(c.DeskName, c.LibraryName, _libRepo);
 
             case ListDesksCommand c:
-                return ListDesks.Execute(c.LibraryName, _libRepo, _presenter);
-
+                _result =  ListDesks.Execute(c.LibraryName, _libRepo);
+                if (_result.Payload is List<Desk> desks)
+                    _presenter.ListDesks(desks, c.LibraryName);
+                return _result;
             case ViewDeskCommand c:
-                return ViewDesk.Execute(c.DeskId, c.LibraryName, c.SortSequence, _libRepo, _presenter);
+                _result =  ViewDesk.Execute(c.DeskId, c.LibraryName, c.SortSequence, _libRepo);
+                if (_result.Payload is Desk desk)
+                    _presenter.ViewDesk(desk, c.LibraryName);
+                return _result;
 
             case SetAppetiteCommand c:
                 return SetAppetite.Execute(c.ItemID, c.DeskID, c.LibraryName, c.Date, _libRepo);
@@ -155,7 +176,10 @@ public static class CLIController
                 return BorrowItem.Execute(c.ItemId, c.DeskId, c.LibraryName, authUser.Id, _libRepo);
 
             case ListLoansCommand c:
-                return ListLoans.Execute(c.ItemId, c.LibraryName, _libRepo, _presenter);
+                _result = ListLoans.Execute(c.ItemId, c.LibraryName, _libRepo);
+                if (_result.Payload is (LoanHistory loans, LibraryItem libItem))
+                    _presenter.PresentLoanHistory(loans, libItem, c.LibraryName);
+                return _result;
 
             case ReturnItemCommand c:
                 return ReturnItem.Execute(c.ItemId, c.DeskId, c.LibraryName, authUser.Id, _libRepo);
@@ -178,9 +202,12 @@ public static class CLIController
 
                 return NewNote.Execute(c.ItemId, c.LibName, note, authUser, _libRepo);
 
-            case ListNotesCommand c:
-                return ListNotes.Execute(c.ItemId, c.LibName, _libRepo, _presenter);
-
+            case ListNotesCommand c: 
+                _result = ListNotes.Execute(c.ItemId, c.LibName, _libRepo);
+                if (_result.Payload is (List<Note> notes, LibraryItem item))
+                    _presenter.ListNotes(notes, item.Name ?? "", item.Id, c.LibName ?? "");
+                return _result;
+                
             case EditNoteCommand c:
                 string? newNote = "";
                 _payload = SelectItemNote.Execute(c.ItemId, c.NoteId, c.LibName, _libRepo).Payload;
@@ -201,7 +228,12 @@ public static class CLIController
                 return NewProperty.Execute(c.LibName, c.PropName, c.PropType, _libRepo);
 
             case ListPropertiesCommand c:
-                return ListProperties.Execute(c.LibName, c.ItemId, _libRepo, _presenter);
+                _result = ListProperties.Execute(c.LibName, c.ItemId, _libRepo);
+                if (_result.Payload is Library lib)
+                    _presenter.LibraryProperties(lib);
+                else if (_result.Payload is (Library library, LibraryItem i))
+                    _presenter.ItemProperties(i, library);                
+                return _result;
 
             case SetPropertyCommand c:
                 return SetProperty.Execute(c.PropName, c.NewValue, c.LibName, c.ItemId, _libRepo);
