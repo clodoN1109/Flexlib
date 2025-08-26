@@ -5,7 +5,6 @@ public class Process
     public object OriginalInput { get; }
     private object _currentValue;
     private readonly List<object> _history = new();
-
     public Process(object processNode)
     {
         if (processNode is not IProcessNode typed)

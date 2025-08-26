@@ -6,13 +6,12 @@ using System.IO;
 using Flexlib.Interface.Input;
 using System.Collections.Generic;
 
-namespace Flexlib.Interface.CLI;
+namespace Flexlib.Interface.Input.Commands;
 
 
 public class HelpCommand : Command
 {
     public HelpCommand(string[] options) { }
-    public HelpCommand() { }
 
     public override bool IsValid() => true;
     public override string Type => "help";

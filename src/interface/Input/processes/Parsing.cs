@@ -1,15 +1,23 @@
 using Flexlib.Interface.GUI;
-using Flexlib.Interface.CLI;
 using Flexlib.Interface.TUI;
+using Flexlib.Interface.Input.Commands;
+using Flexlib.Infrastructure.Config;
+using Flexlib.Application.Ports;
+using Flexlib.Infrastructure.Persistence;
 
 namespace Flexlib.Interface.Input;
 
 
 public static partial class Input
 {
-    public static ParsedInput Parse(Normalized input)
+    private static ILibraryRepository _libRepo;
+    static Input()
     {
-        var args = input.Args;
+        _libRepo = new JsonLibraryRepository();
+    }
+    public static ParsedInput Parsing(string[] input)
+    {
+        var args = input;
 
         string? firstArg = args.Length > 0 ? args[0] : null;
         string[] options = [.. args.Skip(1)];
@@ -17,50 +25,56 @@ public static partial class Input
         if (args.Length == 0)
             return new TUIStartUp(options);
 
-        return firstArg?.ToLower() switch
+        return firstArg?.ToLower().TranslateToDefault() switch
         {
-            "signup"            => new SignUpCommand(options),
-            "login"             => new LoginCommand(options),
-            "logout"            => new LogoutCommand(options),
-            "new-lib"           => new NewLibraryCommand(options),
-            "new-item"          => new NewItemCommand(options),
-            "rename-item"       => new RenameItemCommand(options),
-            "update-origin"     => new UpdateItemOriginCommand(options),
-            "get-origin"        => new GetItemOriginCommand(options),
-            "remove-item"       => new RemoveItemCommand(options),
-            "view-item"         => new ViewItemCommand(options),
-            "new-desk"          => new NewDeskCommand(options),
-            "list-desks"        => new ListDesksCommand(options),
-            "view-desk"         => new ViewDeskCommand(options),
-            "set-appetite"      => new SetAppetiteCommand(options),
-            "set-progress"      => new SetProgressCommand(options),
-            "define-progress"   => new DefineProgressCommand(options),
-            "set-priority"      => new SetPriorityCommand(options),
-            "rename-desk"       => new RenameDeskCommand(options),
-            "borrow-item"       => new BorrowItemCommand(options),
-            "list-loans"        => new ListLoansCommand(options),
-            "return-item"       => new ReturnItemCommand(options),
-            "list-libs"         => new ListLibrariesCommand(options),
-            "list-items"        => new ListItemsCommand(options),
-            "get-layout"        => new GetLibraryLayoutCommand(options),
-            "set-layout"        => new SetLibraryLayoutCommand(options),
-            "new-prop"          => new NewPropertyCommand(options),
-            "rename-prop"       => new RenamePropertyCommand(options),
-            "list-props"        => new ListPropertiesCommand(options),
-            "set-prop"          => new SetPropertyCommand(options),
-            "unset-prop"        => new UnsetPropertyCommand(options),
-            "remove-prop"       => new RemovePropertyCommand(options),
-            "new-note"          => new NewNoteCommand(options),
-            "list-notes"        => new ListNotesCommand(options),
-            "edit-note"         => new EditNoteCommand(options),
-            "remove-note"       => new RemoveNoteCommand(options),
-            "fetch-files"       => new FetchFilesCommand(options),
-            "rebalance"         => new RebalanceLocalStorageCommand(options),
-            "remove-lib"        => new RemoveLibraryCommand(options),
-            "tui"               => new TUIStartUp(options),
-            "gui"               => new GUIStartUp(options),
-            "help"              => new HelpCommand(options),
-            _                   => new UnknownInput($"Unknown input: {firstArg}")
+            "signup" => new SignUpCommand(options),
+            "login" => new LoginCommand(options),
+            "logout" => new LogoutCommand(options),
+            "new-lib" => new NewLibraryCommand(options),
+            "new-item" => new NewItemCommand(options),
+            "rename-item" => new RenameItemCommand(options),
+            "update-origin" => new UpdateItemOriginCommand(options),
+            "get-origin" => new GetItemOriginCommand(options),
+            "remove-item" => new RemoveItemCommand(options),
+            "view-item" => new ViewItemCommand(options),
+            "new-desk" => new NewDeskCommand(options),
+            "list-desks" => new ListDesksCommand(options),
+            "view-desk" => new ViewDeskCommand(options),
+            "set-appetite" => new SetAppetiteCommand(options),
+            "set-progress" => new SetProgressCommand(options),
+            "define-progress" => new DefineProgressCommand(options),
+            "set-priority" => new SetPriorityCommand(options),
+            "rename-desk" => new RenameDeskCommand(options),
+            "borrow-item" => new BorrowItemCommand(options),
+            "list-loans" => new ListLoansCommand(options),
+            "return-item" => new ReturnItemCommand(options),
+            "list-libs" => new ListLibrariesCommand(options),
+            "list-items" => new ListItemsCommand(options),
+            "get-layout" => new GetLibraryLayoutCommand(options),
+            "set-layout" => new SetLibraryLayoutCommand(options),
+            "new-prop" => new NewPropertyCommand(options),
+            "rename-prop" => new RenamePropertyCommand(options),
+            "list-props" => new ListPropertiesCommand(options),
+            "set-prop" => new SetPropertyCommand(options),
+            "unset-prop" => new UnsetPropertyCommand(options),
+            "remove-prop" => new RemovePropertyCommand(options),
+            "new-note" => new NewNoteCommand(options),
+            "list-notes" => new ListNotesCommand(options),
+            "edit-note" => new EditNoteCommand(options),
+            "remove-note" => new RemoveNoteCommand(options),
+            "fetch-files" => new FetchFilesCommand(options),
+            "rebalance" => new RebalanceLocalStorageCommand(options),
+            "remove-lib" => new RemoveLibraryCommand(options),
+            "tui" => new TUIStartUp(options),
+            "gui" => new GUIStartUp(options),
+            "help" => new HelpCommand(options),
+            "exit" => new ExitCommand(options),
+            "clear" => new ClearCommand(options),
+            "cls" => new ClearCommand(options),
+            "light" => new LightModeCommand(options),
+            "select-profile" => new SelectProfileCommand(options),
+            "dark" => new DarkModeCommand(options),
+            _ => new UnknownInput($"Unknown input: {firstArg}")
         };
     }
 }

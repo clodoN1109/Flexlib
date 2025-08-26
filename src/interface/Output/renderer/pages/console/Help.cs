@@ -7,13 +7,13 @@ namespace Flexlib.Interface.Output;
 public partial class ConsoleRenderer
 {
 
-    public List<Components.ColoredLine> AvailableActions(List<string> actions, int consoleWidth)
+    public List<Components.ColoredRow> AvailableActions(List<string> actions, int consoleWidth)
     {
-        var lines = new List<Components.ColoredLine>();
+        var lines = new List<Components.ColoredRow>();
 
         if (actions == null || actions.Count == 0)
         {
-            lines.Add(new Components.ColoredLine("No available actions.", ConsoleColor.DarkGray));
+            lines.Add(new Components.ColoredRow("No available actions.", ConsoleColor.DarkGray));
             return lines;
         }
 
@@ -48,65 +48,63 @@ public partial class ConsoleRenderer
 
         // Render boxed output
         string borderLine = "---" + new string('―', consoleWidth - 6) + "┐";
-        lines.Add(new Components.ColoredLine(borderLine, ConsoleColor.DarkGray));
+        lines.Add(new Components.ColoredRow(borderLine, ConsoleColor.DarkGray));
 
         foreach (var line in commandLines)
         {
             string padded = "  " + line.PadRight(consoleWidth - 6);
-            lines.Add(new Components.ColoredLine(padded + " │", ConsoleColor.Gray));
+            lines.Add(new Components.ColoredRow(padded + " │", ConsoleColor.Gray));
         }
 
         string bottomLine = "---" + new string('―', consoleWidth - 6) + "┘";
-        lines.Add(new Components.ColoredLine(bottomLine, ConsoleColor.DarkGray));
+        lines.Add(new Components.ColoredRow(bottomLine, ConsoleColor.DarkGray));
 
         return lines;
     }
 
-    public List<Components.ColoredLine> UsageInfo(UsageInfo info, int consoleWidth)
+    public List<Components.ColoredRow> UsageInfo(UsageInfo info, int consoleWidth)
     {
-        var lines = new List<Components.ColoredLine>();
+        var lines = new List<Components.ColoredRow>();
 
-        string separator = new string('░', consoleWidth);
         string logo = Components.LogoLine(consoleWidth);
-        string title = $"░░░░ {(info is CommandUsageInfo cmdInfo ? cmdInfo.Group.Icon + " " : "")}{info?.Title.ToUpperInvariant()} ";
-        string paddedTitle = title + new string('░', Math.Max(0, consoleWidth - title.Length));
+        string paddedTitle = $"{(info is CommandUsageInfo cmdInfo ? cmdInfo.Group.Icon + " " : "")}{info?.Title.ToUpperInvariant()} ";
 
-        // lines.Add(new Components.ColoredLine(""));
-        // lines.Add(new Components.ColoredLine(logo));
-        lines.Add(new Components.ColoredLine(""));
-        lines.Add(new Components.ColoredLine(paddedTitle, ConsoleColor.Gray));
+        // lines.Add(new Components.ColoredRow(""));
+        // lines.Add(new Components.ColoredRow(logo));
+        lines.Add(new Components.ColoredRow(""));
+        lines.Add(new Components.ColoredRow(paddedTitle, ConsoleColor.Gray));
 
         // Metadata
         if (info?.Meta?.Any() == true)
         {
-            lines.Add(new Components.ColoredLine(""));
-            lines.Add(new Components.ColoredLine(string.Join("  •  ", info.Meta), ConsoleColor.DarkGray));
+            lines.Add(new Components.ColoredRow(""));
+            lines.Add(new Components.ColoredRow(string.Join("  •  ", info.Meta), ConsoleColor.DarkGray));
         }
 
         // Description
         if (!string.IsNullOrWhiteSpace(info?.Description))
         {
-            lines.Add(new Components.ColoredLine(""));
+            lines.Add(new Components.ColoredRow(""));
             var wrapped = Components.WrappedText(info.Description, consoleWidth);
             foreach (var line in wrapped)
-                lines.Add(new Components.ColoredLine(line, ConsoleColor.White));
+                lines.Add(new Components.ColoredRow(line, ConsoleColor.White));
         }
 
         // Usage Syntax
         if (!string.IsNullOrWhiteSpace(info?.Syntax))
         {
-            lines.Add(new Components.ColoredLine(""));
-            lines.Add(new Components.ColoredLine("usage:", ConsoleColor.Cyan));
-            lines.Add(new Components.ColoredLine(""));
-            lines.Add(new Components.ColoredLine("   " + info.Syntax, ConsoleColor.White));
+            lines.Add(new Components.ColoredRow(""));
+            lines.Add(new Components.ColoredRow("usage:", ConsoleColor.Cyan));
+            lines.Add(new Components.ColoredRow(""));
+            lines.Add(new Components.ColoredRow("   " + info.Syntax, ConsoleColor.White));
         }
 
         // Options
         if (info?.Options?.Any() == true)
         {
-            lines.Add(new Components.ColoredLine(""));
-            lines.Add(new Components.ColoredLine("options:", ConsoleColor.Cyan));
-            lines.Add(new Components.ColoredLine(""));
+            lines.Add(new Components.ColoredRow(""));
+            lines.Add(new Components.ColoredRow("options:", ConsoleColor.Cyan));
+            lines.Add(new Components.ColoredRow(""));
 
             foreach (var opt in info.Options.OrderByDescending(opt => opt.Mandatory))
             {
@@ -127,33 +125,31 @@ public partial class ConsoleRenderer
                 }
                 
 
-                lines.Add(new Components.ColoredLine(label, opt.Mandatory ? ConsoleColor.Yellow : ConsoleColor.DarkGray, false));
+                lines.Add(new Components.ColoredRow(label, opt.Mandatory ? ConsoleColor.Yellow : ConsoleColor.DarkGray, false));
 
                 var wrappedDesc = Components.WrappedText(opt.Description, consoleWidth - 6);
                 foreach (var descLine in wrappedDesc)
-                    lines.Add(new Components.ColoredLine("      " + descLine, ConsoleColor.Gray));
+                    lines.Add(new Components.ColoredRow("      " + descLine, ConsoleColor.Gray));
                 
-                lines.Add(new Components.ColoredLine("      " + opt.Syntax, ConsoleColor.Gray));
+                lines.Add(new Components.ColoredRow("      " + opt.Syntax, ConsoleColor.Gray));
             }
         }
 
         // Examples
         if (info?.Examples.Count > 0 ) 
         {
-            lines.Add(new Components.ColoredLine("examples:", ConsoleColor.Cyan));
+            lines.Add(new Components.ColoredRow("examples:", ConsoleColor.Cyan));
         }
         foreach (var example in info?.Examples ?? new List<string>())
         {
             if (!string.IsNullOrWhiteSpace(example))
             {
-                lines.Add(new Components.ColoredLine("")); // Adds an empty line
-                lines.Add(new Components.ColoredLine("   " + example, ConsoleColor.White));
+                lines.Add(new Components.ColoredRow("")); // Adds an empty line
+                lines.Add(new Components.ColoredRow("   " + example, ConsoleColor.White));
             }
         }
 
-        lines.Add(new Components.ColoredLine(""));
-        lines.Add(new Components.ColoredLine(separator, ConsoleColor.Gray));
-        lines.Add(new Components.ColoredLine(""));
+        lines.Add(new Components.ColoredRow(""));
 
         return lines;
     }

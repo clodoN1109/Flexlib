@@ -9,7 +9,7 @@ public partial class ConsoleRenderer
 
     public Components.WrappedMessage Message(string? message, ConsoleColor color = ConsoleColor.Gray)
     {
-        var lines = new List<Components.ColoredLine>();
+        var lines = new List<Components.ColoredRow>();
 
         if (string.IsNullOrWhiteSpace(message))
             return new Components.WrappedMessage { Lines = lines };
@@ -37,15 +37,15 @@ public partial class ConsoleRenderer
         string top = "---" + new string('―', boxWidth - 3) + "┐";
         string bottom = "---" + new string('―', boxWidth - 3) + "┘";
 
-        lines.Add(new Components.ColoredLine(top, color));
+        lines.Add(new Components.ColoredRow(top, color));
 
         foreach (var line in wrappedLines)
         {
             string padded = line.PadRight(contentWidth);
-            lines.Add(new Components.ColoredLine($" {padded} │", color));
+            lines.Add(new Components.ColoredRow($" {padded} │", color));
         }
 
-        lines.Add(new Components.ColoredLine(bottom, color));
+        lines.Add(new Components.ColoredRow(bottom, color));
 
         return new Components.WrappedMessage { Lines = lines };
     }
@@ -61,7 +61,7 @@ public partial class ConsoleRenderer
 
     public Components.WrappedMessage RenderResult(Result result)
     {
-        var all = new List<Components.ColoredLine>();
+        var all = new List<Components.ColoredRow>();
 
         if (result.IsSuccess && !string.IsNullOrEmpty(result.SuccessMessage))
             all.AddRange(Success(result.SuccessMessage).Lines);

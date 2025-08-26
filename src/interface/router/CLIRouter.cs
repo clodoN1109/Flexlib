@@ -1,4 +1,3 @@
-using Flexlib.Interface.CLI;
 using Flexlib.Interface.GUI;
 using Flexlib.Interface.Controllers;
 using Flexlib.Interface.Input;
@@ -8,6 +7,7 @@ using Flexlib.Application.Ports;
 using Flexlib.Infrastructure.Persistence;
 using Flexlib.Infrastructure.Authentication;
 using Flexlib.Infrastructure.Interop;
+using Flexlib.Interface.Input.Commands;
 
 namespace Flexlib.Interface.Router;
 

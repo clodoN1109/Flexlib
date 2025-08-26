@@ -39,7 +39,7 @@ public class ConsolePresenter : IPresenter
 
     public void PresentLoanHistory(LoanHistory history, LibraryItem item, string libName)
     {
-        _emitter.PrintLines(_renderer.FormatLoanHistoryTable(history, item, libName, WindowWidth));
+        _emitter.PrintLines(_renderer.RenderLoanHistoryTable(history, item, libName, WindowWidth));
     }
 
     public void UserInfo(string info)
@@ -54,12 +54,12 @@ public class ConsolePresenter : IPresenter
 
     public void ItemProperties(LibraryItem item, Library lib)
     {
-        _emitter.PrintLines(_renderer.FormatItemPropertiesTable(item, lib, WindowWidth));
+        _emitter.PrintLines(_renderer.RenderItemPropertiesTable(item, lib, WindowWidth));
     }
 
     public void LibraryProperties(Library lib)
     {
-        _emitter.PrintLines(_renderer.FormatPropertyDefinitionsTable(lib, WindowWidth));
+        _emitter.PrintLines(_renderer.RenderPropertyDefinitionsTable(lib, WindowWidth));
     }
 
     public void AuthStatus(string message)
@@ -92,31 +92,31 @@ public class ConsolePresenter : IPresenter
 
     public void ListNotes(List<Note> notes, string? itemName, int itemId, string? libName)
     {
-        var lines = _renderer.FormatNoteTable(notes, itemName ?? " ", itemId, libName ?? " ", WindowWidth);
+        var lines = _renderer.RenderNoteTable(notes, itemName ?? " ", itemId, libName ?? " ", WindowWidth);
         _emitter.PrintLines(lines);
     }
 
     public void ListDesks(List<Desk> desks, string? libName)
     {
-        var lines = _renderer.FormatDesksTable(desks, libName ?? " ", WindowWidth);
+        var lines = _renderer.RenderDesksTable(desks, WindowWidth);
         _emitter.PrintLines(lines);
     }
 
     public void ViewDesk(Desk desk, string? libName)
     {
-        var lines = _renderer.FormatDeskTable(desk, libName ?? " ", WindowWidth);
+        var lines = _renderer.RenderDeskItemsTable(desk, WindowWidth);
         _emitter.PrintLines(lines);
     }
 
     public void ListItems(List<LibraryItem> items, Library lib, string filterSequence, string sortSequence, double localSizeInBytes, List<string> itemNameFilter)
     {
-        var lines = _renderer.FormatItemTable(items, lib, filterSequence, sortSequence, localSizeInBytes, itemNameFilter, WindowWidth);
+        var lines = _renderer.RenderItemsPage(items, lib, filterSequence, sortSequence, localSizeInBytes, itemNameFilter, WindowWidth);
         _emitter.PrintLines(lines);
     }
 
     public void ListLibs(List<Library> libs)
     {
-        var lines = _renderer.FormatLibraryTable(libs, WindowWidth);
+        var lines = _renderer.RenderLibrariesPage(libs, WindowWidth);
         _emitter.PrintLines(lines);
     }
 

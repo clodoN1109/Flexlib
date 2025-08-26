@@ -24,6 +24,8 @@ public static readonly CommandGroup Properties      = new("properties"      , "�
 public static readonly CommandGroup Storage         = new("storage"         , "↣");
 public static readonly CommandGroup Interfaces      = new("interfaces"      , "▣");
 public static readonly CommandGroup Desks           = new("desks"           , "☰");
+public static readonly CommandGroup TUI             = new("tui"             , "T");
+public static readonly CommandGroup Config          = new("config"          , "⚙");
 
 
     public static IEnumerable<CommandGroup> All => new[]

@@ -7,14 +7,14 @@ namespace Flexlib.Application.UseCases;
 
 public static class ListDesks
 {
-    public static Result Execute(string libName, ILibraryRepository repo, IPresenter presenter)
+    public static Result Execute(string libName, ILibraryRepository repo)
     {
 
         Result validation = IsOperationAllowed(libName, repo);
 
         if (validation.IsSuccess)
         {
-            return _ListDesks(libName, repo, presenter);
+            return _ListDesks(libName, repo);
         }
         else 
         {
@@ -23,14 +23,12 @@ public static class ListDesks
 
     }
 
-    private static Result _ListDesks(string libName, ILibraryRepository repo, IPresenter presenter)
+    private static Result _ListDesks(string libName, ILibraryRepository repo)
     {
         try {
             var lib = repo.GetByName(libName);
-           
-            presenter.ListDesks(lib!.Desks, libName);
             
-            return Result.Success($"");
+            return Result.Success($"", lib?.Desks);
         }
         catch {
             return Result.Fail($"Failed to present list of desks from library {libName}");

@@ -1,14 +1,13 @@
-using Flexlib.Infrastructure.Interop;
 using Flexlib.Interface.Input.Heuristics;
 
 namespace Flexlib.Interface.Input;
 
 public static partial class Input
 {
-    public static Normalized Normalize(object input)
+    public static string[] Normalization(string[] input)
     {
         if (input is not string[] args || args.Length == 0)
-            return new Normalized(Array.Empty<string>());
+            return [];
 
         var normalized = new string[args.Length];
 
@@ -16,7 +15,7 @@ public static partial class Input
         {
             string temp = args[i];
 
-            if (IsCaseInsensitive(temp))
+            if (IsCaseInsensitive)
                 temp = temp.ToLowerInvariant();
 
             if (AddressAnalysis.IsFilePath(temp))
@@ -25,21 +24,8 @@ public static partial class Input
             normalized[i] = temp.Trim();
         }
 
-        return new Normalized(normalized);
+        return normalized;
     }
 
-    private static bool IsCaseInsensitive(string s) => false;
 
-}
-
-public class Normalized : ProcessedInput
-{
-    public string[] Args { get; }
-
-    public Normalized(string[] args)
-    {
-        Args = args;
-    }
-
-    public override bool IsValid() => Args.Length > 0;
 }

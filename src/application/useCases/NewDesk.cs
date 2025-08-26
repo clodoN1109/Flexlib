@@ -2,11 +2,14 @@ using Flexlib.Domain;
 using Flexlib.Infrastructure.Interop;
 using Flexlib.Application.Common;
 using Flexlib.Application.Ports;
+using Flexlib.Infrastructure.Config;
+using Flexlib.Interface;
 
 namespace Flexlib.Application.UseCases;
 
 public static class NewDesk
 {
+    
     public static Result Execute(string deskName, string libName, ILibraryRepository repo)
     {
 
@@ -16,7 +19,7 @@ public static class NewDesk
         {
             return _NewDesk(deskName, libName, repo);
         }
-        else 
+        else
         {
             return validation;
         }
@@ -26,14 +29,18 @@ public static class NewDesk
     private static Result _NewDesk(string deskName, string libName, ILibraryRepository repo)
     {
         Result result;
-        
         var lib = repo.GetByName(libName);
         result = lib!.NewDesk(deskName);
         if (result.IsFailure)
             return result;
 
-        return repo.Save(lib, true);
-        
+        if (repo.Save(lib, true).IsFailure)
+            return Result.Fail($"Could not create the {"desk".TranslateToProfile()}");
+
+        return Result.Success(
+            $"Successfully created the {"desk".TranslateToProfile()} " +
+            $"with name {deskName} at {"library".TranslateToProfile()} {libName}"
+        );
     }
 
     private static Result IsOperationAllowed(string deskName, string libName, ILibraryRepository repo)

@@ -46,13 +46,14 @@ public class JsonUserRepository : IUserRepository
     {
         string dataDirectory;
 
-    #if DEBUG
+#if DEBUG
         dataDirectory = Path.Combine(exeFolder, "data");
-    #else
-        string flexlibDir = Path.Combine(appDataFolder, "Flexlib");
-        Directory.CreateDirectory(flexlibDir);
-        dataDirectory = Path.Combine(flexlibDir, "data");
-    #endif
+#else
+        //string flexlibDir = Path.Combine(appDataFolder, "Flexlib");
+        //Directory.CreateDirectory(flexlibDir);
+        //dataDirectory = Path.Combine(flexlibDir, "data");
+        dataDirectory = Path.Combine(exeFolder, "data");
+#endif
 
         Directory.CreateDirectory(dataDirectory);
         return dataDirectory;

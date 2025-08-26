@@ -1,80 +1,27 @@
 using Terminal.Gui;
 using Flexlib.Infrastructure.Processing;
-using Flexlib.Interface.Input;
 using Flexlib.Application.UseCases;
 using Flexlib.Application.Common;
-using Flexlib.Interface.CLI;
 using Flexlib.Infrastructure.Persistence;
 using Flexlib.Infrastructure.Interop;
-
+using Command = Flexlib.Interface.Input.Command;
+using Flexlib.Interface.Input.Commands;
+using Flexlib.Interface.Output;
+using Flexlib.Infrastructure.Environment;
+using Flexlib.Domain;
 
 namespace Flexlib.Interface.TUI;
 
-
 public partial class TUIApp : ITUIApp
 {
-    private void TUIController(string input, bool isNotRecursiveCall)
+    private void TUIController(Command cmd, bool isNotRecursiveCall)
     {
-        if (string.IsNullOrWhiteSpace(input))
-            return;
-
-        if (isNotRecursiveCall)
-            AddToCommandHistory(input);
-
-        var args = input.ToArrayOfStrings();
-        string commandName = args[0].ToLowerInvariant();
-
-        // Forbidden Commands
-        switch (commandName)
-        {
-            case "gui":
-            case "tui":
-                pagePane.Text = "Cannot create a nested interface. \nUse the CLI commands or available shortcuts instead.";
-                return;
-        }
-
-        //Special TUI commands
-        switch (commandName)
-        {
-            case "exit":
-                ExitTUI();
-                return;
-
-            case "help":
-                ActivateHelpFrame(TUIHelp.PromptUSage());
-                return;
-
-            case "cls":
-            case "clear":
-                pagePane.Text = "";
-                helpPane.Text = "";
-                DeactivateHelpFrame();
-                return;
-
-            case "dark":
-                UpdateThemes("dark");
-                UpdateSchemes();
-                return;
-
-            case "light":
-                UpdateThemes("light");
-                UpdateSchemes();
-                return;
-
-        }
-
-        // CLI commands
-        InputPreProcessing.Execute(input.ToArrayOfStrings(), out PreProcessingResult processed);
-
-        if (!processed.IsValid || processed.Value is not Input.Command cmd || !Input.Command.IsKnownCommandName(commandName))
-        {
-            RenderResult(Result.Fail($"Invalid command '{input.Trim()}'. \n\nFor the list of available commands, use 'help'.")); return;
-        }
+        _libRepo = new JsonLibraryRepository();
 
         if (cmd.IsSpecificHelp())
         {
-            string outputStream = RunFlexlib(args);
-            ActivateHelpFrame(outputStream);
+            string outputStream = RunFlexlibExe(cmd);
+            ActivateHelpFrame(outputStream.TranslateToProfile());
             return;
         }
 
@@ -86,9 +33,36 @@ public partial class TUIApp : ITUIApp
 
         DeactivateHelpFrame();
 
-        string promptMessage;
+        string confirmationMessage;
+        bodyPane.GetCurrentWidth(out int pageWidth);
+        pageWidth.IfZeroFallbackTo(Env.GetSafeWindowWidth(), out pageWidth);
         switch (cmd)
         {
+            // Special TUI commands
+            case ExitCommand:
+                ExitTUI();
+                return;
+
+            case HelpCommand:
+                ActivateHelpFrame(TUIHelp.PromptUSage().TranslateToProfile());
+                return;
+
+            case ClearCommand:
+                bodyPane.Text = "";
+                helpPane.Text = "";
+                DeactivateHelpFrame();
+                return;
+
+            case DarkModeCommand:
+                UpdateThemes("dark");
+                UpdateSchemes(_tui);
+                return;
+
+            case LightModeCommand:
+                UpdateThemes("light");
+                UpdateSchemes(_tui);
+                return;
+
             // Auth
             case LoginCommand:
                 _finalAction = "login";
@@ -104,8 +78,132 @@ public partial class TUIApp : ITUIApp
                 _auth.Logout();
                 ExitTUI();
                 return;
-            
+
             // Libraries
+            case ListLibrariesCommand c:
+                var libraryList = ListLibs.Execute(_libRepo);
+                if (libraryList.Payload is List<Library> libs)
+                    _page?.Update(
+                        c,
+                        _renderer.RenderLibrariesTable(libs, pageWidth).ToMultiRowString(),
+                        "LIBRARIES",
+                        $"",
+                        $"",
+                        $"",
+                        $"{libs.Count.ToString()} libraries"
+                    );
+                else
+                    RenderResult(Result.Fail($"Could not retrieve the requested list of {"libraries".TranslateToProfile()}."));
+                break;
+
+            case ListItemsCommand c:
+                _result = ListItems.Execute(c.LibraryName, c.FilterSequence, c.SortSequence, c.ItemName, _libRepo);
+                if (_result.Payload is ListItemsPayload payload)
+                    _page?.Update(
+                        c,
+                        _renderer.RenderItemsTable(payload.Items,
+                            payload.Library,
+                            pageWidth).ToMultiRowString(),
+                            "ITEMS",
+                            $"{payload.Library.Name}/{payload.FilterSequence}/{string.Join('|', payload.ItemNameFilter.Where(n => n != "*").Select(n => n.IsCompound() ? $"'{n}'" : n))}",
+                            $"{payload.SortSequence}",
+                            string.Join("/", payload.Library.LayoutSequence.Select(p => p.Name)),
+                            $"{payload.Items.Count} items {payload.LocalSizeInBytes:N2} bytes"
+                    );
+                break;
+            case ListPropertiesCommand c:
+                _result = ListProperties.Execute(c.LibName, c.ItemId, _libRepo);
+
+                List<Components.ColoredRow> table = new();
+                if (_result.Payload is Library lib)
+                {
+                    table = _renderer.RenderPropertyDefinitionsTable(lib, pageWidth);
+                    _page?.Update(
+                        c,
+                        table.ToMultiRowString(),
+                        "PROPERTIES",
+                        $"{c.LibName}",
+                        "",
+                        "",
+                        $"{lib.PropertyDefinitions.Count()} properties"
+                    );
+                }
+                else if (_result.Payload is (Library library, LibraryItem item))
+                {
+                    table = _renderer.RenderItemPropertiesTable(item, library, pageWidth);
+                    _page?.Update(
+                        c,
+                        table.ToMultiRowString(),
+                        "PROPERTIES",
+                        $"{c.LibName}/{item.Name}",
+                        "",
+                        $"Item ID {item.Id}",
+                        $"{library.PropertyDefinitions.Count()} properties {item.PropertyValues.Count()} values"
+                    );
+                }
+                else RenderResult(_result);
+                break;
+
+            case ListDesksCommand c:
+                _result = ListDesks.Execute(c.LibraryName, _libRepo);
+                if (_result.Payload is List<Desk> desks)
+                    _page?.Update(
+                        c,
+                        _renderer.RenderDesksTable(desks, pageWidth).ToMultiRowString(),
+                        "DESKS",
+                        $"{c.LibraryName}",
+                        "",
+                        "",
+                        $"{desks.Count()} desks"
+                    );
+                else RenderResult(_result);
+                break;
+
+            case ViewDeskCommand c:
+                _result = ViewDesk.Execute(c.DeskId, c.LibraryName, c.SortSequence, _libRepo);
+                if (_result.Payload is Desk desk)
+                    _page?.Update(
+                        c,
+                        _renderer.RenderDeskItemsTable(desk, pageWidth).ToMultiRowString(),
+                        "DESK ITEMS",
+                        $"{c.LibraryName}/{desk.Name}",
+                        $"{c.SortSequence}",
+                        $"Desk ID: {c.DeskId}",
+                        $"{desk.BorrowedItems.Count()} items"
+                    );
+                else RenderResult(_result);
+                break;
+
+            case ListLoansCommand c:
+                _result = ListLoans.Execute(c.ItemId, c.LibraryName, _libRepo);
+                if (_result.Payload is (LoanHistory loans, LibraryItem libItem))
+                    _page?.Update(
+                        c,
+                        _renderer.RenderLoanHistoryTable(loans, libItem, c.LibraryName, pageWidth).ToMultiRowString(),
+                        "LOAN HISTORY",
+                        $"{c.LibraryName}/{libItem.Name}",
+                        $"",
+                        $"",
+                        $"{loans.Entries.Count()} entries"
+                    );
+                else RenderResult(_result);
+                break;
+
+            case ListNotesCommand c:
+                _result = ListNotes.Execute(c.ItemId, c.LibName, _libRepo);
+                if (_result.Payload is (List<Note> notes, LibraryItem i))
+                    _page?.Update(
+                        c,
+                        _renderer.RenderNoteTable(notes, i!.Name ?? "", i!.Id, c.LibName, pageWidth).ToMultiRowString(),
+                        "NOTES",
+                        $"{c.LibName}/{i.Name}",
+                        $"",
+                        $"",
+                        $"{notes.Count()} notes"
+                    );
+                else RenderResult(_result);
+                break;
+
             case NewLibraryCommand c:
                 _result = NewLibrary.Execute(c.Name, c.Path, _libRepo);
                 RenderResult(_result);
@@ -115,7 +213,7 @@ public partial class TUIApp : ITUIApp
                 _result = GetLibraryLayout.Execute(c.LibraryName, _libRepo);
                 if (_result.Payload is List<string> layout)
                 {
-                    RenderResult( Result.Success($"{_renderer.RenderLayoutSequence(layout).ToMultilineString()}" ));
+                    RenderResult(Result.Success($"{_renderer.RenderLayoutSequence(layout).ToMultilineString()}"));
                 }
                 else
                 {
@@ -132,13 +230,13 @@ public partial class TUIApp : ITUIApp
                 _selectedLibrary = _libRepo.GetByName(c.Name)!;
                 if (_selectedLibrary == null)
                 {
-                    _result = Result.Fail($"Library named {c.Name} not found.");
+                    _result = Result.Fail($"{"Library".TranslateToProfile()} named {c.Name} not found.");
                     RenderResult(_result);
                     break;
                 }
 
-                promptMessage = $"\nAre you sure you want to delete the library '{c.Name}' at path:\n\n  {_selectedLibrary.Path} ?\n";
-                if (!ConfirmationPrompt(_selectedFrameTheme.ToColorScheme(), promptMessage))
+                confirmationMessage = $"\nAre you sure you want to delete the {"library".TranslateToProfile()} '{c.Name}' at path:\n\n  {_selectedLibrary.Path} ?\n";
+                if (!ConfirmationPrompt(_selectedFrameTheme.ToColorScheme(), confirmationMessage))
                     break;
                 _result = RemoveLibrary.Execute(c.Name, _libRepo);
                 RenderResult(_result);
@@ -177,13 +275,13 @@ public partial class TUIApp : ITUIApp
                 _selectedItem = _selectedLibrary.GetItemById(c.ItemId);
                 if (_selectedItem == null)
                 {
-                    _result = Result.Fail($"Item with ID {c.ItemId} not found in library {c.LibraryName}.");
+                    _result = Result.Fail($"{"Item".TranslateToProfile()} with ID {c.ItemId} not found in {"library".TranslateToProfile()} {c.LibraryName}.");
                     RenderResult(_result);
                     break;
                 }
 
-                promptMessage = $"\nAre you sure you want to delete the item '{_selectedItem?.Name ?? ""}' from library '{_selectedLibrary?.Name ?? ""}'?\n\n";
-                if (!ConfirmationPrompt(_selectedFrameTheme.ToColorScheme(), promptMessage))
+                confirmationMessage = $"\nAre you sure you want to delete the {"item".TranslateToProfile()} '{_selectedItem?.Name ?? ""}' from {"library".TranslateToProfile()} '{_selectedLibrary?.Name ?? ""}'?\n\n";
+                if (!ConfirmationPrompt(_selectedFrameTheme.ToColorScheme(), confirmationMessage))
                     break;
                 _result = RemoveItem.Execute(c.ItemId, c.LibraryName, _libRepo);
                 RenderResult(_result);
@@ -202,7 +300,7 @@ public partial class TUIApp : ITUIApp
                                         currentNote.Text,
                                         margin,
                                         margin.Length - 2,
-                                        Pos.Top(promptLabel) - _dialogHeight, _dialogHeight
+                                        Pos.Top(prompt) - _dialogHeight, _dialogHeight
                                         );
                 }
                 if (_result?.IsSuccess ?? false)
@@ -221,7 +319,7 @@ public partial class TUIApp : ITUIApp
                     "",
                     margin,
                     margin.Length - 2,
-                    Pos.Top(promptLabel) - _dialogHeight, _dialogHeight
+                    Pos.Top(prompt) - _dialogHeight, _dialogHeight
                     );
                 if (_result?.IsSuccess ?? false)
                     _result = NewNote.Execute(c.ItemId, c.LibName, (string)(_result?.Payload ?? ""), _user!, _libRepo);
@@ -238,8 +336,8 @@ public partial class TUIApp : ITUIApp
                 if ((_result.Payload is Domain.Note targetNote) && !string.IsNullOrWhiteSpace(targetNote.Text))
                 {
                     itemName = _libRepo.GetByName(c.LibName)?.GetItemById(c.ItemId)?.Name;
-                    promptMessage = $"\nAre you sure you want to delete note of ID {c.NoteId} from item '{itemName ?? ""}' from library '{c.LibName ?? ""}'?\n\n";
-                    if (!ConfirmationPrompt(_selectedFrameTheme.ToColorScheme(), promptMessage))
+                    confirmationMessage = $"\nAre you sure you want to delete note of ID {c.NoteId} from {"item".TranslateToProfile()} '{itemName ?? ""}' from {"library".TranslateToProfile()} '{c.LibName ?? ""}'?\n\n";
+                    if (!ConfirmationPrompt(_selectedFrameTheme.ToColorScheme(), confirmationMessage))
                         _result = Result.Warn("Note deletion canceled.");
                     else
                     {
@@ -327,20 +425,24 @@ public partial class TUIApp : ITUIApp
                 RenderResult(_result);
                 break;
 
-            // Temporary redirect to the CLI controller
+            // Configurations
+            case SelectProfileCommand c:
+                _result = SelectProfile.Execute(c.Name, _libRepo);
+                RenderResult(_result);
+                break;
+
+            // Fallback to the CLI route
             default:
-                string outputStream = RunFlexlib(args);
-                _page.Update(outputStream, input);
-                DeactivateHelpFrame();
+                string outputStream = RunFlexlibExe(cmd);
+                _page?.Update(cmd, outputStream);
                 break;
         }
 
         if (isNotRecursiveCall)
-            UpdatePagePane();
+            RefreshBodyPane();
 
         _libRepo = new JsonLibraryRepository();
 
     }
 
-    private void TUIController(string input) => TUIController(input, true);
 }

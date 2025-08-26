@@ -1,4 +1,3 @@
-using Terminal.Gui;
 using Flexlib.Infrastructure.Config;
 using Flexlib.Infrastructure.Environment;
 using Flexlib.Application.Ports;
@@ -10,6 +9,8 @@ using Flexlib.Infrastructure.Interop;
 using Flexlib.Interface.Output;
 using Flexlib.Infrastructure.Authentication;
 using Flexlib.Services.Media;
+using Flexlib.Interface.Input;
+using Terminal.Gui;
 
 namespace Flexlib.Interface.TUI;
 
@@ -37,6 +38,7 @@ public partial class TUIApp : ITUIApp
         _generalTheme = Themes.Get(_config.Theme);
         _helpTheme = config.Theme == "dark" ? Themes.Get("dark-help") : Themes.Get("light-help");
         _selectedFrameTheme = config.Theme == "dark" ? Themes.Get("selected-dark-frame") : Themes.Get("selected-light-frame");
+        _selectedPromptTheme = config.Theme == "dark" ? Themes.Get("selected-dark-prompt") : Themes.Get("selected-light-prompt");
         _errorFrameTheme = config.Theme == "dark" ? Themes.Get("error-dark-frame") : Themes.Get("error-light-frame");
         _warningFrameTheme = config.Theme == "dark" ? Themes.Get("warning-dark-frame") : Themes.Get("warning-light-frame");
         _successFrameTheme = config.Theme == "dark" ? Themes.Get("success-dark-frame") : Themes.Get("success-light-frame");
@@ -49,16 +51,9 @@ public partial class TUIApp : ITUIApp
         try
         {
             Terminal.Gui.Application.Init();
-            var tui = RenderTUI(user);
-
-            pagePane.GetCurrentWidth(out int currentPagePaneWidth);
-            var libraryList = ListLibs.Execute(_libRepo);
-            if (libraryList.Payload is List<Library> libs)
-            {
-                pagePane.Text = new ConsoleRenderer().FormatLibraryTable(libs, Env.GetSafeWindowWidth()).ToMultiRowString();
-            }
-
-            Terminal.Gui.Application.Run();
+            RenderTUI(user);
+            DisplayLogo("Welcome to", "flexlib", "free - open - offline - forever");
+            Terminal.Gui.Application.Run(_tui);
         }
         finally
         {
@@ -80,13 +75,15 @@ public partial class TUIApp : ITUIApp
         }
     }
 
-    private string RunFlexlib(string[] args)
+    private string RunFlexlibExe(Input.Command cmd)
     {
         string flexlibExe = Path.Combine(AppContext.BaseDirectory, "Flexlib.exe");
 
         // Determine a virtual console width for CLI rendering
-        int tuiWidth = pagePane.Bounds.Width; // or some other measurement
-        var allArgs = args.Concat(new[] { $"--width={tuiWidth}" });
+        int tuiWidth = bodyPane.Bounds.Width; // or some other measurement
+        var allArgs = new[] { cmd.Type }
+            .Concat(cmd.Options)
+            .Concat(new[] { $"--width={tuiWidth}" });
 
         var psi = new ProcessStartInfo
         {
@@ -145,11 +142,12 @@ public partial class TUIApp : ITUIApp
 
         historyIndex = commandHistory.Count;
     }
-    
-    private void UpdatePagePane()
+
+    private void RefreshBodyPane()
     {
-        TUIController(_page?.Address ?? "list-libs", false);
-    }   
+        if (_page != null)
+            TUIRouter(_page.AddressAsString, false);
+    }    
 
 }
 

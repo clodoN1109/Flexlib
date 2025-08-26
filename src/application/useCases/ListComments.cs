@@ -9,9 +9,9 @@ namespace Flexlib.Application.UseCases;
 
 public static class ListNotes
 {
-    public static Result Execute(object itemId, string libName, ILibraryRepository repo, IPresenter presenter)
+    public static Result Execute(object itemId, string libName, ILibraryRepository repo)
     {
-        var parsedArgs = new ParsedArgs(itemId, libName, repo, presenter); 
+        var parsedArgs = new ParsedArgs(itemId, libName, repo); 
 
         var validation = IsOperationAllowed(parsedArgs);
 
@@ -26,9 +26,7 @@ public static class ListNotes
         
         var selectedItem = selectedLibrary.GetItemById(parsedArgs.ItemId);
 
-        parsedArgs.Presenter.ListNotes(selectedItem!.Notes, selectedItem!.Name ?? "", selectedItem!.Id, selectedLibrary!.Name ?? "");
-
-        return Result.Success($"");
+        return Result.Success($"", ( selectedItem?.Notes, selectedItem ) );
 
     }
 
@@ -54,14 +52,12 @@ public static class ListNotes
         public object ItemId { get; }
         public string LibName { get; }
         public ILibraryRepository Repo { get; }
-        public IPresenter Presenter { get; }
 
-        public ParsedArgs(object itemId, string libName, ILibraryRepository repo, IPresenter presenter)
+        public ParsedArgs(object itemId, string libName, ILibraryRepository repo)
         {
             LibName = libName;
             ItemId = itemId;
             Repo = repo;
-            Presenter = presenter;
         }
     }
 }

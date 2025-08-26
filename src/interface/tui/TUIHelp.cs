@@ -39,6 +39,10 @@ public static class TUIHelp
             {
                 "exit", "dark", "light", "clear", "cls", "help"
             },
+            ["Configurations"] = new[]
+            {
+                "select-profile"
+            } ,
             ["Authentication"] = new[]
             {
                 "login", "signup", "logout"

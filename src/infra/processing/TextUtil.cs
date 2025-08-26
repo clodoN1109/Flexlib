@@ -1,3 +1,6 @@
+using System.Text.RegularExpressions;
+
+
 namespace Flexlib.Infrastructure.Processing;
 
 public static class TextUtil
@@ -29,7 +32,7 @@ public static class TextUtil
 public class MutableString()
 {
     public string Value { get; set; } = "";
-    
+
 }
 
 public static class StringExtensions
@@ -48,9 +51,23 @@ public static class StringExtensions
     }
     public static string[] ToArrayOfStrings(this string input, string divisor = " ")
     {
-        return input
-            .Split(new[] { divisor }, StringSplitOptions.RemoveEmptyEntries)
-            .Select(s => s.Trim())
+        if (string.IsNullOrWhiteSpace(input))
+            return Array.Empty<string>();
+
+        // Pattern matches:
+        // - double quoted strings: "..."
+        // - single quoted strings: '...'
+        // - or unquoted sequences without the divisor
+        var pattern = $"\"([^\"]*)\"|'([^']*)'|[^{Regex.Escape(divisor)}]+";
+
+        return Regex.Matches(input, pattern)
+            .Cast<Match>()
+            .Select(m =>
+                m.Groups[1].Success ? m.Groups[1].Value :
+                m.Groups[2].Success ? m.Groups[2].Value :
+                m.Value
+            )
+            .Where(s => !string.IsNullOrWhiteSpace(s))
             .ToArray();
     }
 

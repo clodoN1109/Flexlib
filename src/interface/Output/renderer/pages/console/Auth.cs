@@ -1,13 +1,5 @@
-using Flexlib.Domain;
-using System.Text.Json;
-using System.Drawing;
-using Flexlib.Application.Ports;
-using Flexlib.Interface.CLI;
-using Flexlib.Infrastructure.Interop;
-using Flexlib.Infrastructure.Processing;
-using Flexlib.Interface.Output;
+
 using Flexlib.Interface.Input;
-using System.Linq;
 
 namespace Flexlib.Interface.Output;
 
@@ -17,7 +9,7 @@ public partial class ConsoleRenderer
 
     public AuthPromptScreen AuthPromptRender(int consoleWidth)
     {
-        var lines = new List<Components.ColoredLine>();
+        var lines = new List<Components.ColoredRow>();
         string title = "🟦 Welcome to Flexlib";
         string subtitle = "Please identify yourself to continue";
 
@@ -28,12 +20,12 @@ public partial class ConsoleRenderer
         string horizontal = new('─', innerWidth - 2);
 
         // Content lines (excluding vertical centering)
-        var boxLines = new List<Components.ColoredLine>();
+        var boxLines = new List<Components.ColoredRow>();
 
-        boxLines.Add(new Components.ColoredLine($"{padX}┌{horizontal}┐", ConsoleColor.DarkGray));
-        boxLines.Add(new Components.ColoredLine($"{padX}│ {title.PadRight(innerWidth - 3)}│", ConsoleColor.Cyan));
-        boxLines.Add(new Components.ColoredLine($"{padX}│ {subtitle.PadRight(innerWidth - 3)}│", ConsoleColor.Gray));
-        boxLines.Add(new Components.ColoredLine($"{padX}│{"".PadRight(innerWidth - 2)}│", ConsoleColor.Gray));
+        boxLines.Add(new Components.ColoredRow($"{padX}┌{horizontal}┐", ConsoleColor.DarkGray));
+        boxLines.Add(new Components.ColoredRow($"{padX}│ {title.PadRight(innerWidth - 3)}│", ConsoleColor.Cyan));
+        boxLines.Add(new Components.ColoredRow($"{padX}│ {subtitle.PadRight(innerWidth - 3)}│", ConsoleColor.Gray));
+        boxLines.Add(new Components.ColoredRow($"{padX}│{"".PadRight(innerWidth - 2)}│", ConsoleColor.Gray));
 
         string idLabel = "🪪 ID:";
         string passLabel = "🔒 Password:";
@@ -45,19 +37,19 @@ public partial class ConsoleRenderer
         int idY = boxLines.Count;
         
         int passX = paddingX + 1 + labelPad + passLabel.Length + 2; // +1 because of box border +2 to get distance from prompt text
-        boxLines.Add(new Components.ColoredLine($"{padX}│ {idLine.PadRight(innerWidth - 3)}│", ConsoleColor.White));
+        boxLines.Add(new Components.ColoredRow($"{padX}│ {idLine.PadRight(innerWidth - 3)}│", ConsoleColor.White));
         int passY = boxLines.Count;
-        boxLines.Add(new Components.ColoredLine($"{padX}│ {passLine.PadRight(innerWidth - 3)}│", ConsoleColor.White));
+        boxLines.Add(new Components.ColoredRow($"{padX}│ {passLine.PadRight(innerWidth - 3)}│", ConsoleColor.White));
 
-        boxLines.Add(new Components.ColoredLine($"{padX}│{"".PadRight(innerWidth - 2)}│", ConsoleColor.Gray));
-        boxLines.Add(new Components.ColoredLine($"{padX}└{horizontal}┘", ConsoleColor.DarkGray));
+        boxLines.Add(new Components.ColoredRow($"{padX}│{"".PadRight(innerWidth - 2)}│", ConsoleColor.Gray));
+        boxLines.Add(new Components.ColoredRow($"{padX}└{horizontal}┘", ConsoleColor.DarkGray));
 
         // Center vertically
         int consoleHeight = Console.WindowHeight;
         int verticalPad = Math.Max(0, (consoleHeight - boxLines.Count) / 2);
 
         for (int i = 0; i < verticalPad; i++)
-            lines.Add(new Components.ColoredLine("", ConsoleColor.Gray)); // empty line for spacing
+            lines.Add(new Components.ColoredRow("", ConsoleColor.Gray)); // empty line for spacing
 
         lines.AddRange(boxLines);
 
@@ -72,7 +64,7 @@ public partial class ConsoleRenderer
 
     public RegistrationPromptScreen RegistrationPromptRender(int consoleWidth, int consoleHeight)
     {
-        var lines = new List<Components.ColoredLine>();
+        var lines = new List<Components.ColoredRow>();
         string title = "🟦 Welcome to Flexlib";
         string subtitle = "Please create your account";
 
@@ -83,7 +75,7 @@ public partial class ConsoleRenderer
         string horizontal = new('─', innerWidth - 2);
 
         // Box content lines
-        var boxLines = new List<Components.ColoredLine>();
+        var boxLines = new List<Components.ColoredRow>();
 
         boxLines.Add(new($"{padX}┌{horizontal}┐", ConsoleColor.DarkGray));
         boxLines.Add(new($"{padX}│ {title.PadRight(innerWidth - 3)}│", ConsoleColor.Cyan));

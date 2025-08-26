@@ -7,14 +7,14 @@ namespace Flexlib.Application.UseCases;
 
 public static class ListLoans
 {
-    public static Result Execute(string itemId, string libName, ILibraryRepository repo, IPresenter presenter)
+    public static Result Execute(string itemId, string libName, ILibraryRepository repo)
     {
 
         Result validation = IsOperationAllowed(itemId, libName, repo);
 
         if (validation.IsSuccess)
         {
-            return _ListLoans(itemId, libName, repo, presenter);
+            return _ListLoans(itemId, libName, repo);
         }
         else 
         {
@@ -23,7 +23,7 @@ public static class ListLoans
 
     }
 
-    private static Result _ListLoans(string itemId, string libName, ILibraryRepository repo, IPresenter presenter)
+    private static Result _ListLoans(string itemId, string libName, ILibraryRepository repo)
     {
         try
         {
@@ -35,9 +35,7 @@ public static class ListLoans
             if (item is null)
                 return Result.Fail($"Item with ID '{itemId}' not found in library '{libName}'.");
 
-            presenter.PresentLoanHistory(item!.Loans, item, lib.Name ?? "");
-
-            return Result.Success($"Loan history listed for item '{item.Name}' in library '{libName}'.");
+            return Result.Success($"Obtained loan history for item '{item.Name}' in library '{libName}'.", (item.Loans, item));
         }
         catch (Exception ex)
         {

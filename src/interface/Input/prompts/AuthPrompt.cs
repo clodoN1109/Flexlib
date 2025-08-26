@@ -48,14 +48,14 @@ public static class AuthPrompt
 
 public class AuthPromptScreen
 {
-    public List<Components.ColoredLine> Lines { get; set; } = new();
+    public List<Components.ColoredRow> Lines { get; set; } = new();
     public (int X, int Y) IDPosition { get; set; }
     public (int X, int Y) PasswordPosition { get; set; }
 }
 
 public class RegistrationPromptScreen
 {
-    public List<Components.ColoredLine> Lines { get; set; } = new();
+    public List<Components.ColoredRow> Lines { get; set; } = new();
     public (int X, int Y) NamePosition { get; set; }
     public (int X, int Y) IDPosition { get; set; }
     public (int X, int Y) PasswordPosition { get; set; }

@@ -6,7 +6,7 @@ using System.IO;
 using Flexlib.Interface.Input;
 using System.Collections.Generic;
 
-namespace Flexlib.Interface.CLI;
+namespace Flexlib.Interface.Input.Commands;
 
 public class NewItemCommand : Command
 {
@@ -355,13 +355,14 @@ public class ListItemsCommand : Command
         {
             Meta = new List<string> {},
             Title = "list items",
-            Description = "Presents a filtered and sorted list of items of the selected library.",
+            Description = "Presents a filtered and sorted list of items from the selected library.",
             Group = CommandGroups.Items,
             Syntax = "list-items <library name> [\"filter sequence\"] [\"item name\"] [\"sort sequence\"]",
             Examples = new List<string> {
                 "list-items Literature \"physics,math/Newton, Gottfried Leibniz/1780-1856\" \"optics,principles\" year/publisher",
                 "list-items Cinema Ernst/*/1990-2021 \"\" budget/year/rating",
-                "list-items Music * \"Sonata, Concerto\" year/artist"
+                "list-items Music * \"Sonata, Concerto\" year/artist",
+                "list-items Games * 1985-2003/null/adventure"
                 },
             Options = new List<Option>
             {
