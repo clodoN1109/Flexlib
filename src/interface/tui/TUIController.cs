@@ -85,7 +85,7 @@ public partial class TUIApp : ITUIApp
                 if (libraryList.Payload is List<Library> libs)
                     _page?.Update(
                         c,
-                        _renderer.RenderLibrariesTable(libs, pageWidth).ToMultiRowString(),
+                        _renderer.RenderLibrariesTable(libs, pageWidth, false).ToMultiRowString(),
                         "LIBRARIES",
                         $"",
                         $"",
@@ -103,7 +103,7 @@ public partial class TUIApp : ITUIApp
                         c,
                         _renderer.RenderItemsTable(payload.Items,
                             payload.Library,
-                            pageWidth).ToMultiRowString(),
+                            pageWidth, false).ToMultiRowString(),
                             "ITEMS",
                             $"{payload.Library.Name}/{payload.FilterSequence}/{string.Join('|', payload.ItemNameFilter.Where(n => n != "*").Select(n => n.IsCompound() ? $"'{n}'" : n))}",
                             $"{payload.SortSequence}",
@@ -117,7 +117,7 @@ public partial class TUIApp : ITUIApp
                 List<Components.ColoredRow> table = new();
                 if (_result.Payload is Library lib)
                 {
-                    table = _renderer.RenderPropertyDefinitionsTable(lib, pageWidth);
+                    table = _renderer.RenderPropertyDefinitionsTable(lib, pageWidth, false);
                     _page?.Update(
                         c,
                         table.ToMultiRowString(),
@@ -130,7 +130,7 @@ public partial class TUIApp : ITUIApp
                 }
                 else if (_result.Payload is (Library library, LibraryItem item))
                 {
-                    table = _renderer.RenderItemPropertiesTable(item, library, pageWidth);
+                    table = _renderer.RenderItemPropertiesTable(item, library, pageWidth, false);
                     _page?.Update(
                         c,
                         table.ToMultiRowString(),
@@ -149,7 +149,7 @@ public partial class TUIApp : ITUIApp
                 if (_result.Payload is List<Desk> desks)
                     _page?.Update(
                         c,
-                        _renderer.RenderDesksTable(desks, pageWidth).ToMultiRowString(),
+                        _renderer.RenderDesksTable(desks, pageWidth, false).ToMultiRowString(),
                         "DESKS",
                         $"{c.LibraryName}",
                         "",
@@ -164,7 +164,7 @@ public partial class TUIApp : ITUIApp
                 if (_result.Payload is Desk desk)
                     _page?.Update(
                         c,
-                        _renderer.RenderDeskItemsTable(desk, pageWidth).ToMultiRowString(),
+                        _renderer.RenderDeskItemsTable(desk, pageWidth, false).ToMultiRowString(),
                         "DESK ITEMS",
                         $"{c.LibraryName}/{desk.Name}",
                         $"{c.SortSequence}",
@@ -179,7 +179,7 @@ public partial class TUIApp : ITUIApp
                 if (_result.Payload is (LoanHistory loans, LibraryItem libItem))
                     _page?.Update(
                         c,
-                        _renderer.RenderLoanHistoryTable(loans, libItem, c.LibraryName, pageWidth).ToMultiRowString(),
+                        _renderer.RenderLoanHistoryTable(loans, libItem, c.LibraryName, pageWidth, false).ToMultiRowString(),
                         "LOAN HISTORY",
                         $"{c.LibraryName}/{libItem.Name}",
                         $"",
@@ -194,7 +194,7 @@ public partial class TUIApp : ITUIApp
                 if (_result.Payload is (List<Note> notes, LibraryItem i))
                     _page?.Update(
                         c,
-                        _renderer.RenderNoteTable(notes, i!.Name ?? "", i!.Id, c.LibName, pageWidth).ToMultiRowString(),
+                        _renderer.RenderNoteTable(notes, i!.Name ?? "", i!.Id, c.LibName, pageWidth, false).ToMultiRowString(),
                         "NOTES",
                         $"{c.LibName}/{i.Name}",
                         $"",
@@ -426,7 +426,7 @@ public partial class TUIApp : ITUIApp
                 break;
 
             // Configurations
-            case SelectProfileCommand c:
+            case SetProfileCommand c:
                 _result = SelectProfile.Execute(c.Name, _libRepo);
                 RenderResult(_result);
                 break;

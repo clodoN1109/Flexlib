@@ -47,7 +47,7 @@ public static class CLIController
         {
 
             // Configuration
-            case SelectProfileCommand c:
+            case SetProfileCommand c:
                 return SelectProfile.Execute(c.Name, _libRepo);
 
             // Libraries

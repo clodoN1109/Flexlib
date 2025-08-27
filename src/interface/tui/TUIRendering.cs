@@ -394,25 +394,74 @@ public partial class TUIApp : ITUIApp
             bodyFrame.ColorScheme = _generalTheme.ToColorScheme();
             bodyPane.ColorScheme = _generalTheme.ToColorScheme();
         };
+
         BindScrollToArrowKeys(bodyPane);
 
-        // scrollbar
-        var scrollBar = new ScrollBarView(bodyPane, true)
+        //
+        // vertical scrollbar
+        //
+        var vScrollBar = new ScrollBarView(bodyPane, true)
         {
             X = Pos.Right(bodyPane) + outputScrollbarMargin
         };
-        scrollBar.ChangedPosition += () =>
+        vScrollBar.ChangedPosition += () =>
         {
-            bodyPane.TopRow = scrollBar.Position;
+            bodyPane.TopRow = vScrollBar.Position;
             bodyPane.SetNeedsDisplay();
         };
+
+        //
+        // horizontal scrollbar
+        //
+        var hScrollBar = new ScrollBarView(bodyPane, false)
+        {
+            Y = Pos.Bottom(bodyPane)
+        };
+        hScrollBar.ChangedPosition += () =>
+        {
+            bodyPane.LeftColumn = hScrollBar.Position;
+            bodyPane.SetNeedsDisplay();
+        };
+
+        //
+        // sync scrollbars during drawing
+        //
         bodyPane.DrawContent += (_) =>
         {
-            scrollBar.Size = bodyPane.Lines;
-            scrollBar.ColorScheme = scheme;
-            scrollBar.Position = bodyPane.TopRow;
-            scrollBar.Refresh();
+            vScrollBar.Size = bodyPane.Lines;
+            vScrollBar.Position = bodyPane.TopRow;
+            vScrollBar.ColorScheme = scheme;
+            vScrollBar.Refresh();
+
+            hScrollBar.Size = bodyPane.Maxlength;
+            hScrollBar.Position = bodyPane.LeftColumn;
+            hScrollBar.ColorScheme = scheme;
+            hScrollBar.Refresh();
         };
+
+        //
+        // allow arrow keys for horizontal movement too
+        //
+        bodyPane.KeyPress += (e) =>
+        {
+            if (e.KeyEvent.Key == Key.CursorLeft && bodyPane.LeftColumn > 0)
+            {
+                bodyPane.LeftColumn--;
+                hScrollBar.Position = bodyPane.LeftColumn;
+                hScrollBar.Refresh();
+                e.Handled = true;
+            }
+            else if (e.KeyEvent.Key == Key.CursorRight && bodyPane.LeftColumn < bodyPane.Maxlength - 1)
+            {
+                bodyPane.LeftColumn++;
+                hScrollBar.Position = bodyPane.LeftColumn;
+                hScrollBar.Refresh();
+                e.Handled = true;
+            }
+        };
+
+        bodyFrame.Add(vScrollBar);
+        bodyFrame.Add(hScrollBar);
 
         return (bodyFrame, bodyPane);
     }
@@ -808,18 +857,27 @@ public partial class TUIApp : ITUIApp
     }
     private void UpdateSchemes(Window win)
     {
-        win.ColorScheme             = _generalTheme .ToColorScheme();
-        topLeftLabel.ColorScheme    = _generalTheme .ToColorScheme();
-        topRightLabel.ColorScheme   = _generalTheme .ToColorScheme();
-        outputFrame.ColorScheme     = _generalTheme .ToColorScheme();
-        bodyPane.ColorScheme        = _generalTheme .ToColorScheme();
-        helpFrame.ColorScheme       = _helpTheme    .ToColorScheme();
-        helpPane.ColorScheme        = _helpTheme    .ToColorScheme();
-        cmdLinePane.ColorScheme      = _generalTheme .ToColorScheme();
-        prompt.ColorScheme     = _generalTheme .ToColorScheme();
-        footerPane.ColorScheme      = _generalTheme .ToColorScheme();
-        authLabel.ColorScheme       = _generalTheme .ToColorScheme();
-
+        win.ColorScheme                 = _generalTheme.ToColorScheme();
+        bodyFrame.ColorScheme           = _generalTheme .ToColorScheme();
+        bodyPane.ColorScheme            = _generalTheme .ToColorScheme();
+        bottomInfoFrame.ColorScheme     = _generalTheme .ToColorScheme();
+        titleLabel.ColorScheme          = _generalTheme .ToColorScheme();
+        topInfoFrame.ColorScheme        = _generalTheme .ToColorScheme();
+        topLeftLabel.ColorScheme        = _generalTheme .ToColorScheme();
+        topRightLabel.ColorScheme       = _generalTheme .ToColorScheme();
+        bottomInfoFrame.ColorScheme     = _generalTheme .ToColorScheme();
+        bottomLeftLabel.ColorScheme     = _generalTheme .ToColorScheme();
+        bottomRightLabel.ColorScheme    = _generalTheme .ToColorScheme();
+        windowTopLeft.ColorScheme       = _generalTheme .ToColorScheme();
+        windowTopRight.ColorScheme      = _generalTheme .ToColorScheme();
+        outputFrame.ColorScheme         = _generalTheme .ToColorScheme();
+        bodyPane.ColorScheme            = _generalTheme .ToColorScheme();
+        helpFrame.ColorScheme           = _helpTheme    .ToColorScheme();
+        helpPane.ColorScheme            = _helpTheme    .ToColorScheme();
+        cmdLinePane.ColorScheme         = _generalTheme .ToColorScheme();
+        prompt.ColorScheme              = _generalTheme .ToColorScheme();
+        footerPane.ColorScheme          = _generalTheme .ToColorScheme();
+        authLabel.ColorScheme           = _generalTheme .ToColorScheme();
         bodyPane.DrawContent += (_) =>
         {
             outputScrollBar.Size = bodyPane.Lines;
@@ -836,7 +894,7 @@ public partial class TUIApp : ITUIApp
         };
 
         string meta = $"{_generalTheme.Icon}       v{(Env.IsDebug() ? Env.BuildId : Env.Version)}{margin}";  // Minimal spaces for cleaner alignment
-        topRightLabel.Text = meta;
+        windowTopRight.Text = meta;
     }
 
     public class TUIReader : IReader

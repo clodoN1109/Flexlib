@@ -3,7 +3,8 @@ function ExecuteBuildProcess {
         [string]$Configuration = "Debug",
         [int]$BuildId,
         [string]$Version,
-        [string[]]$RuntimeIds = @([System.Runtime.InteropServices.RuntimeInformation]::RuntimeIdentifier)
+        [string[]]$RuntimeIds = @([System.Runtime.InteropServices.RuntimeInformation]::RuntimeIdentifier),
+        [switch]$SingleFile 
     )
 
     if (-not $Version) { $Version = "0.0.0" }
@@ -20,6 +21,7 @@ function ExecuteBuildProcess {
             "-p:RuntimeIdentifier=$RuntimeId",
             "-v:q"
         )
+
         if ($Configuration -ieq "Release") {
             # Normalize RIDs
             if ($RuntimeId -eq "win10-x64") { $RuntimeId = "win-x64" }
@@ -27,20 +29,36 @@ function ExecuteBuildProcess {
             # Specify target framework (hardcode or read from csproj)
             $TargetFramework = "net8.0"
 
-            # Compose output path including RID and TFM
-            $OutputPath = Join-Path $PSScriptRoot "..\..\builds\last\Release\single-file\$TargetFramework\$RuntimeId"
+            if ($SingleFile) {
+                # Single-file output path
+                $OutputPath = Join-Path $PSScriptRoot "..\..\builds\last\Release\single-file\$TargetFramework\$RuntimeId"
 
-            $publishArgs = $commonArgs + @(
-                "--self-contained", "true",
-                "-p:PublishSingleFile=true",
-                "-p:PublishTrimmed=false",
-                "-p:PublishReadyToRun=true",
-                "-p:IncludeAllContentForSelfExtract=true",
-                "-p:IncludeNativeLibrariesForSelfExtract=true",
-                "-p:DebugType=None",
-                "-p:DebugSymbols=false",
-                "--output", $OutputPath
-            )
+                $publishArgs = $commonArgs + @(
+                    "--self-contained", "true",
+                    "-p:PublishSingleFile=true",
+                    "-p:PublishTrimmed=false",
+                    "-p:PublishReadyToRun=true",
+                    "-p:IncludeAllContentForSelfExtract=true",
+                    "-p:IncludeNativeLibrariesForSelfExtract=true",
+                    "-p:DebugType=None",
+                    "-p:DebugSymbols=false",
+                    "--output", $OutputPath
+                )
+            }
+            else {
+                # Normal self-contained output path
+                $OutputPath = Join-Path $PSScriptRoot "..\..\builds\last\Release\self-contained\$TargetFramework\$RuntimeId"
+
+                $publishArgs = $commonArgs + @(
+                    "--self-contained", "true",
+                    "-p:PublishSingleFile=false",
+                    "-p:PublishTrimmed=false",
+                    "-p:PublishReadyToRun=true",
+                    "-p:DebugType=None",
+                    "-p:DebugSymbols=false",
+                    "--output", $OutputPath
+                )
+            }
 
             $output = dotnet publish @publishArgs 2>&1
         }
