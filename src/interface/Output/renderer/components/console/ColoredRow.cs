@@ -9,16 +9,22 @@ public static partial class Components
         public string Text { get; set; }
         public ConsoleColor Color { get; set; } = ConsoleColor.White;
 
-        public ColoredRow(string text, ConsoleColor color = ConsoleColor.White, bool truncate = true)
+        public ColoredRow(string text, ConsoleColor color = ConsoleColor.White, bool truncate = false, int? maxWidth = null)
         {
-            Text = truncate ? Truncate(text) : text;
+            Text = truncate ? Truncate(text, maxWidth) : text;
             Color = color;
         }
 
-        private static string Truncate(string text)
+        private static string Truncate(string text, int? width)
         {
-            int width = Env.GetSafeWindowWidth();
-            return text.Length <= width ? text : text[..Math.Max(0, width - 1)] + "…";
+            int max = width ?? Env.GetSafeWindowWidth();
+
+            if (string.IsNullOrEmpty(text))
+                return string.Empty;
+
+            return text.Length <= max
+                ? text
+                : text[..Math.Max(0, max - 1)] + "…";
         }
     }
 
@@ -27,4 +33,3 @@ public static partial class Components
         return string.Join(Environment.NewLine, lines.Select(l => l.Text));
     }
 }
-

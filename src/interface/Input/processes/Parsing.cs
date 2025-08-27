@@ -72,7 +72,7 @@ public static partial class Input
             "clear" => new ClearCommand(options),
             "cls" => new ClearCommand(options),
             "light" => new LightModeCommand(options),
-            "select-profile" => new SelectProfileCommand(options),
+            "set-profile" => new SetProfileCommand(options),
             "dark" => new DarkModeCommand(options),
             _ => new UnknownInput($"Unknown input: {firstArg}")
         };

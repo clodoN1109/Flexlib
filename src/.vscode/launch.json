@@ -18,7 +18,7 @@
       "program": "C:\\Users\\clovi\\OneDrive\\Área de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\builds\\last\\Debug\\net8.0\\win-x64\\Flexlib.dll",
       "cwd": "C:\\Users\\clovi\\OneDrive\\Área de Trabalho\\Clodo\\Work\\Projects\\Incubator\\FlexLib\\Dev\\src\\",
       "console": "integratedTerminal",
-      "args": ["select-profile", "project"],
+      "args": ["set-profile", "project"],
       "justMyCode": false
     }
   ]

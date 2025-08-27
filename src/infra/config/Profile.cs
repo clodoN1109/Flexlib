@@ -122,11 +122,10 @@ public static class Profiles
     {
         Translator = new Dictionary<string, string>
         {
-            { "library", "project" },
             { "libraries", "projects" },
+            { "library", "project" },
             { "lib", "proj" },
             { "item", "task" },
-            { "items", "tasks" },
             { "desk", "plan" },
             { "borrow", "select"}
         }

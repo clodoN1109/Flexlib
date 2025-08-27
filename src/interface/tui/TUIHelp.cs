@@ -41,7 +41,7 @@ public static class TUIHelp
             },
             ["Configurations"] = new[]
             {
-                "select-profile"
+                "set-profile"
             } ,
             ["Authentication"] = new[]
             {

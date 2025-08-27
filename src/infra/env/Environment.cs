@@ -13,19 +13,16 @@ public static class Env
     // Folder that contains the actual running executable (works with single-file)
     public static string GetExecutingAssemblyLocation()
     {
-        var exePath = System.Environment.ProcessPath
-                      ?? Process.GetCurrentProcess().MainModule?.FileName
-                      ?? throw new InvalidOperationException("Cannot determine executable path.");
-        return Path.GetDirectoryName(exePath)!;
+        // Returns the folder where the executable resides, works for both normal and single-file builds
+        return AppContext.BaseDirectory;
     }
 
-    // Full path to the running executable (the single-file host)
     public static string GetExecutingAssemblyFullName()
     {
-        return System.Environment.ProcessPath
-               ?? Process.GetCurrentProcess().MainModule?.FileName
-               ?? throw new InvalidOperationException("Cannot determine executable path.");
+        // Combines the executable folder with the expected exe name
+        return Path.Combine(GetExecutingAssemblyLocation(), "Flexlib.exe");
     }
+
 
     public static string? GetApplicationPath()
     {

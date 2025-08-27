@@ -1,18 +1,18 @@
 using Flexlib.Infrastructure.Modelling;
 using Flexlib.Interface.Input;
 
-public class SelectProfileCommand : Command
+public class SetProfileCommand : Command
 {
     public string Name { get; }
 
-    public SelectProfileCommand(string[] options)
+    public SetProfileCommand(string[] options)
     {
 
         Name = options.Length > 0 ? options[0] : "";
         Options = options;
     }
 
-    public override string Type => "select-profile";
+    public override string Type => "set-profile";
 
     public override bool IsValid()
     {
@@ -24,10 +24,10 @@ public class SelectProfileCommand : Command
         return new CommandUsageInfo
         {
             Meta = new List<string> {},
-            Title = "select-profile",
-            Description = "Selects a profile that customizes the application interfaces.",
+            Title = "set-profile",
+            Description = "Sets a profile that personalizes how the application interface is presented.",
             Group = CommandGroups.Config,
-            Syntax = "select-profile <profile name>",
+            Syntax = "set-profile <profile name>",
             Options = new List<Option>
             {
                 new Option{
