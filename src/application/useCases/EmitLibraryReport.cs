@@ -5,7 +5,7 @@ using Flexlib.Infrastructure.Interop;
 
 namespace Flexlib.Application.UseCases;
 
-public static class EmitLibraryReport
+public static class NewLibraryReport
 {
     public static Result Execute(string libName, ILibraryRepository repo)
     {
