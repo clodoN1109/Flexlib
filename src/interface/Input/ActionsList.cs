@@ -48,6 +48,6 @@ public static class ActionsList
         "cls",
         "help",
         "set-profile",
-        "lib-report"
+        "new-report"
     };
 }

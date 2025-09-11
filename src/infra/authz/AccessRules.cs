@@ -49,7 +49,7 @@ public static class ActionAccessRules
         ["light"]               = AccessLevel.User,
         ["dark"]                = AccessLevel.User,
         ["clear"]               = AccessLevel.User,
-        ["lib-report"]          = AccessLevel.User,
+        ["new-report"]          = AccessLevel.User,
         ["set-profile"]         = AccessLevel.User,
     };
 

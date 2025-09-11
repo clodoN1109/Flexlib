@@ -33,7 +33,7 @@ public static class TUIHelp
             },
             ["Miscellaneous"] = new[]
             {
-                "fetch-files", "lib-report"
+                "fetch-files", "new-report"
             },
             ["TUI"] = new[]
             {

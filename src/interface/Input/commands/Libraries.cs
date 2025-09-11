@@ -236,17 +236,17 @@ public class SetLibraryLayoutCommand : Command
     
 }
 
-public class LibraryReportCommand : Command
+public class NewLibraryReportCommand : Command
     {
         public string LibraryName { get; }
 
-        public LibraryReportCommand(string[] options)
+        public NewLibraryReportCommand(string[] options)
         {
             Options = options;
             LibraryName = options.Length > 0 ? options[0] : "";
         }
 
-        public override string Type => "lib-report";
+        public override string Type => "new-report";
 
         public override bool IsValid()
         {
@@ -265,10 +265,10 @@ public class LibraryReportCommand : Command
             return new CommandUsageInfo
             {
                 Meta = new List<string> { },
-                Title = "lib-report",
+                Title = "new-report",
                 Description = "Emmits a report detailing the library's current state.",
                 Group = CommandGroups.Libraries,
-                Syntax = "lib-report <library name>",
+                Syntax = "new-report <library name>",
                 Options = new List<Option>
                 {
                     new Option{
