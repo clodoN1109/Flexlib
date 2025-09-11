@@ -62,6 +62,10 @@ public static class CLIController
                 }
                 return _result;
                 
+            case LibraryReportCommand c:
+                _result = EmitLibraryReport.Execute(c.LibraryName, _libRepo);
+                return _result;
+
             case GetLibraryLayoutCommand c:
                 _result = GetLibraryLayout.Execute(c.LibraryName, _libRepo);
 
