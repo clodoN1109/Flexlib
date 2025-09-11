@@ -201,14 +201,15 @@ public class SetLibraryLayoutCommand : Command
         }
 
         return false;
-        
+
     }
-    
+
+
     public override CommandUsageInfo GetUsageInfo()
     {
         return new CommandUsageInfo
         {
-            Meta = new List<string> {},
+            Meta = new List<string> { },
             Title = "set-layout",
             Description = "Redefines the selected library layout.",
             Group = CommandGroups.Libraries,
@@ -220,7 +221,7 @@ public class SetLibraryLayoutCommand : Command
                     OptionDomain = new VariableDomain(),
                     Mandatory = true
                 },
-                
+
                 new Option{
                     Name = "layout",
                     OptionDomain = new VariableDomain(),
@@ -231,5 +232,51 @@ public class SetLibraryLayoutCommand : Command
             }
         };
     }
+
+    
 }
 
+public class LibraryReportCommand : Command
+    {
+        public string LibraryName { get; }
+
+        public LibraryReportCommand(string[] options)
+        {
+            Options = options;
+            LibraryName = options.Length > 0 ? options[0] : "";
+        }
+
+        public override string Type => "lib-report";
+
+        public override bool IsValid()
+        {
+
+            if (Options.Length == 1)
+            {
+                return true;
+            }
+
+            return false;
+
+        }
+
+        public override CommandUsageInfo GetUsageInfo()
+        {
+            return new CommandUsageInfo
+            {
+                Meta = new List<string> { },
+                Title = "lib-report",
+                Description = "Emmits a report detailing the library's current state.",
+                Group = CommandGroups.Libraries,
+                Syntax = "lib-report <library name>",
+                Options = new List<Option>
+                {
+                    new Option{
+                        Name = "library name",
+                        OptionDomain = new VariableDomain(),
+                        Mandatory = true
+                    },
+                }
+            };
+        }
+    }

@@ -49,7 +49,8 @@ public static class ActionAccessRules
         ["light"]               = AccessLevel.User,
         ["dark"]                = AccessLevel.User,
         ["clear"]               = AccessLevel.User,
-        ["set-profile"]      = AccessLevel.User,
+        ["lib-report"]          = AccessLevel.User,
+        ["set-profile"]         = AccessLevel.User,
     };
 
     public static AccessLevel GetRequiredLevel(string actionName)

@@ -138,6 +138,20 @@ public class JsonLibraryRepository : ILibraryRepository
         }
         
     }
+    
+    public Result Save(LibraryReport report, string reportPath)
+    {
+        try
+        {
+            JsonHelpers.WriteJson(reportPath, report);
+
+            return Result.Success("Report emitted successfully.");
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail($"Report could not be emitted. {ex}");
+        }
+    }
 
     public Result Save(Library lib, bool skipLocalStorage = false)
     {
@@ -151,7 +165,6 @@ public class JsonLibraryRepository : ILibraryRepository
         JsonHelpers.WriteJson(_metaFile, _cache);
 
         UpdateLibFileStructure(lib);
-        UpdateLibMetaFile(lib);
 
         if (skipLocalStorage)
             return Result.Success($"Library {lib.Name} metadata updated.");
@@ -174,7 +187,6 @@ public class JsonLibraryRepository : ILibraryRepository
         targetLib?.Items.Add(item);
 
         JsonHelpers.WriteJson(_metaFile, _cache);
-        UpdateLibMetaFile(lib);
 
         if (skipLocalStorage)
             return Result.Success($"Item \"{item.Name}\" metadata updated.");
@@ -472,7 +484,7 @@ public class JsonLibraryRepository : ILibraryRepository
         Directory.CreateDirectory(localDir);
  
     }
-
+    [Obsolete]
     private void UpdateLibMetaFile(Library lib)
     {
 

@@ -74,6 +74,7 @@ public static partial class Input
             "light" => new LightModeCommand(options),
             "set-profile" => new SetProfileCommand(options),
             "dark" => new DarkModeCommand(options),
+            "lib-report" => new LibraryReportCommand(options),
             _ => new UnknownInput($"Unknown input: {firstArg}")
         };
     }
