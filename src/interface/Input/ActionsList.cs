@@ -47,6 +47,7 @@ public static class ActionsList
         "clear",
         "cls",
         "help",
-        "set-profile"
+        "set-profile",
+        "lib-report"
     };
 }

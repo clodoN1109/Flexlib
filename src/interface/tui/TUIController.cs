@@ -96,6 +96,11 @@ public partial class TUIApp : ITUIApp
                     RenderResult(Result.Fail($"Could not retrieve the requested list of {"libraries".TranslateToProfile()}."));
                 break;
 
+            case LibraryReportCommand c:
+                _result = EmitLibraryReport.Execute(c.LibraryName, _libRepo);
+                RenderResult(_result);
+                break;
+
             case ListItemsCommand c:
                 _result = ListItems.Execute(c.LibraryName, c.FilterSequence, c.SortSequence, c.ItemName, _libRepo);
                 if (_result.Payload is ListItemsPayload payload)
