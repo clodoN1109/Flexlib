@@ -24,7 +24,7 @@ public static class NewLibraryReport
         if (selectedLib != null)
         {
             LibraryReport report = new LibraryReport(selectedLib);
-            string reportPath = Path.Combine(selectedLib.Path, $"{selectedLib.Name}/metadata.json");
+            string reportPath = Path.Combine(selectedLib.Path, $"{selectedLib.Name}/report.json");
             return parsedArgs.Repo.Save(report, reportPath);
 
         }
