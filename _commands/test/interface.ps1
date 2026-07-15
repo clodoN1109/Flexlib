@@ -7,7 +7,7 @@ function Interface  {
         [switch]$UpdateReferences
     ) 
 
-    $projectRoot = "C:\Users\clovi\OneDrive\Área de Trabalho\Clodo\Work\Projects\Incubator\FlexLib"
+    $projectRoot = "C:\Users\clovi\OneDrive\Área de Trabalho\Clodo\Work\Projects\FlexLib"
     $devCommands = "$projectRoot/Dev/_commands"
     $testCommandDir = "$devCommands/test"
 

@@ -13,7 +13,7 @@ public static class TUIHelp
             },
             ["Item Management"] = new[]
             {
-                "list-items", "new-item", "rename-item", "remove-item", "view-item", "set-prop", "update-origin", "get-origin"
+                "list-items", "new-item", "rename-item", "remove-item", "view-item", "set-prop", "unset-prop", "update-origin", "get-origin"
             },
             ["Desk Management"] = new[]
             {

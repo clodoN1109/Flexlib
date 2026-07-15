@@ -263,7 +263,7 @@ public class UnsetPropertyCommand : Command
         {
             Meta = new List<string> {},
             Title = "unset-prop",
-            Description = "Sets a new value for the selected property of the selected item.",
+            Description = "Removes a passed value from the selected property of the selected item.",
             Group = CommandGroups.Properties,
             Syntax = "set-prop <library name> <item id> <property name> <target value>",
             Options = new List<Option>
