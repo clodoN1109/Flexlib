@@ -30,6 +30,7 @@ public static class ActionsList
         "new-prop",
         "list-props",
         "set-prop",
+        "unset-prop",
         "remove-prop",
         "rename-prop",
         "new-note",
